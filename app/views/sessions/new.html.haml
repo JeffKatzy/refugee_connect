@@ -1,0 +1,33 @@
+.row.six.columns.panel
+	%h1 User sign in
+	= form_for(:session, url: sessions_path)
+		= f.label :email
+		= f.text_field :email
+		= f.label :password
+		= f.password_field :password
+		%br
+		= f.submit "Sign in", class: "button"
+.panel.row.six.columns
+	%h3 New User
+	%br
+	%br
+	%p= link_to "Sign up now!", signup_path, class: "button"
+
+/ <div class="row six columns panel">
+/ 		<h1> Teacher sign in</h1>
+/ 			<%= form_for(:session, url: sessions_path) do |f| %>
+/ 				<%= f.label :email %>
+/ 				<%= f.text_field  :email %>
+/ 				<%= f.label :password %>
+/ 				<%= f.password_field :password %>
+/ 				<br>
+/ 				<%= f.submit "Sign in", class: "button" %>
+/ 			<% end %>
+/ </div>
+
+/ 	<div class= "panel row six columns">
+/ 		<h3>New teacher? </h3>
+/ 		<br>
+/ 		<br>
+/ 		<p><%= link_to "Sign up now!", signup_path, class: "button" %></p>
+/ 	</div>

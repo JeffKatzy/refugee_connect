@@ -1,0 +1,8 @@
+%nav.top-bar#navbar
+  %ul.left
+    %li.name= link_to 'Yakbat', root_path
+  %ul.rest
+    %li= link_to 'Register', new_user_path, id: 'register_btn'
+    %li= link_to 'Signin', signin_path, remote: true, id: 'login_btn'
+#login_btn_nav
+  = render 'sessions/form'
