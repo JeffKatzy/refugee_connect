@@ -25,7 +25,6 @@ class Appointment < ActiveRecord::Base
 
   def start_call
   	self.call_to_users.build(tutor_id: user.id, tutee_id: user.id)
-  	self.call_to_users.last
-  	self.call_to_users.start_call
+  	self.call_to_users.last.start_call
   end
 end
