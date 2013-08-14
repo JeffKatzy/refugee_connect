@@ -24,7 +24,6 @@ class CallToUser < ActiveRecord::Base
 	#Find the associated student and refugee
 	@tutor = User.find(tutor_id) 
 	@tutee = User.find(tutee_id)
-	binding.pry 
 	@call = @account.calls.create({:from => '+12673172085', :to => '+1' + @tutor.cell_number, :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml"})
 	puts @call
 	self.begin_time = Time.now.in_time_zone('Eastern Time (US & Canada)') 
