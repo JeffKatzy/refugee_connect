@@ -3,6 +3,7 @@ RefugeeConnect::Application.routes.draw do
   resources :users
   root :to =>   'pages#home'
   resources :sessions, only: [:new, :create, :destroy]
+  resources :call_to_users
   get 'users/cancel' => 'users#cancel'
   match '/signup',  to: 'users#new'
   match '/signin',  to: 'sessions#new'
