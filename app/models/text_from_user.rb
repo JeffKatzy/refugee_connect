@@ -41,7 +41,7 @@ class TextFromUser < ActiveRecord::Base
   #the only thing untested is attempt session.
   def attempt_session
     if user.appointments.current.present?
-      appointment = current
+      appointment = user.appointments.current
       appointment.start_call
     else
       appointment = user.appointments.next_appointment
