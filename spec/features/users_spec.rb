@@ -34,7 +34,6 @@ describe 'Users' do
 	    expect(User.last.openings.first.time_open).to eq 13
 	    expect(User.last.availability_manager.per_week).to eq 1
 	    expect(User.last.availability_manager.occurrence_rules.to_s).to eq "[Weekly on Sundays]"
-
   	end
 	end
 end

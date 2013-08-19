@@ -18,8 +18,9 @@
 class User < ActiveRecord::Base
   has_secure_password
   has_one :availability_manager
+  has_many :text_from_users
   has_many :openings
-  has_many :appointments
+  
   has_many :text_to_users
   attr_accessible :cell_number, :email, :password_digest, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week
 
@@ -31,17 +32,20 @@ class User < ActiveRecord::Base
   accepts_nested_attributes_for :openings
 
   after_create :create_availability_manager, :add_per_week_to_availability_manager, :init
+
+  def appointments
+    Appointment.where('tutor_id = :user_id or tutee_id = :user_id', user_id: self.id)
+  end
     
   def available_this_week?
     if self.availability_manager == nil || self.availability_manager.per_week == nil
-      binding.pry if self == main
-      user = self
-      AvailabilityManager.find_or_create_by_user_id(user.id)
-      user.per_week ||= 1
+      # binding.pry if self == main
+      AvailabilityManager.find_or_create_by_user_id(self.id)
+      self.per_week ||= 1
       self.save
-      user.availability_manager.per_week = self.per_week
-      user.availability_manager.save
-      user.available_this_week?
+      self.availability_manager.per_week = self.per_week
+      self.availability_manager.save
+      self.available_this_week?
   	elsif (appointments.this_week.count < self.availability_manager.try(:occurrence_rules).try(:count)) && (appointments.before(Time.now.end_of_week).try(:count) < availability_manager.try(:per_week))
       return true
     elsif availability_manager.per_week == appointments.before(Time.now.end_of_week).count

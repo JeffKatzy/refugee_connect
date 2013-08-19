@@ -2,6 +2,11 @@ RefugeeConnect::Application.routes.draw do
 
   resources :users
   root :to =>   'pages#home'
+  get 'text_from_user/:From/:Body' => 'text_from_users#create'
+
+
+  post 'text_from_user/:From/:Body' => 'text_from_users#create', as: :text_from_user
+
   resources :sessions, only: [:new, :create, :destroy]
   resources :call_to_users
   resources :appointments

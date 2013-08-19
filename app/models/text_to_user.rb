@@ -10,6 +10,8 @@
 #  updated_at :datetime         not null
 #
 
+require 'builder'
+
 class TextToUser < ActiveRecord::Base
   attr_accessible :body, :time, :user_id
   belongs_to :user
