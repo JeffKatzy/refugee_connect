@@ -3,7 +3,6 @@ class AppointmentsController < ApplicationController
     @appointment = Appointment.find(params[:id])
     @tutor = User.find(@appointment.tutor)
     @tutee = User.find(@appointment.tutee)
-    @refugee_number = @tutee.cell_number.to_s
 
       respond_to do |format|
         format.xml { @tutee_number }
