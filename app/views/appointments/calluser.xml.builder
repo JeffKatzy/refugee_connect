@@ -4,7 +4,7 @@ xml.Response do
     #{@tutee.name}.  You're session should start in just a moment.  Please open your book to page
     #{@appointment.start_page}")
     xml.Dial do
-    	xml.Number(+12154997415)
+    	xml.Number(@tutee.cell_number)
     end 
 end
 
