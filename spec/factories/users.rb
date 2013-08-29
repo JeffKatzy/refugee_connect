@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :user do
     email { Faker::Internet.email }
     password 'password'
-    cell_number { Faker::PhoneNumber.phone_number }
+    cell_number '+12154997415'
     active true
 
     factory :tutor_unavailable do

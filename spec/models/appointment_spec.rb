@@ -8,10 +8,11 @@
 #  finish_page   :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  user_id       :integer
 #  began_at      :datetime
 #  ended_at      :datetime
 #  scheduled_for :datetime
+#  tutor_id      :integer
+#  tutee_id      :integer
 #
 
 require 'spec_helper'

@@ -21,9 +21,9 @@ class CallToUser < ActiveRecord::Base
   @@account = @@client.account
 
   def start_call
-	@call = @@account.calls.create({:from => '+12673172085', :to => '+1' + self.tutor.cell_number, :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml"})
-	puts @call
-	self.begin_time = Time.now.in_time_zone('Eastern Time (US & Canada)') 
-	self.save
+  	@call = @@account.calls.create({:from => '+12673172085', :to => '+1' + self.tutor.cell_number, :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml"})
+  	puts @call
+  	self.begin_time = Time.now.in_time_zone('Eastern Time (US & Canada)') 
+  	self.save
   end
 end

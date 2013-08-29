@@ -17,10 +17,11 @@ class TextToUser < ActiveRecord::Base
   belongs_to :user
   belongs_to :appointment
 
+  @@client = Twilio::REST::Client.new(ENV['TW_SID'], ENV['TW_TOK'])
+  @@account = @@client.account
+
   def self.deliver(user, body)
-  	@client = Twilio::REST::Client.new(ENV['TW_SID'], ENV['TW_TOK'])
-  	@account = @client.account
-  	@message = @account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body)
+  	@message = @@account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body)
   	TextToUser.create(body: body, user_id: user.id, time: Time.now.in_time_zone('Eastern Time (US & Canada)'))
   	puts @message 
   end

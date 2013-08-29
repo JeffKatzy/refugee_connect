@@ -17,9 +17,9 @@ class TextFromUser < ActiveRecord::Base
   attr_accessible :body, :time, :user_id, :incoming_number
 
   def respond
-    if body == "go"
+    if body.downcase == "go"
       attempt_session
-    elsif body == "sorry"
+    elsif body.downcase == "sorry"
       TextToUser.deliver(user, "Thanks for letting us know, we'll find someone else.")
       appointment = user.appointments.next_appointment
       if appointment.present? 

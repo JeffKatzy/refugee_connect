@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   has_one :availability_manager
   has_many :text_from_users
   has_many :openings
+  has_many :reminder_texts
   
   has_many :text_to_users
   attr_accessible :cell_number, :email, :password_digest, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week
@@ -36,6 +37,19 @@ class User < ActiveRecord::Base
   def appointments
     Appointment.where('tutor_id = :user_id or tutee_id = :user_id', user_id: self.id)
   end
+
+  def is_tutor?
+    if self.role == 'tutor'
+      true
+    else
+      false
+    end
+  end
+
+  def last_page_completed
+    self.appointments.most_recent.first.finish_page
+  end
+
     
   def available_this_week?
     if self.availability_manager == nil || self.availability_manager.per_week == nil
@@ -76,11 +90,12 @@ class User < ActiveRecord::Base
 
   def available_appointments_this_week
     if self.available_this_week?
-      hash = {}
+      arr = []
       opposite_active_users.select { |user| user.available_this_week? }.select { |user| self.intersections(user).count > 0 }.each do |user|
-        hash[user] = self.intersections(user)
+        hsh = { user: user, times: self.intersections(user)}
+        arr << hsh
       end
-      hash
+      arr
     else
       return 'user has no remaining availabilities this week.'
     end
