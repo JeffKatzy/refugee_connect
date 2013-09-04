@@ -18,7 +18,7 @@
       = form.label :day_open
       = form.select("day_open", {"Sunday" => "Sunday", "Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday", "Saturday" => "Saturday"})
       = form.label :time_open
-      = form.select("time_open", {"10 pm" => "2", "11 pm" => "3", "12 pm" => "4" })
+      = form.select("time_open", {"1 pm" => "15", "2 pm" => "16", "3 pm" => "17" })
       = form.link_to_remove "Remove this availability"
     = f.link_to_add "Add a time available", :openings
     %br 
