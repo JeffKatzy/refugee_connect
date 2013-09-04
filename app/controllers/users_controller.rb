@@ -8,7 +8,8 @@ class UsersController < ApplicationController
   def create
     @user = User.create(params[:user])
     session[:user_id] = @user.id
-    redirect_to @user
+    authentication
+    redirect_to match_users_path(@user)
   end
 
   def index

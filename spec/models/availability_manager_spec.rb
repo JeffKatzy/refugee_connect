@@ -20,21 +20,31 @@ describe AvailabilityManager do
     availability_manager.should be_valid
   end
 
-  describe "#schedule" do
+  describe '#init_schedule' do
+    it "should add a new schedule" do 
+      availability_manager.init_schedule
+      availability_manager.schedule_hash.should be_a_kind_of(Hash)
+    end
   end
 
-  describe "#availabilities" do
+  describe '#create_rule' do 
+    it "should create an ice_cube rule" do
+      rule = availability_manager.create_rule('monday', 1)
+      rule.to_s.should eq "Weekly on Mondays on the 1st hour of the day"
+    end
+  end
+
+  describe "#add_recurrence" do
+    it "should add the rule to the schedule" do
+      availability_manager.create_rule(:tuesday, 3).to_s.should eq "Weekly on Tuesdays on the 3rd hour of the day"
+    end
   end
 
   describe "#add_weekly_availability" do
-    before :each do
-      availability_manager.add_weekly_availability('monday', 1)
-    end
-
-    it "should add times available" do
-      availability_manager.schedule.recurrence_rules.count should eq 1
-      availability_manager.add_weekly_availability('tuesday', 4)
-      availability_manager.schedule.recurrence_rules.count should eq 2
+    it "should add multiple available times" do
+      availability_manager.add_weekly_availability('Monday', 1)
+      availability_manager.add_weekly_availability('Tuesday', 3)
+      availability_manager.schedule.to_s.should eq "Weekly on Mondays on the 1st hour of the day / Weekly on Tuesdays on the 3rd hour of the day"
     end
   end
 

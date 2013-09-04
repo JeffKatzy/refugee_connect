@@ -172,4 +172,68 @@ describe Appointment do
 			end
 		end
 	end
+
+	describe '.fully_assigned' do
+		before :each do 
+			@appointment_one = FactoryGirl.create(:appointment)
+			@appointment_two = FactoryGirl.create(:appointment)
+			@appointment_three = FactoryGirl.create(:appointment)
+			@appointment_two.tutor = nil
+			@appointment_two.save
+			@appointment_three.tutee = nil
+			@appointment_three.save
+		end
+
+		it 'should only return appointments with both a tutor and a tutee' do
+			Appointment.fully_assigned.should eq [@appointment_one]
+		end
+	end
+
+	describe '.batch_for_this_hour' do
+		let(:date) { DateTime.new(2020, 2, 3, 4, 5, 6) }
+		before :each do
+			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: date)
+			@appointment_two = FactoryGirl.create(:appointment, scheduled_for: date)
+			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: date.change(hour: 8))
+		end
+
+		it "should only select appointments from this hour" do
+			Timecop.travel(date) do
+				Appointment.batch_for_this_hour.should eq [@appointment_one, @appointment_two]
+				# Appointment.fully_assigned.after(Time.now.beginning_of_hour).before(Time.now.end_of_hour).should eq [@appointment_one, @appointment_two]
+			end
+		end
+
+		it "should include appointments at the beginning of the hour" do
+			Timecop.travel(date) do
+				@appointment_four = FactoryGirl.create(:appointment, scheduled_for: date.change(minute: 0, second: 0))
+				Appointment.batch_for_this_hour.should eq [@appointment_one, @appointment_two, @appointment_four]
+			end
+		end
+	end
+
+	describe '.batch_for_just_before_reminder_text' do
+
+		let(:date) { DateTime.new(2020, 2, 3, 4, 5, 6) }
+		before :each do
+			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: date + 20.minutes )
+			@appointment_two = FactoryGirl.create(:appointment, scheduled_for: date + 10.minutes )
+			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: date.change(hour: 8))
+		end
+
+		it "should only select appointments due in forty minutes" do
+			Appointment.fully_assigned.
+      where("begin_time between (?) and (?)", Time.now.utc, (Time.now.utc + 40.minutes))
+		end
+	end
+
+	pending '.batch_for_am_reminder_text' do
+		it "should only select appointments starting tomorrow" do 
+		end
+	end
+
+	pending '.batch_for_pm_reminder_text' do
+		it "" do
+		end
+	end
 end

@@ -15,13 +15,15 @@
 class CallToUser < ActiveRecord::Base
   attr_accessible :begin_time, :end_time, :tutee_id, :tutor_id
   belongs_to :appointment
+  belongs_to :tutor, class_name: 'User', foreign_key: :tutor_id
+  belongs_to :tutee, class_name: 'User', foreign_key: :tutee_id
 
   BASE_URL =  "http://agile-mesa-7894.herokuapp.com/"
   @@client = Twilio::REST::Client.new(ENV['TW_SID'], ENV['TW_TOK'])
   @@account = @@client.account
 
   def start_call
-  	@call = @@account.calls.create({:from => '+12673172085', :to => '+1' + self.tutor.cell_number, :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml"})
+  	@call = @@account.calls.create({:from => '+12673172085', :to => self.tutor.cell_number, :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml"})
   	puts @call
   	self.begin_time = Time.now.in_time_zone('Eastern Time (US & Canada)') 
   	self.save

@@ -40,7 +40,8 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
-    if user.appointments.current.present?
+    if user.appointments.current.present? 
+      #I don't think this method 'current' works any more
       appointment = user.appointments.current
       appointment.start_call
     else

@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   has_many :reminder_texts
   
   has_many :text_to_users
-  attr_accessible :cell_number, :email, :password_digest, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week
+  attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week
 
   scope :tutors, -> { where(role: 'tutor') }
   scope :tutees, -> { where(role: 'tutee') }

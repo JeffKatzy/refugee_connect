@@ -21,6 +21,12 @@ FactoryGirl.define do
     finish_page 15
     scheduled_for Time.now + 1.day
     status 'complete'
+    
+    after(:create) do |appointment|
+      appointment.tutor = FactoryGirl.build(:tutor_available)
+      appointment.tutee = FactoryGirl.build(:tutee_available)
+      appointment.save
+    end
 
     factory :apt_five_min do
       scheduled_for Time.now + 5.minutes

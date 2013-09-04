@@ -1,20 +1,27 @@
 module IceTime
 
-  attr_accessor :schedule
-
-  def init_schedule(time)
-    @schedule = IceCube::Schedule.new(time, :duration => 3600)
-  end
-
-  def add_weekly_availability(day, hour)
-    time = convert_to_time(hour)
-    init_schedule(time) if @schedule.nil?
-    add_recurrence_to(schedule, day)
+  def init_schedule
+    @schedule = IceCube::Schedule.new(Time.now - 1.day, duration: 3600)
     save_schedule
   end
 
-  def add_recurrence_to(schedule, day)
-    schedule.add_recurrence_rule IceCube::Rule.weekly.day(day.downcase.to_sym)
+  def add_weekly_availability(day, hour)
+    rule = create_rule(day, hour)
+    if self.schedule.nil?
+      init_schedule 
+    else 
+    end
+    add_recurrence(rule)
+  end
+
+  def create_rule(day, hour)
+    IceCube::Rule.weekly.day(day.downcase.to_sym).
+      hour_of_day(hour).minute_of_hour(0).second_of_minute(0)
+  end
+
+  def add_recurrence(rule)
+    schedule.add_recurrence_rule rule
+    save_schedule
   end
 
   def convert_to_time(hour)

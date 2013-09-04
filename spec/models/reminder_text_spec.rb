@@ -8,11 +8,13 @@
 #  user_id        :integer
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  type           :string(255)
+#  category       :string(255)
 #
 
 require 'spec_helper'
 
 describe ReminderText do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it 'has a valid factory' do
+  	FactoryGirl.create(:reminder_text).should be_valid
+  end
 end

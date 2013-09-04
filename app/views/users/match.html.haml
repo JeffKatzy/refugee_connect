@@ -1,7 +1,7 @@
 %h2= "Matches for #{@auth.name}"
+Your matching appointments:
 = form_tag "/appointments/batch", method: "post" do
 	- @matches.each_with_index do |match, idx|
-		Your matching appointments:
 		%br
 		%br
 		%span= "#{match[:user].name}'s availabilities"

@@ -11,7 +11,7 @@ RefugeeConnect::Application.routes.draw do
 
   post 'appointments/batch'
   get 'users/cancel' => 'users#cancel'
-  get 'users/match/:user_id' => 'users#match'
+  get 'users/match/:user_id' => 'users#match', as: :match_users
   match '/signup',  to: 'users#new'
   match '/signin',  to: 'sessions#new'
   delete '/login' => 'sessions#destroy'

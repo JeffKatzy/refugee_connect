@@ -36,4 +36,9 @@ describe 'Users' do
 	    expect(User.last.availability_manager.occurrence_rules.to_s).to eq "[Weekly on Sundays]"
   	end
 	end
+
+	pending 'it should blank out the information upon switch from tutor to tutee' do 
+		it '' do
+		end
+	end
 end
