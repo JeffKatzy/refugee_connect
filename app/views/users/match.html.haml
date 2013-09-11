@@ -1,13 +1,16 @@
-%h2= "Matches for #{@auth.name}"
-Your matching appointments:
-= form_tag "/appointments/batch", method: "post" do
-	- @matches.each_with_index do |match, idx|
+- if @matches.present?
+	%h2= "Matches for #{@auth.name}"
+	Your matching appointments:
+	= form_tag "/appointments/batch", method: "post" do
+		- @matches.each_with_index do |match, idx|
+			%br
+			%br
+			%span= "#{match[:user].name}'s availabilities"
+			- match[:times].each do |time|
+				%p
+				%span= time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + " EST"
+				= check_box_tag '[match_id][]', "#{match[:user].id}.#{time}"
 		%br
-		%br
-		%span= "#{match[:user].name}'s availabilities"
-		- match[:times].each do |time|
-			%p
-			%span= time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + " EST"
-			= check_box_tag '[match_id][]', "#{match[:user].id}.#{time}"
-	%br
-	%p= submit_tag "Sign up for classes"
+		%p= submit_tag "Sign up for classes"
+- else
+	There are no available appointments for you this week.

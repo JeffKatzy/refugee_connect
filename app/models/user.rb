@@ -32,7 +32,12 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :openings
 
+
   after_create :create_availability_manager, :add_per_week_to_availability_manager, :init
+  before_save :format_phone_number
+  validates_plausible_phone :cell_number, :presence => true
+
+
 
   def appointments
     Appointment.where('tutor_id = :user_id or tutee_id = :user_id', user_id: self.id)
@@ -46,6 +51,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def format_cell_number
+    self.cell_number.gsub(/[^0-9]/, "")
+  end
+
   def last_page_completed
     self.appointments.most_recent.first.finish_page
   end
@@ -53,7 +62,6 @@ class User < ActiveRecord::Base
     
   def available_this_week?
     if self.availability_manager == nil || self.availability_manager.per_week == nil
-      # binding.pry if self == main
       AvailabilityManager.find_or_create_by_user_id(self.id)
       self.per_week ||= 1
       self.save
@@ -115,5 +123,15 @@ class User < ActiveRecord::Base
     self.active = true
     self.per_week ||= 1
     self.save
+  end
+
+  private 
+
+  def format_phone_number
+    if self.is_tutor?
+      self.cell_number = PhonyRails.normalize_number(cell_number, :country_code => 'US')
+    else
+      self.cell_number = PhonyRails.normalize_number(cell_number, :country_code => 'IN')
+    end
   end
 end

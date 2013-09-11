@@ -19,5 +19,10 @@ class AppointmentsController < ApplicationController
   def index
     @appointments = @auth.appointments.next_appointments
   end
-    
+
+  def askpagenumber 
+    @appointment = Appointment.find(params[:id])
+    tutor = User.find(@appointment.tutor)
+    TextToUser.deliver(tutor, 'Please text the page number that you last left off at.')
+  end
 end

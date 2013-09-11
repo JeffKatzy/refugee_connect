@@ -16,12 +16,12 @@
 #
 
 class Appointment < ActiveRecord::Base
-  attr_accessible :finish_page, :start_page, :status, :scheduled_for, :user_id, :began_at, :ended_at
+  attr_accessible :finish_page, :start_page, :status, :scheduled_for, :tutor_id, :began_at, :ended_at, :tutee_id
   
   scope :after, ->(time) { where("scheduled_for >= ?", time) }
   scope :before, ->(time) { where("scheduled_for <= ?", time) }
   scope :this_week, after(Time.now.utc.beginning_of_week).before(Time.now.utc.end_of_week)
-  scope :most_recent, :limit => 1, :order => 'began_at DESC'
+  scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
   
   #perhaps make incomplete the default scope
   # scope :this_hour, after(Time.now.beginning_of_hour).before(Time.now.end_of_hour)  #for some reason this was not working
@@ -33,6 +33,7 @@ class Appointment < ActiveRecord::Base
   scope :fully_assigned, where("tutee_id IS NOT NULL AND tutor_id IS NOT NULL")
   scope :in_half_a_day, where("begin_time between (?) and (?)", Time.now.utc + 16.hours, (Time.now.utc + 16.7.hours))
   scope :in_forty_minutes, where("begin_time between (?) and (?)", Time.now.utc, (Time.now.utc + 40.minutes))
+  scope :most_recent, complete.recent_inclusive
 
   # scope :batch_for_this_hour, fully_assigned.after(Time.now.beginning_of_hour).before(Time.now.end_of_hour)
   
@@ -42,6 +43,7 @@ class Appointment < ActiveRecord::Base
   belongs_to :tutee, class_name: 'User', foreign_key: :tutee_id
   has_many :call_to_users
   has_many :reminder_texts
+  after_create :find_start_page
 
   #only allow one appointment per hour per user
 
@@ -65,9 +67,14 @@ class Appointment < ActiveRecord::Base
   end
 
   def find_start_page
-    most_recent_appointment = self.tutee.appointments.most_recent
-    self.start_page = most_recent_appointment.start_page
-    self.save
+    if self.tutee && self.tutee.appointments.present? && self.tutee.appointments.most_recent.present? && self.tutee.appointments.most_recent.first.finish_page.present?
+      most_recent_appointment = self.tutee.appointments.most_recent.first  
+      self.start_page = most_recent_appointment.finish_page
+      self.save
+    else
+      self.start_page = 1
+      self.save
+    end
   end
 
   def self.batch(user, match_hash)
@@ -77,10 +84,8 @@ class Appointment < ActiveRecord::Base
       appointment = Appointment.create(scheduled_for: matching_time)
       appointment.assign_user_role(matching_user_id)
       appointment.assign_user_role(user.id)
-      appointment.start_page = appointment.tutee.last_page_completed if appointment.tutee.last_page_completed.present?
       appointment.status = 'incomplete'
       appointment.save
-      
     end
   end
 

@@ -18,8 +18,50 @@
 require 'spec_helper'
 
 describe Appointment do
-  it 'has a valid factory' do
+	it 'has a valid factory' do
 		FactoryGirl.create(:appointment).should be_valid
+	end
+
+	describe "most recent" do
+		let(:apt) {FactoryGirl.create(:appointment) }
+
+		it "should display the last complete appointment" do
+			apt
+			Appointment.most_recent.first.should eq apt
+		end
+	end
+
+	describe '#format_cell_number' do
+		it "should add a US country code for tutors" do
+			tutor = FactoryGirl.create(:tutor_unavailable)
+			tutor.cell_number[0].should eq "1"
+		end
+
+		it "should add an Indian country code for tutees" do
+			tutee = FactoryGirl.create(:tutee_unavailable)
+			tutee.cell_number[0].should eq "9"
+			tutee.cell_number[1].should eq "1"
+		end
+	end
+
+	describe "#find_start_page" do
+		let(:apt) {FactoryGirl.create(:appointment) }
+
+		context "where the appointment is the tutees first" do 
+			it "should set the page number to one" do		
+				apt.start_page.should eq 1
+			end
+		end
+
+		context "where the appointment is not the tutees first" do
+			it "should set the page number to the most recent appointments end page" do
+				apt.finish_page = 3
+				apt.save
+				apt_two = Appointment.create(scheduled_for: Time.now, status: 'complete', tutor_id: apt.tutor.id, tutee_id: apt.tutee.id )
+				apt.save
+				apt_two.start_page.should eq apt.finish_page				
+			end
+		end
 	end
 
 	describe '.after(this_week)' do

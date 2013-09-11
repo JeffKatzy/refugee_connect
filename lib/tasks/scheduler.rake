@@ -4,3 +4,5 @@ task :begin_session_text => :environment do
   ReminderText.begin_session
   puts "done."
 end
+
+

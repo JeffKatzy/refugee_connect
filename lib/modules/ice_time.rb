@@ -38,6 +38,6 @@ module IceTime
   end
 
   def remaining_occurrences_this_week
-    schedule.occurrences(Time.now.end_of_week).select { |time| time > Time.now.beginning_of_week && time < Time.now.end_of_week }
+    schedule.occurrences(Time.now.end_of_week + 1.day).select { |time| time > Time.now }
   end
 end

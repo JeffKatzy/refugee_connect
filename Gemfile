@@ -21,6 +21,7 @@ gem 'haml'
 gem 'localtunnel'
 gem 'ice_cube'
 gem 'chronic'
+gem 'phony_rails'
 
 group :assets do
   gem 'sass-rails', "  ~> 3.2.4"

@@ -17,11 +17,16 @@ describe 'Appointments' do
 			check '_match_id_'
 			click_on 'Sign up for classes'
 			page.should have_content 'Bob'
-			page.should have_content '01:00PM on Sunday'
+			page.should have_content '03:00PM on Monday'
 			Appointment.last.scheduled_for.
 			in_time_zone('Eastern Time (US & Canada)').
-			strftime("%I:%M%p on %As").should eq "01:00PM on Sundays"
-			date = DateTime.new 2013,9,8,17,00,00
+			strftime("%I:%M%p on %As").should eq "03:00PM on Mondays"
+			apt_time = Appointment.last.scheduled_for
+			day =  apt_time.day
+			month = apt_time.month
+			hour = apt_time.hour
+			binding.pry
+			date = DateTime.new 2013,day,month,hour,00,00
 			Timecop.travel(date)
 			Appointment.batch_for_this_hour.should eq [Appointment.last]
 			ReminderText.begin_session

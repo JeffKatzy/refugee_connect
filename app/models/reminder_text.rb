@@ -22,6 +22,7 @@ class ReminderText < ActiveRecord::Base
   belongs_to :appointment
   belongs_to :user
 
+  
   def self.begin_session
     appointments_batch = Appointment.batch_for_this_hour
     appointments_batch.each do |appointment|

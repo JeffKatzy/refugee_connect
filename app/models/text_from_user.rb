@@ -16,6 +16,8 @@ class TextFromUser < ActiveRecord::Base
   belongs_to :user
   attr_accessible :body, :time, :user_id, :incoming_number
 
+  phony_normalize :incoming_number
+
   def respond
     if body.downcase == "go"
       attempt_session
@@ -58,6 +60,7 @@ class TextFromUser < ActiveRecord::Base
   def set_new_page
     appointment = user.appointments.needs_text.most_recent.first
     appointment.finish_page = body.to_i  
+    appointment.save
     TextToUser.deliver(user, "Thanks, we just saved the page number.")
   end
 

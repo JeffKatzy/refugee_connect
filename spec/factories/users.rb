@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :user do
     email { Faker::Internet.email }
     password 'password'
-    cell_number '+12154997415'
+    cell_number '2154997415'
     name 'jeffers'
     active true
 
@@ -72,9 +72,9 @@ FactoryGirl.define do
       
       after(:create) do |tutee|
         tutee.availability_manager = FactoryGirl.build(:availability_manager, per_week: 3, user: tutee)
-        tutee.availability_manager.add_weekly_availability('wednesday', 4)
-        tutee.availability_manager.add_weekly_availability('thursday', 4)
-        tutee.availability_manager.add_weekly_availability('friday', 4)
+        tutee.availability_manager.add_weekly_availability('wednesday', 15)
+        tutee.availability_manager.add_weekly_availability('thursday', 13)
+        tutee.availability_manager.add_weekly_availability('friday', 15)
         [:appointment_wednesday, :appointment_thursday, :appointment_friday].each do |appointment|
           tutee.appointments << FactoryGirl.build(appointment, user: tutee)
         end
@@ -89,9 +89,6 @@ FactoryGirl.define do
         tutee.availability_manager = FactoryGirl.build(:sunday, per_week: 4, user: tutee)
         tutee.availability_manager.add_weekly_availability('monday', 15)
         tutee.availability_manager.add_weekly_availability('sunday', 13)
-        #   [:appointment_thursday, :appointment_friday].each do |appointment|
-        #   tutee.appointments << FactoryGirl.build(appointment, user: tutee)
-        # end
       end
     end
 
