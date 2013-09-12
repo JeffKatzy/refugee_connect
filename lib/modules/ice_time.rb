@@ -1,7 +1,7 @@
 module IceTime
 
   def init_schedule
-    @schedule = IceCube::Schedule.new(Time.now - 1.day, duration: 3600)
+    @schedule = IceCube::Schedule.new(Time.now.in_time_zone("America/New_York") - 1.day, duration: 3600)
     save_schedule
   end
 
@@ -15,8 +15,7 @@ module IceTime
   end
 
   def create_rule(day, hour)
-    IceCube::Rule.weekly.day(day.downcase.to_sym).
-      hour_of_day(hour).minute_of_hour(0).second_of_minute(0)
+    IceCube::Rule.weekly.day(day.downcase.to_sym).hour_of_day(hour).minute_of_hour(0).second_of_minute(0)
   end
 
   def add_recurrence(rule)
