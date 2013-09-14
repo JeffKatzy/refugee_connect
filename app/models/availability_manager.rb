@@ -18,10 +18,16 @@ class AvailabilityManager < ActiveRecord::Base
 
   belongs_to :user
   serialize :schedule_hash, Hash
-  after_create :init
+  after_create :init, :init_schedule
 
   def init
     self.per_week ||= 1
+  end
+
+  def init_schedule
+    @schedule = IceCube::Schedule.new(duration: 3600)
+    @schedule.start_time = Time.now.in_time_zone("America/New_York") - 1.day
+    save_schedule
   end
 
   def self.remove_availability(user, appointments_time)

@@ -20,6 +20,10 @@ describe AvailabilityManager do
     availability_manager.should be_valid
   end
 
+  it "should have an initialized schedule with a start time in EST" do
+    availability_manager.schedule.start_time.zone.should == "EDT"
+  end
+
   describe '#init_schedule' do
     it "should add a new schedule" do 
       availability_manager.init_schedule

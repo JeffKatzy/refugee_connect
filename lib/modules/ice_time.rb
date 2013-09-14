@@ -1,11 +1,5 @@
 module IceTime
 
-  def init_schedule
-    @schedule = IceCube::Schedule.new(duration: 3600)
-    @schedule.start_time = Time.now.in_time_zone("America/New_York") - 1.day
-    save_schedule
-  end
-
   def add_weekly_availability(day, hour)
     rule = create_rule(day, hour)
     if self.schedule.nil?
