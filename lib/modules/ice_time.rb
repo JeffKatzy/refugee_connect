@@ -2,10 +2,6 @@ module IceTime
 
   def add_weekly_availability(day, hour)
     rule = create_rule(day, hour)
-    if self.schedule.nil?
-      init_schedule 
-    else 
-    end
     add_recurrence(rule)
   end
 

@@ -28,7 +28,7 @@ class ReminderText < ActiveRecord::Base
     appointments_batch.each do |appointment|
     	unless appointment.reminder_texts.where(category: 'begin_session').present?
     		reminder = ReminderText.create(time: Time.now, appointment_id: appointment.id, user_id: appointment.tutor.id)
-      	first_part = appointment[:scheduled_for].in_time_zone.strftime("Your class at %I:%M%p ")
+      	first_part = appointment[:scheduled_for].in_time_zone("America/New_York").strftime("Your class at %I:%M%p ")
       	second_part = "on page #{appointment.start_page} is now ready to start.  Reply to this text with the word 'go' to start the call or 'sorry' to cancel." 
       	body_of_text = first_part + second_part 
       	TextToUser.deliver(appointment.tutor, body_of_text) 
@@ -66,9 +66,9 @@ class ReminderText < ActiveRecord::Base
   private
 
   def self.send_reminder_text(appointments_batch)
-    texts_batch.each do |text|
+    appointments_batch.each do |text|
       #text is tutoring session
-      first_part = text[:begin_time].in_time_zone.strftime("Tutoring Reminder: upcoming session at %I:%M%p beginning")
+      first_part = text[:begin_time].in_time_zone("America/New_York").strftime("Tutoring Reminder: upcoming session at %I:%M%p beginning")
       second_part = "on page #{page_number}.  Please email jek2141@columbia.edu to reschedule or cancel the session." 
       body_of_text = first_part + second_part
       TextToUser.deliver(appointment.tutor, body) 
