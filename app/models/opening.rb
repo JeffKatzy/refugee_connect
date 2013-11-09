@@ -4,22 +4,31 @@
 #
 #  id         :integer          not null, primary key
 #  user_id    :integer
-#  time_open  :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  day_open   :string(255)
+#  time       :datetime
+#  time_open  :string(255)
 #
 
 class Opening < ActiveRecord::Base
-  attr_accessible :day_open, :time_open, :user_id
+  attr_accessible :day_open, :time_open, :user_id, :time
   belongs_to :user
-  after_create :find_or_create_availability_manager, :add_occurrence_rules
+  after_create :set_time, :find_or_create_availability_manager, :add_occurrence_rules
+
+  def set_time
+  	Time.zone = user.time_zone
+  	Chronic.time_class = Time.zone
+  	self.time = Chronic.parse(time_open)
+    self.save
+  end
 
   def find_or_create_availability_manager
   	AvailabilityManager.find_or_create_by_user_id(self.user.id)
   end
 
   def add_occurrence_rules
-  	self.user.availability_manager.add_weekly_availability(self.day_open, self.time_open)
+    weekday = self.time.utc.strftime("%A")
+  	self.user.availability_manager.add_weekly_availability(weekday, self.time.utc)
   end
 end

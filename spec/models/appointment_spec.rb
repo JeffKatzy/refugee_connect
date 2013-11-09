@@ -22,30 +22,8 @@ describe Appointment do
 		FactoryGirl.create(:appointment).should be_valid
 	end
 
-	describe "most recent" do
-		let(:apt) {FactoryGirl.create(:appointment) }
-
-		it "should display the last complete appointment" do
-			apt
-			Appointment.most_recent.first.should eq apt
-		end
-	end
-
-	describe '#format_cell_number' do
-		it "should add a US country code for tutors" do
-			tutor = FactoryGirl.create(:tutor_unavailable)
-			tutor.cell_number[0].should eq "1"
-		end
-
-		it "should add an Indian country code for tutees" do
-			tutee = FactoryGirl.create(:tutee_unavailable)
-			tutee.cell_number[0].should eq "9"
-			tutee.cell_number[1].should eq "1"
-		end
-	end
-
 	describe "#find_start_page" do
-		let(:apt) {FactoryGirl.create(:appointment) }
+		let(:apt) {FactoryGirl.create(:apt_five_min, began_at: Time.current, status: 'complete') }
 
 		context "where the appointment is the tutees first" do 
 			it "should set the page number to one" do		
@@ -54,13 +32,23 @@ describe Appointment do
 		end
 
 		context "where the appointment is not the tutees first" do
-			it "should set the page number to the most recent appointments end page" do
+			it "should set the page number to the most tutee's most recent appointments" do
 				apt.finish_page = 3
 				apt.save
-				apt_two = Appointment.create(scheduled_for: Time.now, status: 'complete', tutor_id: apt.tutor.id, tutee_id: apt.tutee.id )
+				apt_two = Appointment.create(scheduled_for: Time.now, status: 'incomplete', tutor_id: apt.tutor.id, tutee_id: apt.tutee.id )
 				apt.save
 				apt_two.start_page.should eq apt.finish_page				
 			end
+		end
+	end
+
+	describe ".create" do
+		it "should remove the occurrence with the correct parameter" do
+			tutor = FactoryGirl.create(:tutor_available)
+			tutee = FactoryGirl.create(:tutee_available)
+			time = tutee.availability_manager.schedule.occurrences(Time.current.end_of_week + 7.days).first
+			apt = FactoryGirl.create(:appointment, tutor: tutor, tutee: tutee, scheduled_for: time)
+			tutee.availability_manager.schedule.occurrences(Time.now.end_of_week + 7.days).first.should_not eq time
 		end
 	end
 
@@ -96,35 +84,40 @@ describe Appointment do
 		end
 	end
 
-	describe '#this_hour' do
+	describe '.this_hour' do
 		before :each do 
-			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.now + 10.minutes)
-			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 20.minutes)
+      Timecop.travel(Time.now.beginning_of_hour)
+			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes)
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 20.minutes)
 			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes)
-			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes)
+			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.current + 2.hours)
 		end
 
 
 		it "should return a list of appointments this hour" do 
-			Appointment.this_hour.should eq [@this_hour, @twenty_minutes, @thirty_minutes]
+			Appointment.this_hour.should include @this_hour, @twenty_minutes, @thirty_minutes
+		end
+
+		it "should not include appointments not in the hour" do
 			Appointment.this_hour.should_not include @two_hours
 		end
 	end
 
 	describe '#current_appointment' do
 		before :each do 
-			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.now + 10.minutes)
-			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 20.minutes)
-			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes)
-			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes)
+			Timecop.travel(Time.current.beginning_of_hour)
+			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes, status: 'incomplete')
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 20.minutes, status: 'incomplete')
+			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 30.minutes, status: 'incomplete')
+			@forty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 40.minutes, status: 'incomplete')
 		end
 
 		it "should be occurring this hour" do
-			Appointment.current_appointment.scheduled_for.hour.should eq Time.now.hour 
+			Appointment.current.scheduled_for.hour.should eq Time.current.hour 
 		end
 
 		it "should only return one appointment" do
-			Appointment.current_appointment.should be_a(Appointment)
+			Appointment.current.should be_a(Appointment)
 		end
 	end
 
@@ -143,14 +136,14 @@ describe Appointment do
 
 	describe ".next_appointments" do
 		before :each do 
-			@ten_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 10.minutes, status: 'incomplete')
-			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 20.minutes, status: 'incomplete')
-			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes, status: 'incomplete')
-			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes, status: 'incomplete')
+			@ten_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes, status: 'incomplete')
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 20.minutes, status: 'incomplete')
+			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 30.minutes, status: 'incomplete')
+			@forty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 40.minutes, status: 'incomplete')
 		end
 
 		it "should return appointments in the order they are scheduled" do
-			Appointment.next_appointments.should eq [@ten_minutes, @twenty_minutes, @thirty_minutes, @two_hours]
+			Appointment.next_appointments.should eq [@ten_minutes, @twenty_minutes, @thirty_minutes, @forty_minutes]
 		end
 
 		it 'should only return incomplete appointments' do
@@ -158,22 +151,38 @@ describe Appointment do
 			@ten_minutes.save
 			@thirty_minutes.status = 'complete'
 			@thirty_minutes.save
-			Appointment.next_appointments.should eq [@twenty_minutes, @two_hours]
+			Appointment.next_appointments.should eq [@twenty_minutes, @forty_minutes]
 		end
 	end
 
 	describe '.next_appointment' do
 		before :each do 
-			@ten_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 10.minutes, status: 'complete')
-			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 20.minutes, status: 'incomplete')
-			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes, status: 'incomplete')
-			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.now + 30.minutes, status: 'incomplete')
+			@ten_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes, status: 'complete')
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 20.minutes, status: 'incomplete')
+			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 30.minutes, status: 'incomplete')
+			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.current + 30.minutes, status: 'incomplete')
 		end
 
 		it "should return only the next upcoming, incomplete appointment" do
 			Appointment.next_appointment.should eq @twenty_minutes
 		end
 	end
+
+	describe "most recent" do
+		before :each do 
+			@ten_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current - 2.hours + 10.minutes, status: 'complete', began_at: Time.current - 2.hours + 10.minutes)
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current - 2.hours + 20.minutes, status: 'complete', began_at: Time.current - 2.hours + 20.minutes)
+			
+			@twenty_five_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current - 2.hours + 25.minutes, status: 'complete', began_at: Time.current - 2.hours + 25.minutes)
+			@thirty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current - 2.hours + 30.minutes, status: 'incomplete', began_at: Time.current - 2.hours + 30.minutes)
+		end
+
+		it "should display the last complete appointment" do
+			Appointment.most_recent.first.should eq @twenty_five_minutes
+		end
+	end
+
+
 
 	describe '#set_status' do
 		before :each do 
@@ -194,7 +203,7 @@ describe Appointment do
 	describe '.needs_text' do
 		before :each do 
 			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: Time.now - 1.hour, began_at: Time.now.beginning_of_hour, ended_at: Time.now.end_of_hour)
-			@appointment_two = FactoryGirl.create(:appointment, scheduled_for: Time.now - 20.minutes, ended_at: Time.now.end_of_hour)
+			@appointment_two = FactoryGirl.create(:appointment, scheduled_for: Time.now - 20.minutes, began_at: Time.now.end_of_hour)
 			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: Time.now - 40.minutes, ended_at: Time.now.end_of_hour)
 			@appointment_one.set_status
 			@appointment_two.set_status
@@ -203,59 +212,42 @@ describe Appointment do
 
 		it "should be a complete appointment" do
 			Appointment.needs_text.each do |apt|
-				apt.status.should eq 'complete'
-			end
-		end
-
-		it "should have a begin_time and an end_time" do
-			Appointment.needs_text.each do |apt|
-				apt.begin_time.should_not be_nil
-				apt.end_time.should_not be_nil
+				apt.should eq @appointment_one
 			end
 		end
 	end
 
 	describe '.fully_assigned' do
 		before :each do 
-			@appointment_one = FactoryGirl.create(:appointment)
-			@appointment_two = FactoryGirl.create(:appointment)
-			@appointment_three = FactoryGirl.create(:appointment)
-			@appointment_two.tutor = nil
-			@appointment_two.save
-			@appointment_three.tutee = nil
-			@appointment_three.save
+			@appointment_one = FactoryGirl.create(:appointment_no_tutee)
+			@appointment_two = FactoryGirl.create(:apt_five_min)
 		end
 
 		it 'should only return appointments with both a tutor and a tutee' do
-			Appointment.fully_assigned.should eq [@appointment_one]
+			Appointment.fully_assigned.should eq [ @appointment_two ]
 		end
 	end
 
 	describe '.batch_for_this_hour' do
-		let(:date) { DateTime.new(2020, 2, 3, 4, 5, 6) }
 		before :each do
-			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: date)
-			@appointment_two = FactoryGirl.create(:appointment, scheduled_for: date)
-			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: date.change(hour: 8))
+			Timecop.travel(Time.current.beginning_of_hour + 7.minutes)
+			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 20.minutes, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))	
+			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.current + 2.hours)
 		end
 
 		it "should only select appointments from this hour" do
-			Timecop.travel(date) do
-				Appointment.batch_for_this_hour.should eq [@appointment_one, @appointment_two]
-				# Appointment.fully_assigned.after(Time.now.beginning_of_hour).before(Time.now.end_of_hour).should eq [@appointment_one, @appointment_two]
-			end
+			Appointment.batch_for_this_hour.should include @this_hour, @twenty_minutes
+			# Appointment.fully_assigned.after(Time.now.beginning_of_hour).before(Time.now.end_of_hour).should eq [@appointment_one, @appointment_two]
 		end
 
 		it "should include appointments at the beginning of the hour" do
-			Timecop.travel(date) do
-				@appointment_four = FactoryGirl.create(:appointment, scheduled_for: date.change(minute: 0, second: 0))
-				Appointment.batch_for_this_hour.should eq [@appointment_one, @appointment_two, @appointment_four]
-			end
+			@appointment_four = FactoryGirl.create(:appointment, scheduled_for: Time.current.beginning_of_hour, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))
+			Appointment.batch_for_this_hour.should include @this_hour, @twenty_minutes, @appointment_four
 		end
 	end
 
 	describe '.batch_for_just_before_reminder_text' do
-
 		let(:date) { DateTime.new(2020, 2, 3, 4, 5, 6) }
 		before :each do
 			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: date + 20.minutes )
@@ -269,13 +261,7 @@ describe Appointment do
 		end
 	end
 
-	pending '.batch_for_am_reminder_text' do
-		it "should only select appointments starting tomorrow" do 
-		end
-	end
-
-	pending '.batch_for_pm_reminder_text' do
-		it "" do
-		end
+	describe '.batch_create' do
+		
 	end
 end

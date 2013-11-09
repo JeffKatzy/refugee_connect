@@ -4,10 +4,11 @@
 #
 #  id         :integer          not null, primary key
 #  user_id    :integer
-#  time_open  :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  day_open   :string(255)
+#  time       :datetime
+#  time_open  :string(255)
 #
 
 require 'spec_helper'

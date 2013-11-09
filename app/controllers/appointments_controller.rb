@@ -12,11 +12,12 @@ class AppointmentsController < ApplicationController
   end
 
   def batch
-    Appointment.batch(@auth, params[:match_id])
+    Appointment.batch_create(params[:user_id], params[:match_id])
     redirect_to appointments_path
   end
 
   def index
+    binding.pry
     @appointments = @auth.appointments.next_appointments
   end
 

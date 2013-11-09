@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130901144705) do
+ActiveRecord::Schema.define(:version => 20131102175951) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -87,10 +87,11 @@ ActiveRecord::Schema.define(:version => 20130901144705) do
 
   create_table "openings", :force => true do |t|
     t.integer  "user_id"
-    t.integer  "time_open"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "day_open"
+    t.datetime "time"
+    t.string   "time_open"
   end
 
   create_table "reminder_texts", :force => true do |t|
@@ -154,12 +155,17 @@ ActiveRecord::Schema.define(:version => 20130901144705) do
     t.string   "password_digest"
     t.string   "cell_number"
     t.string   "role"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
     t.boolean  "admin"
     t.string   "name"
     t.boolean  "active"
     t.integer  "per_week"
+    t.string   "uid"
+    t.string   "oauth_token"
+    t.datetime "oauth_expires_at"
+    t.string   "image"
+    t.string   "time_zone"
   end
 
 end

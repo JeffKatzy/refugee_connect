@@ -1,18 +1,7 @@
 #container
   .row
-    .twelve.columns
-      = form_for @user do |form|
-        %p I am a...
-        .two.columns
-          = form.label "Tutor"
-          = radio_button_tag(:role, "tutor", :html => {:id => 'role_tutor' })
-        .two.columns
-          = form.label "tutee"
-          = radio_button_tag(:role, "tutee", :html => {:id => 'role_tutee' })
-        .eight.columns
+    = link_to 'I am a tutor', "/users/new_tutor", remote: true, :class => 'button tiny radius success'
+    = link_to 'I am a tutee', "/users/new_tutee", remote: true, :class => 'button tiny radius success'
   .row
     .12.columns
-      = render 'users/tutor_form'
-  .row
-    .12.columns
-      = render 'users/tutee_form'
+      #form

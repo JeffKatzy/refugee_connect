@@ -22,6 +22,13 @@ gem 'localtunnel'
 gem 'ice_cube'
 gem 'chronic'
 gem 'phony_rails'
+gem 'omniauth-facebook'
+gem 'koala'
+gem 'twitter'
+gem 'cocoon'
+gem 'devise'
+gem 'multiparameter_date_time'
+
 
 group :assets do
   gem 'sass-rails', "  ~> 3.2.4"
@@ -59,7 +66,6 @@ group :test do
   gem 'fakeweb'
   gem 'timecop'
   gem 'faker'
-  gem 'capybara'
   gem 'selenium-webdriver'
   gem 'twilio-test-toolkit'
 end

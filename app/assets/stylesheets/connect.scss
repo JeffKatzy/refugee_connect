@@ -19,6 +19,8 @@
   right: 35px;
 }
 
+
+
 .classes {
   padding-left: 0px
 }
@@ -104,6 +106,7 @@ ul {
 .top-bar {
   background-color: rgb(64, 64, 64);
   margin-bottom: 0px;
+  overflow: visible;
 }
 
 #add_student {
@@ -129,6 +132,11 @@ ul {
 .top-bar ul>li a:not(.button) {
   border: none;
   background: none;
+}
+
+.top-bar ul {
+    height: 0%;
+    /* height: 0%; */
 }
 
 #class_list {
@@ -502,17 +510,6 @@ html {
   color: white;
   text-align: center;
   padding: 10px;
-}
-
-
-.element {
-  margin: 20px;
-  margin-bottom: 0px;
-    width: 145px;
-    height: 70px;
-  float: left;
-  overflow: hidden;
-  position: relative;
 }
 
 .element * {

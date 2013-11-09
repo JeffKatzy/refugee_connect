@@ -12,28 +12,12 @@
 
 class AvailabilityManager < ActiveRecord::Base
 
-  include IceTime
-
   attr_accessible :schedule, :user_id, :per_week
 
   belongs_to :user
   serialize :schedule_hash, Hash
   after_create :init, :init_schedule
-
-  def init
-    self.per_week ||= 1
-  end
-
-  def init_schedule
-    @schedule = IceCube::Schedule.new(duration: 3600)
-    @schedule.start_time = Time.now.in_time_zone("America/New_York") - 1.day
-    save_schedule
-  end
-
-  def self.remove_availability(user, appointments_time)
-  	manager = AvailabilityManager.find_by_user(user.id)
-  	manager.remove_availability(time_period)
-  end
+  has_many :appointments
 
   def save_schedule
     self.schedule_hash = self.schedule.to_hash
@@ -48,5 +32,56 @@ class AvailabilityManager < ActiveRecord::Base
     else
       nil
     end
+  end
+
+  def add_weekly_availability(day, time)
+    rule = create_rule(day, time)
+    add_recurrence(rule)
+  end
+
+  def create_rule(day, time)
+    IceCube::Rule.weekly.day(day.downcase.to_sym).hour_of_day(time.hour).minute_of_hour(time.min).second_of_minute(0)
+  end
+
+  def add_recurrence(rule)
+    schedule.add_recurrence_rule rule
+    save_schedule
+  end
+
+  def remove_occurrence(datetime)
+    schedule.add_exception_time(datetime)
+  end
+
+  def occurrence_rules
+    schedule.recurrence_rules
+  end
+
+  def occurrences_this_or_next_week
+    if remaining_occurrences_this_week.empty?
+      remaining_occurrences_next_week 
+    else
+      remaining_occurrences_this_week
+    end
+  end
+
+  def remaining_occurrences(datetime)
+    schedule.occurrences(datetime).select { |time| time > Time.current }
+  end
+
+  private
+
+  def init
+    self.per_week ||= 1
+  end
+
+  def init_schedule
+    @schedule = IceCube::Schedule.new(duration: 3600)
+    @schedule.start_time = Time.current.in_time_zone("UTC") - 1.day
+    save_schedule
+  end
+
+  def convert_to_time(hour)
+    Time.now.change({:hour => hour.to_i,
+      :min => 0, :sec => 0 })
   end
 end

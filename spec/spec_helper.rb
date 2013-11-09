@@ -10,18 +10,18 @@ require 'factory_girl_rails'
 
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 RSpec.configure do |config|
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :truncation
-  end
- 
-  config.before(:each) do
-    DatabaseCleaner.start
-  end
- 
-  config.after(:each) do
-    DatabaseCleaner.clean
-  end
-  
+config.before(:suite) do
+  DatabaseCleaner.strategy = :truncation
+end
+
+config.before(:each) do
+  DatabaseCleaner.start
+end
+
+config.after(:each) do
+  DatabaseCleaner.clean
+end
+
   config.include Capybara::DSL
   config.color_enabled = true
   config.tty = true

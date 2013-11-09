@@ -20,46 +20,53 @@ describe AvailabilityManager do
     availability_manager.should be_valid
   end
 
-  it "should have an initialized schedule with a start time in EST" do
-    availability_manager.schedule.start_time.zone.should == "EDT"
-  end
-
-  describe '#init_schedule' do
+  describe '.create' do
     it "should add a new schedule" do 
-      availability_manager.init_schedule
       availability_manager.schedule_hash.should be_a_kind_of(Hash)
     end
 
-    it 'should have a start time in EST' do
-      availability_manager.init_schedule
-      availability_manager.schedule.start_time.zone.should == "EDT"
+    it 'should have a start time in the users timezone' do 
+      availability_manager.schedule.start_time.zone.should == "UTC"
+    end
+  end
+
+  describe "#remove_occurrence" do
+    it "should remove the availability for the correct time" do
+      mon = FactoryGirl.create(:monday)
+      first_time = mon.schedule.occurrences(Time.now.end_of_week + 7.days).first.time
+      mon.remove_occurrence(first_time)
+      mon.schedule.occurring_between?(first_time, first_time + 1.hour).should be false
     end
   end
 
   describe '#create_rule' do 
-    it "should create an ice_cube rule" do
-      rule = availability_manager.create_rule('monday', 1)
-      rule.to_s.should include "Weekly on Mondays on the 1st hour of the day"
+    it "should create an ice_cube rule with a time object" do
+      time = DateTime.new 2013,02,14,12,30,00
+      rule = availability_manager.create_rule('monday', time)
+      rule.to_s.should include "Weekly on Mondays on the 12th hour of the day on the 30th minute of the hour"
     end
   end
 
   describe "#add_recurrence" do
     it "should add the rule to the schedule" do
-      availability_manager.create_rule(:tuesday, 3).to_s.should include "Weekly on Tuesdays on the 3rd hour of the day"
+      time = DateTime.new 2013,02,14,3,30,00
+      availability_manager.create_rule(:tuesday, time).to_s.should include "Weekly on Tuesdays on the 3rd hour of the day"
     end
   end
 
   describe "#add_weekly_availability" do
-    it "should add multiple available times" do
-      availability_manager.add_weekly_availability('Monday', 1)
-      availability_manager.add_weekly_availability('Tuesday', 3)
-      availability_manager.schedule.to_s.should include "Weekly on Mondays on the 1st hour of the day", "Weekly on Tuesdays on the 3rd hour of the day"
+    it "should add multiple available times with a time object" do
+      time = DateTime.new 2013,02,14,12,30,00
+      availability_manager.add_weekly_availability('Monday', time)
+      availability_manager.add_weekly_availability('Tuesday', time)
+      availability_manager.schedule.to_s.should include "Weekly on Mondays on the 12th hour of the day on the 30th minute of the hour", "Weekly on Tuesdays on the 12th hour of the day on the 30th minute of the hour"
     end
   end
 
   describe "#save_schedule_hash" do
     before :each do
-      availability_manager.add_weekly_availability('monday', 1)
+      time = DateTime.new 2013,02,14,12,30,00
+      availability_manager.add_weekly_availability('monday', time)
     end
 
     it "should save the availability manager" do 
@@ -68,13 +75,15 @@ describe AvailabilityManager do
     end
   end
 
-  describe '#availabilities_this_week' do
+  describe '#remaining_occurrences(datetime)' do
     before :each do
-      availability_manager.add_weekly_availability('saturday', 12)
+      time = DateTime.new 2013,02,14,12,30,00
+      Timecop.travel(time)
+      availability_manager.add_weekly_availability('saturday', time)
     end
 
     it "should return all availabilities this week" do
-      availability_manager.remaining_occurrences_this_week.count.should eq 1
+      availability_manager.remaining_occurrences(Time.current.end_of_week).count.should eq 1
     end
   end
 end

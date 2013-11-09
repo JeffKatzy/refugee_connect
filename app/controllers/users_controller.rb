@@ -12,14 +12,27 @@ class UsersController < ApplicationController
     redirect_to match_users_path(@user)
   end
 
+  def new_tutor
+    @user = User.new
+  end
+
+  def new_tutee
+    @user = User.new
+  end
+
   def index
     @users = User.all
   end
 
   def match
     if @auth.present?
-      @user = @auth
-      @matches = @auth.available_appointments_this_week
+      @user = User.find(params[:user_id]) 
+      @matches = 
+        if @user.available_appointments_before(Time.current.end_of_week).present?
+          @user.available_appointments_before(Time.current.end_of_week)
+        else
+          @user.available_appointments_before(Time.current.end_of_week + 7.days)
+        end
     else 
       redirect_to root_path
     end

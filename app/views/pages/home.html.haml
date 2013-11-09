@@ -4,5 +4,6 @@
   %ul.rest
     %li= link_to 'Register', new_user_path, id: 'register_btn'
     %li= link_to 'Signin', signin_path, remote: true, id: 'login_btn'
+    %li= link_to 'Connect with facebook', '/auth/facebook', id: 'sign_in_btn'
 #login_btn_nav
   = render 'sessions/form'
