@@ -25,7 +25,6 @@ gem 'phony_rails'
 gem 'omniauth-facebook'
 gem 'koala'
 gem 'twitter'
-gem 'cocoon'
 gem 'devise'
 gem 'multiparameter_date_time'
 
