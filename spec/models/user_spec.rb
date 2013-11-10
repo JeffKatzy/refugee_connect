@@ -179,7 +179,7 @@ describe User do
     end
 
     it "should only return for users who are available" do
-      @sharad.available_appointments_before(Time.current.end_of_week).should eq 'user has no remaining availabilities for that time period.'
+      @sharad.available_appointments_before(Time.current.end_of_week).should eq []
     end
   end
 end

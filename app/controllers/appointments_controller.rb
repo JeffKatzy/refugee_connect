@@ -17,7 +17,6 @@ class AppointmentsController < ApplicationController
   end
 
   def index
-    binding.pry
     @appointments = @auth.appointments.next_appointments
   end
 

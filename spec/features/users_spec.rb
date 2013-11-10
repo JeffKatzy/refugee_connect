@@ -12,7 +12,8 @@ describe 'Users' do
 	  it 'displays the create users button', :js => true do
 	    visit root_path
 	    click_link('Register')
-	    page.should have_button('Create User')
+	    page.should have_link('I am a tutor')
+	    page.should have_link('I am a tutee')
 	  end
 	end
 
@@ -27,11 +28,11 @@ describe 'Users' do
 
 	    expect(User.last.name).to eq 'Bob'
 	    expect(User.last.email).to eq 'bob@gmail.com'
-	    expect(User.last.cell_number).to eq '+12154997415'
+	    expect(User.last.cell_number).to eq '12154997415'
 	    expect(User.last.openings.first.day_open).to eq 'Sunday'
-	    expect(User.last.openings.first.time_open).to eq 14
+	    expect(User.last.openings.first.time_open).to eq "9 pm"
 	    expect(User.last.availability_manager.per_week).to eq 1
-	    expect(User.last.availability_manager.occurrence_rules.to_s).to eq "[Weekly on Sundays]"
+	    expect(User.last.availability_manager.occurrence_rules.to_s).to eq "[Weekly on Mondays on the 2nd hour of the day on the 0th minute of the hour on the 0th second of the minute]"
   	end
 
   	it "should have a user time zone present", :js => true do
@@ -40,7 +41,7 @@ describe 'Users' do
 	    fill_in_user_info
 	    click_link('Add a time available')
 	    click_button('Create User')
-  		expect(User.last.time_zone).to eq "America/New York"
+  		expect(User.last.time_zone).to eq "America/New_York"
   	end
 	end
 

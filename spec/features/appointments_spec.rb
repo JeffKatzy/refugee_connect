@@ -24,7 +24,7 @@ describe 'Appointments' do
 
 			click_on 'Sign up for classes'
 			page.should have_content 'Bob'
-			page.should have_content '09:00PM on Monday'
+			page.should have_content "09:00PM on Sunday"
 			Appointment.last.scheduled_for.
 			in_time_zone('Eastern Time (US & Canada)').
 			strftime("%I:%M%p on %As").should eq "10:00PM on Mondays"

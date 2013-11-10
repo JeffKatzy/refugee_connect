@@ -217,16 +217,16 @@ describe Appointment do
 		end
 	end
 
-	describe '.fully_assigned' do
-		before :each do 
-			@appointment_one = FactoryGirl.create(:appointment_no_tutee)
-			@appointment_two = FactoryGirl.create(:apt_five_min)
-		end
+	# describe '.fully_assigned' do
+	# 	before :each do 
+	# 		@appointment_one = FactoryGirl.create(:appointment_no_tutee)
+	# 		@appointment_two = FactoryGirl.create(:apt_five_min)
+	# 	end
 
-		it 'should only return appointments with both a tutor and a tutee' do
-			Appointment.fully_assigned.should eq [ @appointment_two ]
-		end
-	end
+	# 	it 'should only return appointments with both a tutor and a tutee' do
+	# 		Appointment.fully_assigned.should eq [ @appointment_two ]
+	# 	end
+	# end
 
 	describe '.batch_for_this_hour' do
 		before :each do
