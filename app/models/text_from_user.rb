@@ -42,9 +42,8 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
-    if user.appointments.current.present? 
-      #I don't think this method 'current' works any more
-      appointment = user.appointments.current
+    if user.appointments.this_hour.present? 
+      appointment = user.appointments.this_hour
       appointment.start_call
     else
       appointment = user.appointments.next_appointment
@@ -68,7 +67,7 @@ class TextFromUser < ActiveRecord::Base
     body = "We could not understand your text. Please type 'go' to call the student, 'call off' to 
     call off the call, or enter the page number you last left off at."
     TextToUser.deliver(user, body)
-    appointment = user.appointments.current
+    appointment = user.appointments.this_hour
   end
 
 
