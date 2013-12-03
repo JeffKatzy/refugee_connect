@@ -86,4 +86,22 @@ describe AvailabilityManager do
       availability_manager.remaining_occurrences(Time.current.end_of_week).count.should eq 1
     end
   end
+
+  describe "#available_before?(datetime)" do
+    before :each do
+      @time = DateTime.new(2013,02,14,12,30,00)
+      Timecop.travel(@time.beginning_of_week)
+      @jaya = FactoryGirl.create(:tutor_available)
+      @priya = FactoryGirl.create(:tutor_unavailable)
+      @joey = FactoryGirl.create(:tutor_unavailable)
+    end
+
+    it "returns false for users whose classes are equal to the appointments per week" do
+      @priya.availability_manager.available_before?(Time.current.end_of_week).should eq false
+    end
+
+    it "returns true for users whose classes are less than the appointments per week" do 
+      @jaya.availability_manager.available_before?(Time.current.end_of_week).should eq true
+    end
+  end
 end

@@ -28,11 +28,11 @@ class UsersController < ApplicationController
     if @auth.present?
       @user = User.find(params[:user_id]) 
       @matches = 
-        if @user.available_appointments_before(Time.current.end_of_week).present?
-          @user.available_appointments_before(Time.current.end_of_week)
-        else
-          @user.available_appointments_before(Time.current.end_of_week + 7.days)
-        end
+      if @user.matches.this_week
+        @user.matches.this_week
+      else
+        @user.matches.after(Time.current.utc.end_of_week).before(Time.current.end_of_week + 7.days)
+      end
     else 
       redirect_to root_path
     end

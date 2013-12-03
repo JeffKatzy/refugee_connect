@@ -24,7 +24,6 @@ class Appointment < ActiveRecord::Base
   scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
   scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
   
-  #perhaps make incomplete the default scope
   # scope :this_hour, after(Time.current.beginning_of_hour).before(Time.current.end_of_hour)  #for some reason this was not working
   scope :tomorrow, after(Time.current.end_of_day).before(Time.current.end_of_day + 24.hours)
   scope :incomplete, where(status: 'incomplete')
@@ -42,6 +41,8 @@ class Appointment < ActiveRecord::Base
   
   #check to see if this still works
   belongs_to :user
+  belongs_to :appointment_partner_of_tutor, class_name: 'User', foreign_key: :tutee_id
+  belongs_to :appointment_partner_of_tutee, class_name: 'User', foreign_key: :tutor_id
   belongs_to :tutor, class_name: 'User', foreign_key: :tutor_id
   belongs_to :tutee, class_name: 'User', foreign_key: :tutee_id
   belongs_to :availability_manager
@@ -50,15 +51,6 @@ class Appointment < ActiveRecord::Base
   after_create :find_start_page, :remove_availability_occurrence
   
   #only allow one appointment per hour per user
-
-  def remove_availability_occurrence
-    if tutor.present?
-      tutor.availability_manager.remove_occurrence(self.scheduled_for)
-    end
-    if tutee.present?
-      tutee.availability_manager.remove_occurrence(self.scheduled_for)
-    end
-  end
 
   def self.batch_for_this_hour
     Appointment.fully_assigned.after(Time.current.beginning_of_hour.utc).before(Time.current.end_of_hour.utc)
@@ -77,6 +69,27 @@ class Appointment < ActiveRecord::Base
   def self.batch_for_just_before_reminder_text
     Appointment.fully_assigned.
       where("begin_time between (?) and (?)", Time.current.utc, (Time.current.utc + 40.minutes))
+  end
+
+  def self.next_appointment #next_appointment includes the current_appointment
+    next_appointments.first
+  end
+
+  def self.current #subset of next_appointment
+    next_appointment if next_appointment.present? && next_appointment.scheduled_for.utc.hour == Time.current.utc.hour
+  end
+
+  def self.needs_page_number
+    where('status == complete AND finish_page == nil')
+  end
+
+  def remove_availability_occurrence
+    if tutor.present?
+      tutor.availability_manager.remove_occurrence(self.scheduled_for)
+    end
+    if tutee.present?
+      tutee.availability_manager.remove_occurrence(self.scheduled_for)
+    end
   end
 
   def find_start_page
@@ -110,18 +123,6 @@ class Appointment < ActiveRecord::Base
       self.tutee = user
     end
     self.save
-  end
-
-  def self.next_appointment #next_appointment includes the current_appointment
-    next_appointments.first
-  end
-
-  def self.current #subset of next_appointment
-    next_appointment if next_appointment.present? && next_appointment.scheduled_for.utc.hour == Time.current.utc.hour
-  end
-
-  def self.needs_page_number
-    where('status == complete AND finish_page == nil')
   end
 
   def start_call

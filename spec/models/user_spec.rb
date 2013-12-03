@@ -27,6 +27,25 @@ describe User do
     FactoryGirl.create(:user).should be_valid
   end
 
+  describe ".create" do
+    it "should create an availability manager" do
+      #Do not know how to properly stub this out??
+      # AvailabilityManager.should_receive(:find_or_create_by_user_id)
+      # AvailabilityManager.last.should_receive(:per_week)
+      # @user = FactoryGirl.create(:user)
+    end
+
+    it "should add per week to the availability manager" do
+      #Do not know how to properly stub this out??
+      # @user.should_receive(:add_per_week_to_availability_manager)
+    end
+
+    it "should build matches for this week" do
+      Match.should_receive(:build_all_matches_for)
+      FactoryGirl.create(:user)
+    end
+  end
+
   describe ".tutors" do
   	before :each do
   		@janie = FactoryGirl.create(:user, role: 'tutor')
@@ -94,7 +113,7 @@ describe User do
     end
   end
 
-  describe "#appointments_less_than_accepted_amount" do
+  describe "#wants_more_appointments_before" do
     before :each do
       time = DateTime.new 2013,02,14,12,30,00
       Timecop.travel(time.beginning_of_week)
@@ -102,30 +121,12 @@ describe User do
 
     it "should return true when the number of appointments is less" do
       tutor = FactoryGirl.create(:tutor_unavailable, per_week: 4)
-      tutor.appointments_less_than_accepted_amount(Time.current.end_of_week).should eq true
+      tutor.wants_more_appointments_before(Time.current.end_of_week).should eq true
     end
 
     it "should return false when the number of appointments is more" do
       tutor = FactoryGirl.create(:tutor_unavailable, per_week: 3)
-      tutor.appointments_less_than_accepted_amount(Time.current.end_of_week).should eq false
-    end
-  end
-
-  describe "#available_before?(datetime)" do
-  	before :each do
-      @time = DateTime.new(2013,02,14,12,30,00)
-      Timecop.travel(@time.beginning_of_week)
-      @jaya = FactoryGirl.create(:tutor_available)
-  		@priya = FactoryGirl.create(:tutor_unavailable)
-  		@joey = FactoryGirl.create(:tutor_unavailable)
-  	end
-
-  	it "returns false for users whose classes are equal to the appointments per week" do
-  		@priya.available_before?(Time.current.end_of_week).should eq false
-  	end
-
-    it "returns true for users whose classes are less than the appointments per week" do 
-      @jaya.available_before?(Time.current.end_of_week).should eq true
+      tutor.wants_more_appointments_before(Time.current.end_of_week).should eq false
     end
   end
 
@@ -134,7 +135,8 @@ describe User do
       time = DateTime.new(2013,02,14,12,30,00)
       Timecop.travel(time.beginning_of_week)
       @priya = FactoryGirl.create(:tutor_available)
-      @jaya = FactoryGirl.create(:tutor_available)
+      # @jaya = FactoryGirl.create(:tutor_available)
+      @jaya = FactoryGirl.create(:tutee_available)
     end
 
     it "should return the intersecting times" do

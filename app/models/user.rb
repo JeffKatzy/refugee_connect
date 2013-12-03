@@ -28,6 +28,18 @@ class User < ActiveRecord::Base
   has_many :reminder_texts
   
   has_many :text_to_users
+  
+  has_many :appointments_of_tutor, class_name: 'Appointment', foreign_key: :tutor_id, :order => 'scheduled_for DESC'
+  has_many :appointments_of_tutee, class_name: 'Appointment', foreign_key: :tutee_id, :order => 'scheduled_for DESC'
+  has_many :matches_of_tutor, class_name: 'Match', foreign_key: :tutor_id
+  has_many :matches_of_tutee, class_name: 'Match', foreign_key: :tutee_id
+
+  has_many :appointment_partners_of_tutor, :through => :appointments_of_tutor, source: 'appointment_partner_of_tutor', uniq: true
+  has_many :appointment_partners_of_tutee, :through => :appointments_of_tutee, source: 'appointment_partner_of_tutee', uniq: true
+  has_many :match_partners_of_tutor, :through => :matches_of_tutor, source: 'match_partner_of_tutor', uniq: true
+  has_many :match_partners_of_tutee, :through => :matches_of_tutee, source: 'match_partner_of_tutee', uniq: true
+
+
   attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week, :time_zone
 
   scope :tutors, -> { active.where(role: 'tutor') }
@@ -37,16 +49,63 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :openings, reject_if: :all_blank, allow_destroy: true
 
-
-  after_create :create_availability_manager, :add_per_week_to_availability_manager, :init
+  after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week
   before_save :format_phone_number
   validates_plausible_phone :cell_number, :presence => true
+
+  def appointments
+    if self.is_tutor?
+      appointments_of_tutor || appointments_of_tutee
+    else
+      appointments_of_tutee || appointments_of_tutor
+    end
+  end
+
+  def matches
+    if self.is_tutor?
+      matches_of_tutor || matches_of_tutee
+    else
+      matches_of_tutee || matches_of_tutor
+    end
+  end
+
+  def matches=(matches)
+    matches.each do |match|
+      match.tutor = self if self.role == 'tutor'
+      match.tutee = self if self.role == 'tutee'
+      match.save
+    end
+  end
+
+  def appointment_partners
+    # binding.pry
+    if self.role == 'tutor'
+      self.appointment_partners_of_tutor
+    else
+      self.appointment_partners_of_tutee
+    end
+  end
+
+  def match_partners
+    if self.role == 'tutor'
+      self.match_partners_of_tutor
+    else
+      self.self.match_partners_of_tutee
+    end
+  end
 
   def init
     self.active ||= true
     self.per_week ||= 1
     self.save
   end
+
+  def add_per_week_to_availability_manager
+    self.availability_manager.per_week = self.per_week
+    self.availability_manager.save
+  end  
+
+  # Facebook methods
 
   def self.from_omniauth(auth)
     where(auth.slice(:provider, :uid)).first_or_initialize.tap do |user|
@@ -71,9 +130,9 @@ class User < ActiveRecord::Base
     query(self.college, 'education')
   end
 
-  def appointments
-    Appointment.where('tutor_id = :user_id or tutee_id = :user_id', user_id: self.id)
-  end
+  # def appointments
+  #   Appointment.where('tutor_id = :user_id or tutee_id = :user_id', user_id: self.id)
+  # end
 
   def appointments=(appointments)
     appointments.each do |appointment|
@@ -82,7 +141,6 @@ class User < ActiveRecord::Base
       appointment.save
     end
   end
-
 
   def is_tutor?
     if self.role == 'tutor'
@@ -106,47 +164,14 @@ class User < ActiveRecord::Base
     end
   end
 
-  def available_appointments_before(datetime)
-    if self.available_before?(datetime)
-      arr = []
-      opposite_active_users.select { |user| user.available_before?(datetime) }.select { |user| self.intersections(user, datetime).count > 0 }.each do |user|
-        hsh = { user_id: user.id, user_name: user.name, times: self.intersections(user, datetime)}
-        arr << hsh
-      end
-      return arr.take(5) if arr.count > 4
-      arr.take(5) 
-    else
-      []
-    end
-  end
-
-  def intersections(second_user, datetime)
-    arr = []
-    availability_manager.remaining_occurrences(datetime).each do |start_time|
-      end_time = start_time + 1.hour
-      arr << start_time if second_user.availability_manager.schedule.occurring_between?(start_time, end_time)
-    end 
-    arr
-  end
-
-  def available_before?(datetime)
-    check_availability_manager
-    if availability_manager.remaining_occurrences(datetime) && appointments_less_than_accepted_amount(datetime)
-      return true
-    else
-      return false
-    end
-  end
-
-  def appointments_less_than_accepted_amount(datetime)
-    appointments.after(Time.current).before(datetime).try(:count) < 
+  def wants_more_appointments_before(datetime)
+    self.appointments.after(Time.current).before(datetime).try(:count) < 
       self.try(:per_week) * ((datetime.to_date - Time.current.to_date).to_i/6.round(2))
   end
 
-  def add_per_week_to_availability_manager
-    self.availability_manager.per_week = self.per_week
-    self.availability_manager.save
-  end  
+  def build_matches_for_week
+    Match.build_all_matches_for(self, Time.current.end_of_week)
+  end
 
   private 
 
@@ -156,15 +181,6 @@ class User < ActiveRecord::Base
     else
       self.cell_number = PhonyRails.normalize_number(cell_number, :country_code => 'IN')
     end
-  end
-
-  def check_availability_manager
-    if self.availability_manager == nil || self.availability_manager.per_week == nil
-      am = AvailabilityManager.find_or_create_by_user_id(self.id)
-      am.per_week ||= 1
-      am.save
-    end
-    true
   end
 
   def create_availability_manager

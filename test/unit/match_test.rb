@@ -7,6 +7,7 @@
 #  tutee_id   :integer
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  match_time :datetime
 #
 
 require 'test_helper'

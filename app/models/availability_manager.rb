@@ -68,6 +68,14 @@ class AvailabilityManager < ActiveRecord::Base
     schedule.occurrences(datetime).select { |time| time > Time.current }
   end
 
+  def available_before?(datetime)
+    if self.remaining_occurrences(datetime) && user.wants_more_appointments_before(datetime)
+      return true
+    else
+      return false
+    end
+  end
+
   private
 
   def init
