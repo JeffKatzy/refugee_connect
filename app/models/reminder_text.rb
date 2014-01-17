@@ -13,66 +13,66 @@
 
 class ReminderText < ActiveRecord::Base
   attr_accessible :appointment_id, :category, :time, :user_id
-
-  scope :begin_sessions, where(category: 'begin_session')
-  scope :set_page_numbers, where(category: 'set_page_number')
-  scope :pm_reminders, where(category: 'pm_reminder')
-  scope :just_befores, where(category: 'just_before')
+  belongs_to :appointment
+  # scope :begin_sessions, where(category: 'begin_session')
+  # scope :set_page_numbers, where(category: 'set_page_number')
+  # scope :pm_reminders, where(category: 'pm_reminder')
+  # scope :just_befores, where(category: 'just_before')
 
   belongs_to :appointment
   belongs_to :user
 
+  BEGIN_SESSION = "begin_session"
+  SET_PAGE_NUMBER = "set_page_number"
+  PM_REMINDER = "pm_reminder"
+  JUST_BEFORE = "just_before_reminder"
   
+  #perhaps use state machine here
+
   def self.begin_session
-    appointments_batch = Appointment.batch_for_this_hour
-    appointments_batch.each do |appointment|
-    	unless appointment.reminder_texts.where(category: 'begin_session').present?
-    		reminder = ReminderText.create(time: Time.now, appointment_id: appointment.id, user_id: appointment.tutor.id)
-      	first_part = appointment[:scheduled_for].in_time_zone("America/New_York").strftime("Your class at %I:%M%p ")
-      	second_part = "on page #{appointment.start_page} is now ready to start.  Reply to this text with the word 'go' to start the call or 'sorry' to cancel." 
-      	body_of_text = first_part + second_part 
-      	TextToUser.deliver(appointment.tutor, body_of_text) 
+    appointments_batch = Appointment.batch_for_this_hour  	
+    ReminderText.send_reminder_text(appointments_batch, BEGIN_SESSION) 
+  end
+
+  def self.set_page_number #remind delinquents to enter page number
+    appointments_batch = Appointment.needs_text 
+    ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
+  end
+
+  def self.apts_in_one_day
+  	appointments_batch = Appointment.batch_for_one_day_from_now
+  	ReminderText.send_reminder_text(appointments_batch, PM_REMINDER)
+  end
+
+  def self.just_before_apts
+  	appointments_batch = Appointment.batch_for_just_before
+  	ReminderText.send_reminder_text(appointments_batch, JUST_BEFORE)	
+  end
+
+  def self.send_reminder_text(appointments_batch, category)
+    appointments_batch.each do |apt|
+      unless apt.reminder_texts.where(category: "#{category}").any?
+        body = ReminderText.body(apt, category)
+        TextToUser.deliver(apt.tutor, body) 
+        reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id) 
       end
     end
   end
 
-  def self.set_page_number #remind delinquents to enter page number
-    appointments_batch = Appointment.needs_text
-    unless appointment.reminder_texts.where(category: 'set_page_number').present?
-	    body = "Please text the page number that you last left off at."
-	    appointments_batch.each do |appointment|
-	    	reminder_text = ReminderText.create(time: Time.now, appointment_id: appointment.id, user_id: appointment.tutor.id )
-	      TextToUser.deliver(appointment.tutor, body) 
-	    end
-	  end
-  end
-
-  def self.deliver_pm_reminder_text
-  	unless appointment.reminder_texts.where(category: 'pm_reminder').present?
-    	texts_batch = TutoringSession.batch_for_pm_reminder_text
-    	send_reminder_text(appointments_batch)
-    	reminder_text = ReminderText.create(time: Time.now, appointment_id: appointment.id, user_id: appointment.tutor.id) 
+  def self.body(appointment, category)
+    time = appointment.scheduled_for_to_text('tutor')
+    upcoming_session = "Tutoring Reminder: upcoming session at"
+    admin_session = "Please email jek2141@columbia.edu to reschedule or cancel the session." 
+    if category == BEGIN_SESSION
+      "Your class at #{time} is now ready to start.  Reply to this text with the word 'go' to start the call or 'sorry' to cancel."
+    elsif category == SET_PAGE_NUMBER
+      "Please text the page number that you last left off at."
+    elsif category == PM_REMINDER
+      upcoming_session + " #{time} beginning on page #{appointment.start_page}.  " + admin_session
+    elsif category == JUST_BEFORE
+      upcoming_session + " #{time} beginning on page #{appointment.start_page}.  " + admin_session
+    else
+      raise 'must pass in valid category'
     end
   end
-
-  def self.deliver_just_before_reminder_text
-  	unless appointment.reminder_texts.where(category: 'just_before').present?
-    	texts_batch = TutoringSession.batch_for_just_before_reminder_text 
-    	send_reminder_text(texts_batch)
-    	reminder_text = ReminderText.create(time: Time.now, appointment_id: appointment.id, user_id: appointment.tutor.id) 
-    end
-  end
-
-  private
-
-  def self.send_reminder_text(appointments_batch)
-    appointments_batch.each do |text|
-      #text is tutoring session
-      first_part = text[:begin_time].in_time_zone("America/New_York").strftime("Tutoring Reminder: upcoming session at %I:%M%p beginning")
-      second_part = "on page #{page_number}.  Please email jek2141@columbia.edu to reschedule or cancel the session." 
-      body_of_text = first_part + second_part
-      TextToUser.deliver(appointment.tutor, body) 
-    end
-  end
-  
 end

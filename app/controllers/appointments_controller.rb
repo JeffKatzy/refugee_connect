@@ -12,7 +12,8 @@ class AppointmentsController < ApplicationController
   end
 
   def batch
-    Appointment.batch_create(params[:user_id], params[:match_id])
+    matches = Match.find(params[:match_id])
+    Appointment.batch_create(matches) 
     redirect_to appointments_path
   end
 
@@ -24,5 +25,8 @@ class AppointmentsController < ApplicationController
     @appointment = Appointment.find(params[:id])
     tutor = User.find(@appointment.tutor)
     TextToUser.deliver(tutor, 'Please text the page number that you last left off at.')
+  end
+
+  def show
   end
 end

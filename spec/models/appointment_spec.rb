@@ -18,8 +18,59 @@
 require 'spec_helper'
 
 describe Appointment do
-	it 'has a valid factory' do
-		FactoryGirl.create(:appointment).should be_valid
+
+	before :each do
+		Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
+	end
+
+	describe ".create" do
+		let(:apt) { FactoryGirl.create(:appointment) }
+		it 'should be marked as incomplete' do
+			expect(apt.status).to eq 'incomplete'
+		end
+		
+		it "should remove the occurrence with the correct parameter" do
+			tutor = FactoryGirl.create(:tutor_available)
+			tutee = FactoryGirl.create(:tutee_available)
+			time = tutee.availability_manager.schedule.occurrences(Time.current.end_of_week + 7.days).first
+			apt = FactoryGirl.create(:appointment, tutor: tutor, tutee: tutee, scheduled_for: time)
+			tutee.availability_manager.schedule.occurrences(Time.now.end_of_week + 7.days).first.should_not eq time
+		end
+	end
+
+	describe 'validations' do
+		context "when users are not available" do
+			before(:each) do
+				time = DateTime.new(2013,02,14,12,30,00)
+				Timecop.travel(time.beginning_of_week)
+				Appointment.any_instance.stub(:make_match_unavailable).and_return(true)
+				Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
+			end
+
+			let(:appointment) { FactoryGirl.build(:appointment) }
+			let(:apt_unavailable_tutor) { FactoryGirl.build(:appointment, tutor: FactoryGirl.create(:tutor_unavailable), 
+					tutee: FactoryGirl.create(:tutee_available)) }
+
+			it "should not save unless both want more appointments" do
+				expect(apt_unavailable_tutor).to_not be_valid
+			end
+
+			it "should not invalidate if both want more appointments" do
+				expect(appointment).to be_valid
+			end
+		end
+
+		it "should validate the presences of a tutor" do
+			appointment = FactoryGirl.build(:appointment)
+			appointment.tutor = nil
+			expect(appointment).to_not be_valid
+		end
+
+		it "should validate the presences of a tutee" do
+			appointment = FactoryGirl.build(:appointment)
+			appointment.tutee = nil
+			expect(appointment).to_not be_valid
+		end
 	end
 
 	describe "#find_start_page" do
@@ -35,20 +86,10 @@ describe Appointment do
 			it "should set the page number to the most tutee's most recent appointments" do
 				apt.finish_page = 3
 				apt.save
-				apt_two = Appointment.create(scheduled_for: Time.now, status: 'incomplete', tutor_id: apt.tutor.id, tutee_id: apt.tutee.id )
+				apt_two = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: 'incomplete', tutor_id: apt.tutor.id, tutee_id: apt.tutee.id )
 				apt.save
 				apt_two.start_page.should eq apt.finish_page				
 			end
-		end
-	end
-
-	describe ".create" do
-		it "should remove the occurrence with the correct parameter" do
-			tutor = FactoryGirl.create(:tutor_available)
-			tutee = FactoryGirl.create(:tutee_available)
-			time = tutee.availability_manager.schedule.occurrences(Time.current.end_of_week + 7.days).first
-			apt = FactoryGirl.create(:appointment, tutor: tutor, tutee: tutee, scheduled_for: time)
-			tutee.availability_manager.schedule.occurrences(Time.now.end_of_week + 7.days).first.should_not eq time
 		end
 	end
 
@@ -103,7 +144,7 @@ describe Appointment do
 		end
 	end
 
-	describe '#current_appointment' do
+	describe '.current' do
 		before :each do 
 			Timecop.travel(Time.current.beginning_of_hour)
 			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes, status: 'incomplete')
@@ -217,17 +258,6 @@ describe Appointment do
 		end
 	end
 
-	# describe '.fully_assigned' do
-	# 	before :each do 
-	# 		@appointment_one = FactoryGirl.create(:appointment_no_tutee)
-	# 		@appointment_two = FactoryGirl.create(:apt_five_min)
-	# 	end
-
-	# 	it 'should only return appointments with both a tutor and a tutee' do
-	# 		Appointment.fully_assigned.should eq [ @appointment_two ]
-	# 	end
-	# end
-
 	describe '.batch_for_this_hour' do
 		before :each do
 			Timecop.travel(Time.current.beginning_of_hour + 7.minutes)
@@ -247,6 +277,21 @@ describe Appointment do
 		end
 	end
 
+	describe '.batch_for_one_day_from_now' do
+		before :each do
+			Timecop.travel(Time.current.beginning_of_hour)
+			@twenty_four_hrs = FactoryGirl.create(:appointment, scheduled_for: Time.current + 1.day)
+			@twenty_four_hrs_plus = FactoryGirl.create(:appointment, scheduled_for: Time.current + 1.day + 10.minutes)	
+			@twenty_five_hrs_plus = FactoryGirl.create(:appointment, scheduled_for: Time.current + 25.hours)
+		end
+
+		it "should only select appointments within the next 24 to 25 hours" do
+			Appointment.batch_for_one_day_from_now.should include @twenty_four_hrs, @twenty_four_hrs_plus
+			Appointment.batch_for_one_day_from_now.should_not include @twenty_five_hrs_plus
+		end
+	end
+
+
 	describe '.batch_for_just_before_reminder_text' do
 		let(:date) { DateTime.new(2020, 2, 3, 4, 5, 6) }
 		before :each do
@@ -262,6 +307,75 @@ describe Appointment do
 	end
 
 	describe '.batch_create' do
-		
+		before :each do 
+			Appointment.delete_all
+			@match_one = FactoryGirl.create(:match)
+			@match_two = FactoryGirl.create(:match)
+			@match_three = FactoryGirl.create(:match)
+		end
+
+		it "should have matches belong to the appointment" do
+			@matches = [ @match_one, @match_two, @match_three ]
+			Appointment.batch_create(@matches)
+
+			expect(@match_one.appointment).to be_present
+			expect(@match_two.appointment).to be_present
+			expect(@match_three.appointment).to be_present
+		end
+
+		it "should convert an array of matches into appointments" do
+			@matches = [ @match_one, @match_two, @match_three ]
+			Appointment.batch_create(@matches)
+			
+			@first_appointment = @match_one.appointment
+			@second_appointment = @match_two.appointment
+			@last_appointment = @match_three.appointment
+
+			expect(@first_appointment.scheduled_for).to eq @match_one.match_time
+			expect(@second_appointment.scheduled_for).to eq @match_two.match_time
+			expect(@last_appointment.scheduled_for).to eq @match_three.match_time
+		end
 	end
+
+	describe '.auto_batch_create' do
+		let(:user) { FactoryGirl.create(:user) }
+		let(:tutor_available) { FactoryGirl.create(:tutor_available) }
+		let(:tutee_available) { FactoryGirl.create(:tutee_available) }
+		let(:time) {DateTime.new(2013,02,14,12,30,00)}
+
+		it "should build matches for a user if they do not have matches for the specified time" do
+			Match.delete_all
+			Appointment.delete_all
+			Timecop.travel(time.beginning_of_week)
+			Match.should_receive(:build_all_matches_for).twice
+			Appointment.auto_batch_create(time: time.end_of_week, users: [tutor_available])
+		end
+
+		it "should preference matches where the match is an apt partner" do
+			Match.delete_all
+			Appointment.delete_all
+			Timecop.travel(time.beginning_of_week)
+			Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
+
+			match = FactoryGirl.create(:match, tutee: tutee_available, tutor: tutor_available)
+			match.convert_to_apt
+			match_other_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available)
+			match_same_apt_tutor = FactoryGirl.create(:match, tutor: tutor_available, tutee: tutee_available)
+			match_different_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available)
+			match_another_different_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available)
+			Appointment.auto_batch_create(users: [tutee_available], time: time.end_of_week)
+			expect(tutee_available.appointments.order(:created_at).last.match).to eq match_same_apt_tutor
+		end
+
+		# it "should handle invalid appointments" do
+		# 	Match.delete_all
+		# 	Appointment.delete_all
+		# 	Timecop.travel(time.beginning_of_week)
+		# 	Match.should_receive(:build_all_matches_for).twice
+		# 	time = DateTime.new(2013,02,14,12,30,00)
+		# 	Appointment.auto_batch_create(time: time.end_of_week, users: [tutor_available])
+		# end
+	end
+
+
 end

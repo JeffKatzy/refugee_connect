@@ -46,29 +46,55 @@ class Appointment < ActiveRecord::Base
   belongs_to :tutor, class_name: 'User', foreign_key: :tutor_id
   belongs_to :tutee, class_name: 'User', foreign_key: :tutee_id
   belongs_to :availability_manager
+  belongs_to :match
   has_many :call_to_users
   has_many :reminder_texts
-  after_create :find_start_page, :remove_availability_occurrence
+  after_create :find_start_page, :remove_availability_occurrence, :make_incomplete, :make_match_unavailable, :send_confirmation_text
+  validates :tutor, presence: true
+  validates :tutee, presence: true
+  validate :too_many_apts
+  # validate :available_users
   
   #only allow one appointment per hour per user
+
+  def self.auto_batch_create(h = {})
+    h[:users] ||= User.tutees.active
+    h[:time]  ||= Time.current.end_of_week
+    h[:users].each do |user|
+      if user.wants_more_appointments_before(h[:time])
+        Match.build_all_matches_for(user, h[:time]) if user.matches.available_until(h[:time]).empty?
+        @available_matches = user.reload.matches.available_until(h[:time])
+        if @available_matches.present?
+          matches = user.matches.where(tutee_id: user.appointment_partners).available_until(h[:time]) if user.is_tutor?
+          matches = user.matches.where(tutor_id: user.appointment_partners).available_until(h[:time]) if !user.is_tutor?
+          matches = @available_matches if matches.empty?
+          matches.each do |match|
+            match.convert_to_apt 
+          end
+        end
+      end
+    end
+  end
+
+  def self.batch_create(matches)
+    matches.each do |match|
+      apt = match.convert_to_apt
+    end
+  end
 
   def self.batch_for_this_hour
     Appointment.fully_assigned.after(Time.current.beginning_of_hour.utc).before(Time.current.end_of_hour.utc)
   end
 
-  def self.batch_for_pm_reminder_text
-    Appointment.fully_assigned
-      .where("begin_time between (?) and (?)", Time.current.utc + 16.hours, (Time.current.utc + 16.7.hours))
-  end
-  
-  def self.batch_for_am_reminder_text
-    Appointment.fully_assigned.where("begin_time between (?) and (?)", Time.current.utc + 16.hours, (Time.current.utc + 16.7.hours)).
-      after(Time.current.end_of_day).before(Time.current.end_of_day + 24.hours)
+  def self.batch_for_one_day_from_now
+    Appointment.fully_assigned.where("scheduled_for between (?) and (?)", 
+      (Time.current.utc + 24.hours).beginning_of_hour, (Time.current.utc + 24.hours).end_of_hour)
   end
 
-  def self.batch_for_just_before_reminder_text
+  def self.batch_for_just_before
     Appointment.fully_assigned.
-      where("begin_time between (?) and (?)", Time.current.utc, (Time.current.utc + 40.minutes))
+      where("scheduled_for between (?) and (?)", 
+        Time.current.utc.beginning_of_hour, Time.current.utc.end_of_hour)
   end
 
   def self.next_appointment #next_appointment includes the current_appointment
@@ -103,18 +129,6 @@ class Appointment < ActiveRecord::Base
     end
   end
 
-  def self.batch_create(user_id, matches)
-    matches.each do |match|
-      matching_user_id = match.first.to_i
-      matching_time = match.last.to_datetime
-      apt = Appointment.new(scheduled_for: matching_time)
-      apt.assign_user_role(matching_user_id)
-      apt.assign_user_role(user_id.to_i)
-      apt.status = 'incomplete'
-      apt.save if apt.tutor.present? && apt.tutee.present?
-    end
-  end
-
   def assign_user_role(user_id)
     user = User.find(user_id)
     if user.is_tutor?
@@ -137,5 +151,38 @@ class Appointment < ActiveRecord::Base
       self.status = 'incomplete' 
     end
     self.save
+  end
+
+  def make_incomplete
+    self.status = 'incomplete'
+  end
+
+  def make_match_unavailable
+    self.match.update_attributes(available: false)
+  end
+
+  def send_confirmation_text
+    tutor_body = self[:scheduled_for].in_time_zone(self.tutor.time_zone).strftime("You have have an appointment scheduled with #{self.tutee.name} at %I:%M%p on %A.")
+    # tutee_body = self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("You have have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
+    TextToUser.deliver(self.tutor, tutor_body)
+    # TextToUser.deliver(self.tutee, tutee_body)
+  end
+
+  def too_many_apts
+    if self.tutor.present? && self.tutee.present?
+      if (self.tutor.too_many_apts_per_week(self.scheduled_for) || self.tutee.too_many_apts_per_week(self.scheduled_for) )
+        errors[:base] << "Both tutor and tutee must want more apppointments."
+      end
+    end
+  end
+
+  def scheduled_for_to_text(user_role)
+    if user_role == 'tutor'
+      self[:scheduled_for].in_time_zone(tutor.time_zone).strftime("%I:%M%p beginning")
+    elsif user_role == 'tutee'
+      self[:scheduled_for].in_time_zone(tutee.time_zone).strftime("%I:%M%p beginning")
+    else
+      raise 'Must pass in either tutor or tutee'
+    end
   end
 end

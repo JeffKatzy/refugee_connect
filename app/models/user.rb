@@ -61,6 +61,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def appointments=(appointments)
+    appointments.each do |appointment|
+      appointment.tutor = self if self.role == 'tutor'
+      appointment.tutee = self if self.role == 'tutee'
+      appointment.save
+    end
+  end
+
   def matches
     if self.is_tutor?
       matches_of_tutor || matches_of_tutee
@@ -78,7 +86,6 @@ class User < ActiveRecord::Base
   end
 
   def appointment_partners
-    # binding.pry
     if self.role == 'tutor'
       self.appointment_partners_of_tutor
     else
@@ -90,7 +97,7 @@ class User < ActiveRecord::Base
     if self.role == 'tutor'
       self.match_partners_of_tutor
     else
-      self.self.match_partners_of_tutee
+      self.match_partners_of_tutee
     end
   end
 
@@ -104,43 +111,6 @@ class User < ActiveRecord::Base
     self.availability_manager.per_week = self.per_week
     self.availability_manager.save
   end  
-
-  # Facebook methods
-
-  def self.from_omniauth(auth)
-    where(auth.slice(:provider, :uid)).first_or_initialize.tap do |user|
-      user.provider = auth.provider
-      user.uid = auth.uid
-      user.name = auth.info.name
-      user.oauth_token = auth.credentials.token
-      user.oauth_expires_at = Time.at(auth.credentials.expires_at)
-      user.save!
-    end
-  end
-
-  def facebook
-    @facebook ||= Koala::Facebook::API.new(oauth_token)
-  end
-
-  def friends
-    facebook.fql_query('SELECT name, pic_square, uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me())')
-  end
-
-  def college_friends
-    query(self.college, 'education')
-  end
-
-  # def appointments
-  #   Appointment.where('tutor_id = :user_id or tutee_id = :user_id', user_id: self.id)
-  # end
-
-  def appointments=(appointments)
-    appointments.each do |appointment|
-      appointment.tutor = self if self.role == 'tutor'
-      appointment.tutee = self if self.role == 'tutee'
-      appointment.save
-    end
-  end
 
   def is_tutor?
     if self.role == 'tutor'
@@ -165,8 +135,17 @@ class User < ActiveRecord::Base
   end
 
   def wants_more_appointments_before(datetime)
-    self.appointments.after(Time.current).before(datetime).try(:count) < 
-      self.try(:per_week) * ((datetime.to_date - Time.current.to_date).to_i/6.round(2))
+    self.reload
+    return true if self.appointments.empty? 
+    return true if self.appointments.after(datetime - 7.days).empty?
+    self.appointments.after(datetime - 7.days).before(datetime + 23.hours).try(:count) < self.try(:per_week) 
+  end
+
+  def too_many_apts_per_week(datetime)
+    return false if self.appointments.empty? 
+    return false if self.appointments.after(datetime - 7.days).empty?
+    self.try(:per_week) < self.appointments.after(datetime - 7.days).
+      before(datetime).try(:count)
   end
 
   def build_matches_for_week
@@ -187,4 +166,28 @@ class User < ActiveRecord::Base
     AvailabilityManager.find_or_create_by_user_id(self.id)
     self.save
   end
+  # Facebook methods
+
+  # def self.from_omniauth(auth)
+  #   where(auth.slice(:provider, :uid)).first_or_initialize.tap do |user|
+  #     user.provider = auth.provider
+  #     user.uid = auth.uid
+  #     user.name = auth.info.name
+  #     user.oauth_token = auth.credentials.token
+  #     user.oauth_expires_at = Time.at(auth.credentials.expires_at)
+  #     user.save!
+  #   end
+  # end
+
+  # def facebook
+  #   @facebook ||= Koala::Facebook::API.new(oauth_token)
+  # end
+
+  # def friends
+  #   facebook.fql_query('SELECT name, pic_square, uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me())')
+  # end
+
+  # def college_friends
+  #   query(self.college, 'education')
+  # end
 end

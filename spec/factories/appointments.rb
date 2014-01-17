@@ -18,9 +18,10 @@
 FactoryGirl.define do
   factory :appointment do
     scheduled_for DateTime.new 2013,02,14,12,30,00
-    status 'complete'
+
 
     after(:build) do |appointment|
+      appointment.match = FactoryGirl.create(:match) unless appointment.match.present?
       appointment.tutee = FactoryGirl.build(:tutee_available) unless appointment.tutee.present?
       appointment.tutor = FactoryGirl.build(:tutor_available) unless appointment.tutor.present?
       appointment.save

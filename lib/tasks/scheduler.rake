@@ -5,4 +5,10 @@ task :begin_session_text => :environment do
   puts "done."
 end
 
+task :reminder_text => :environment do
+  puts "Updating feed..."
+  ReminderText.begin_session
+  puts "done."
+end
+
 

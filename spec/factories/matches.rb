@@ -17,10 +17,10 @@ FactoryGirl.define do
   factory :match do
     match_time DateTime.new 2013,02,14,12,30,00
 
-    after(:build) do |appointment|
-      appointment.tutee = FactoryGirl.build(:tutee_available) unless appointment.tutee.present?
-      appointment.tutor = FactoryGirl.build(:tutor_available) unless appointment.tutor.present?
-      appointment.save
+    after(:build) do |match|
+      match.tutee = FactoryGirl.build(:tutee_available) unless match.tutee.present?
+      match.tutor = FactoryGirl.build(:tutor_available) unless match.tutor.present?
+      match.save
     end
   end
 end

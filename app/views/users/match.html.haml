@@ -2,14 +2,20 @@
 	%h2= "Matches for #{@auth.name}"
 	Your matching appointments:
 	= form_tag "/appointments/batch", method: "post" do
-		= hidden_field_tag 'user_id', params[:user_id]
-		- @matches.each_with_index do |match, idx|
-			%br
-			%span= "#{match[:user_name]}'s availabilities"
-			- match[:times].each do |time|
-				%p
-				%span= time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + " EST"
-				= check_box_tag "[match_id][#{match[:user_id]}]", "#{time}", id: "#{match[:user_name]}.#{time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As")}"
+		= hidden_field_tag 'user_id', @user.id
+		- if @user.is_tutor?
+			- @matches.each do |match|
+				%br
+				%span= "#{match.tutee.name}'s availabilities"
+				%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
+				= check_box_tag "match_id[]", match.id
+				%br
+		- else
+			- @matches.each do |match|
+				%br
+				%span= "#{match.tutor.name}'s availabilities"
+				%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
+				= check_box_tag "match_id[]", match.id
 		%br
 		%p= submit_tag "Sign up for classes"
 - else

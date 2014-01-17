@@ -13,6 +13,34 @@
 require 'spec_helper'
 
 describe Match do
+	describe '.create' do
+		before :each do
+			@match = FactoryGirl.create(:match, match_time: Time.now + 1.month )
+		end 
+
+		it "should mark the match as available" do
+			expect(@match.available).to eq true
+		end
+	end
+
+	describe '#already_a_match' do
+		before :each do
+			Match.delete_all
+      time = DateTime.new(2013,02,14,12,30,00)
+      Timecop.travel(time.beginning_of_week)
+      @tutor = FactoryGirl.create(:tutor_available)
+      @tutee = FactoryGirl.create(:tutee_available)
+      Match.match_create(@tutor, @tutee, Time.current.end_of_week)
+    end
+
+		it "should return true if there is already a match for a given time" do
+			expect(Match.already_a_match(@tutor, @tutee, Time.parse("2013-02-15 12:30:00 UTC"))).to eq true
+		end
+
+		it "should return false if there is not already a match for a given time" do
+			expect(Match.already_a_match(@tutor, @tutee, Time.parse("2012-02-20 12:30:00 UTC"))).to eq false
+		end
+	end
 
 	describe '.after(this_week)' do
 		before :each do
@@ -27,6 +55,100 @@ describe Match do
 
 		it "does not return users before the time" do
 	  	Match.after(Time.now + 1.week).should_not include @this_week
+		end
+	end
+
+	describe ".unavailable" do
+		before :each do 
+			@available = FactoryGirl.create(:match)
+			@unavailable = FactoryGirl.create(:match)
+			@available_one = FactoryGirl.create(:match)
+			@unavailable_one = FactoryGirl.create(:match)
+		end
+
+		it "should return only the incomplete appointments" do
+			@unavailable.available = false
+			@unavailable.save
+			@unavailable_one.available = false
+			@unavailable_one.save
+			Match.available.should eq [@available, @available_one]
+		end
+	end
+
+	describe '.convert_to_apt' do
+		before :each do
+			@match = FactoryGirl.create(:match)
+			@match.convert_to_apt
+		end
+
+		it "should return an appointment with the same time" do
+			expect(@match.appointment.scheduled_for).to eq @match.match_time
+		end
+
+		it "should mark the match as unavailable" do
+			expect(@match.available).to eq false
+		end
+	end
+
+	describe '#available_users' do 
+		let(:match) { FactoryGirl.create(:match) }
+		let(:match_unavailable_tutor) { FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_unavailable, per_week: 4), tutee: FactoryGirl.create(:tutee_available)) }
+
+		before(:each) do
+			time = DateTime.new(2013,02,14,12,30,00)
+			Timecop.travel(time.beginning_of_week)
+			Appointment.any_instance.stub(:make_match_unavailable).and_return(true)
+			Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
+		end
+
+		it "should return true if both users want more appointments" do
+			expect(match.available_users).to be_true
+		end
+
+		it "should return false if one or more users do not want more appointments" do
+			tutor = match_unavailable_tutor.tutor
+			tutor.per_week = 3
+			tutor.save
+			expect(match_unavailable_tutor.available_users).to be_false
+		end
+	end
+
+	describe '#available_matches_until(time)' do
+		let(:match_unavailable_tutor) { FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_unavailable, per_week: 4), 
+			tutee: FactoryGirl.create(:tutee_available)) }
+
+		it "should only return matches that are not appointments" do
+			time = DateTime.new 2013,02,14,12,30,00
+			Timecop.travel(time.beginning_of_week)
+			Appointment.any_instance.stub(:send_confirmation_text)
+			@match_to_apt = FactoryGirl.create(:match)
+			@match_to_apt.convert_to_apt
+			tutor = @match_to_apt.tutor
+			@match = FactoryGirl.create(:match, tutor: tutor)
+			matches = tutor.reload.matches
+			expect(matches.available_until(time.end_of_week)).to_not include(@match_to_apt)
+			expect(matches.available_until(time.end_of_week)).to include(@match)
+		end
+
+		it "should only return matches where both users are available" do 
+			time = DateTime.new 2013,02,14,12,30,00
+			Timecop.travel(time.beginning_of_week)
+			Appointment.any_instance.stub(:send_confirmation_text)
+			Appointment.any_instance.stub(:make_match_unavailable)
+
+			tutor = match_unavailable_tutor.tutor
+			tutor.per_week = 3
+			tutor.save
+
+			tutee = match_unavailable_tutor.tutee
+
+			@match = FactoryGirl.create(:match, tutee: tutee)
+			
+			matches = tutor.reload.matches
+			tutee_matches = tutee.reload.matches
+			
+			expect(matches.available_until(time.end_of_week)).to_not include(match_unavailable_tutor)
+			expect(tutee_matches.available_until(time.end_of_week)).to include(@match)
 		end
 	end
 
@@ -48,6 +170,7 @@ describe Match do
 
 	describe '.this_week' do
 		before :each do 
+			Match.delete_all
 			@next_month = FactoryGirl.create(:match, match_time: Time.now + 1.month )
 			@next_month_plus = FactoryGirl.create(:match, match_time: Time.now + 2.months )
 			@this_week = FactoryGirl.create(:match, match_time: Time.now + 1.day)
@@ -68,12 +191,28 @@ describe Match do
       Timecop.travel(time.beginning_of_week)
       @tutor = FactoryGirl.create(:tutor_available)
       @tutee = FactoryGirl.create(:tutee_available)
+      @tutee_unavailable = FactoryGirl.create(:tutee_unavailable)
       Match.delete_all
     end
 
 		it "should produce match objects of the intersecting times and the users" do
 			Match.match_create(@tutor, @tutee, Time.current.end_of_week)
 			Match.all.map(&:match_time).to_s.should eq "[Wed, 13 Feb 2013 12:30:00 UTC +00:00, Thu, 14 Feb 2013 12:30:00 UTC +00:00, Fri, 15 Feb 2013 12:30:00 UTC +00:00]"
+		end
+		#this is the already_a_match method, and should probably occur with validation
+		it "should not create a match if there is already a match with the same user at that time" do 
+			Match.match_create(@tutor, @tutee, Time.current.end_of_week)
+			Match.all.map(&:match_time).to_s.should eq "[Wed, 13 Feb 2013 12:30:00 UTC +00:00, Thu, 14 Feb 2013 12:30:00 UTC +00:00, Fri, 15 Feb 2013 12:30:00 UTC +00:00]"
+			Match.match_create(@tutor, @tutee, Time.current.end_of_week)
+			Match.all.map(&:match_time).to_s.should eq "[Wed, 13 Feb 2013 12:30:00 UTC +00:00, Thu, 14 Feb 2013 12:30:00 UTC +00:00, Fri, 15 Feb 2013 12:30:00 UTC +00:00]"
+		end
+
+		it "should not create the match if it is invalid" do
+			Match.delete_all
+			@tutee_unavailable.per_week = 0
+			@tutee_unavailable.save
+			match = Match.match_create(@tutor, @tutee_unavailable, Time.current.end_of_week)
+			expect(Match.all.count).to eq 0
 		end
 	end
 
@@ -87,16 +226,32 @@ describe Match do
       @sharad = FactoryGirl.create(:tutee_unavailable)
     end
 
-  context "when its a new user without previous appointments or matches" do 
-    it "should return a hash of users with the values being only times the user has" do
-      Match.build_all_matches_for(@simran, Time.current.end_of_week)
-      @simran.reload.matches.map(&:match_time).to_s.should eq "[Wed, 13 Feb 2013 12:30:00 UTC +00:00, Thu, 14 Feb 2013 12:30:00 UTC +00:00, Fri, 15 Feb 2013 12:30:00 UTC +00:00]"
+    context "when two users are matches" do 
+    	it "should have the same matches" do
+    		Match.build_all_matches_for(@simran, Time.current.end_of_week)
+    		Match.build_all_matches_for(@nitika, Time.current.end_of_week)
+    		expect(@simran.reload.matches).to eq @nitika.reload.matches
+    	end
+
+    	it "should have not create new matches after the second user" do
+    		Match.build_all_matches_for(@simran, Time.current.end_of_week)
+    		init_matches = @simran.reload.matches
+    		Match.build_all_matches_for(@nitika, Time.current.end_of_week)
+    		expect(@simran.reload.matches).to eq init_matches
+    	end
     end
 
-    it "should only return for users who are available" do
-      Match.build_all_matches_for(@sharad, Time.current.end_of_week).should eq nil
-    end
-  end
+	  context "when its a new user without previous appointments or matches" do 
+	    it "should return a hash of users with the values being only times the user has" do
+	      Match.build_all_matches_for(@simran, Time.current.end_of_week)
+	      @simran.reload.matches.map(&:match_time).to_s.should eq "[Wed, 13 Feb 2013 12:30:00 UTC +00:00, Thu, 14 Feb 2013 12:30:00 UTC +00:00, Fri, 15 Feb 2013 12:30:00 UTC +00:00]"
+	    end
+
+	    it "should only return for users who are available" do
+	    	@shar = FactoryGirl.create(:tutee_unavailable)
+	      Match.build_all_matches_for(@shar, Time.current - 1.day).should eq nil
+	    end
+	  end
 
 	  context "when a user had past appointments" do 
 	    it "should return previous appointment partners ordered by most recent" do

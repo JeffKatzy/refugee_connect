@@ -112,6 +112,40 @@ describe User do
       tutee.cell_number[1].should eq "1"
     end
   end
+  
+  describe "#too_many_apts_per_week" do
+    before :each do
+      time = DateTime.new 2013,02,14,12,30,00
+      Timecop.travel(time.beginning_of_week)
+    end
+
+    it "should return true when the number of appointments is more" do
+      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 2)
+      tutor.too_many_apts_per_week(Time.current.end_of_week).should eq true
+    end
+
+    # it "should return true when the number of appointments is more" do
+    #   tutee = FactoryGirl.create(:tutee_unavailable, per_week: 2)
+    #   tutee.too_many_apts_per_week(Time.current.end_of_week).should eq true
+    # end 
+
+
+    it "should return false when the number of appointments is equal" do
+      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 3)
+      tutor.too_many_apts_per_week(Time.current.end_of_week).should eq false
+    end
+
+    it "should return false when the number of appointments is equal" do
+      tutee = FactoryGirl.create(:tutee_unavailable, per_week: 3)
+      tutee.too_many_apts_per_week(Time.current.end_of_week).should eq false
+    end
+
+    it "should return false when the number of appointments is less" do
+      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 4)
+
+      tutor.too_many_apts_per_week(Time.current.end_of_week).should eq false
+    end
+  end
 
   describe "#wants_more_appointments_before" do
     before :each do
@@ -124,27 +158,24 @@ describe User do
       tutor.wants_more_appointments_before(Time.current.end_of_week).should eq true
     end
 
-    it "should return false when the number of appointments is more" do
+    it "should return true when the number of appointments is less" do
+      tutee = FactoryGirl.create(:tutee_unavailable, per_week: 4)
+      tutee.wants_more_appointments_before(Time.current.end_of_week).should eq true
+    end
+
+    it "should return false when the number of appointments is equal" do
       tutor = FactoryGirl.create(:tutor_unavailable, per_week: 3)
       tutor.wants_more_appointments_before(Time.current.end_of_week).should eq false
     end
-  end
 
-  describe '#intersections' do
-    before :each do
-      time = DateTime.new(2013,02,14,12,30,00)
-      Timecop.travel(time.beginning_of_week)
-      @priya = FactoryGirl.create(:tutor_available)
-      # @jaya = FactoryGirl.create(:tutor_available)
-      @jaya = FactoryGirl.create(:tutee_available)
+    it "should return false when the number of appointments is equal" do
+      tutee = FactoryGirl.create(:tutee_unavailable, per_week: 3)
+      tutee.wants_more_appointments_before(Time.current.end_of_week).should eq false
     end
 
-    it "should return the intersecting times" do
-      @jaya.intersections(@priya, Time.current.end_of_week).count.should eq 3
-    end
-
-    it "should not matter the direction" do
-      @priya.intersections(@jaya, Time.current.end_of_week).count.should eq 3
+    it "should return false when the number of appointments is more" do
+      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 2)
+      tutor.wants_more_appointments_before(Time.current.end_of_week).should eq false
     end
   end
 
@@ -164,24 +195,6 @@ describe User do
 
     it "should return an array of active users with the same role" do
       @simran.opposite_active_users.should_not include @devin
-    end
-  end
-
-  describe '#available_appointments_before(datetime)' do
-    before :each do
-      time = DateTime.new(2013,02,14,12,30,00)
-      Timecop.travel(time.beginning_of_week)
-      @simran = FactoryGirl.create(:tutor_available)
-      @nitika = FactoryGirl.create(:tutee_available)
-      @sharad = FactoryGirl.create(:tutee_unavailable)
-    end
-
-    it "should return a hash of users with the values being only times the user has" do
-      @simran.available_appointments_before(Time.current.end_of_week).first[:times].to_s.should eq "[Wed, 13 Feb 2013 12:30:00 UTC +00:00, Thu, 14 Feb 2013 12:30:00 UTC +00:00, Fri, 15 Feb 2013 12:30:00 UTC +00:00]"
-    end
-
-    it "should only return for users who are available" do
-      @sharad.available_appointments_before(Time.current.end_of_week).should eq []
     end
   end
 end
