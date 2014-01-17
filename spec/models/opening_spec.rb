@@ -15,7 +15,7 @@ require 'spec_helper'
 
 describe Opening do
   describe "#set_time" do 
-  		let(:tutor) { FactoryGirl.create :user }
+  		let(:tutor) { FactoryGirl.create :tutor_available }
   		let(:opening) { FactoryGirl.create(:opening, day_open: "Monday", time_open: "9 pm", user: tutor) } 
   		
   	it "should create the time in the users time zone" do 
