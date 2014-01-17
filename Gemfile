@@ -27,6 +27,10 @@ gem 'koala'
 gem 'twitter'
 gem 'devise'
 gem 'multiparameter_date_time'
+gem 'autoprefixer-rails'
+gem 'compass-rails'
+gem 'groundworkcss'
+gem 'therubyracer', :platforms => :ruby
 
 
 group :assets do
