@@ -1,14 +1,9 @@
-%ul.title-area
-  %li.name
-    %h1= link_to 'Tutor Connect', root_path
-  %li.toggle-topbar.menu-icon
-    %a{:href => "#"}
-      %span menu
-%section.top-bar-section
-  %ul.right
-    - if @auth.nil?
-      %li= link_to 'Register', new_user_path, :remote => true
-      %li= link_to 'Login', '/login', :remote => true
-    - else
-      %li= link_to 'Profile', user_path(@auth)
-      %li= link_to 'Logout', '/login', :method => :delete
+%header
+	%nav.nav.double.padded#navigation
+		.container
+			%ul
+				.pull-left
+					%li#icon= link_to 'Yakbat', root_path
+				.pull-right
+					%li= link_to 'Sign Up', new_user_path, id: 'register_btn'
+					%li= link_to 'Login', signin_path, remote: true, id: 'login_btn'

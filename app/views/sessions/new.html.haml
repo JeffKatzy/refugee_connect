@@ -1,14 +1,18 @@
-.row.six.columns.panel
-	%h1 User sign in
-	= form_for(:session, url: sessions_path) do |f|
-		= f.label :email
-		= f.text_field :email
-		= f.label :password
-		= f.password_field :password
-		%br
-		= f.submit "Sign in", class: "button"
-.panel.row.six.columns
-	%h3 New User
-	%br
-	%br
-	%p= link_to "Sign up now!", signup_path, class: "button"
+%section.row#hero.six.sixths
+	.row#hero_inside.six.centered.twelfths
+		%p#hero_inside_large_text.pull-left
+			Login
+		= form_for(:session, url: sessions_path) do |f|	
+			.row
+				.one.whole
+					.pull-left= f.label :email
+				.one.half.pull-left
+					= f.text_field :email
+			.row
+				.one.whole
+					.pull-left= f.label :password
+				.one.half.pull-left
+					= f.password_field :password
+			%br
+			= f.submit "Login", class: "button blue center yb_button pull-left"
+

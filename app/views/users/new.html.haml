@@ -1,7 +1,5 @@
-#container
-  .row
-    = link_to 'I am a tutor', "/users/new_tutor", remote: true, :class => 'button tiny radius success'
-    = link_to 'I am a tutee', "/users/new_tutee", remote: true, :class => 'button tiny radius success'
-  .row
-    .12.columns
-      #form
+%section.row#hero.six.sixths
+	.row#hero_inside.six.centered.twelfths
+		%p#hero_inside_large_text.pull-left
+			= link_to 'I am a tutor', "/users/new_tutor", remote: true, :class => 'button'
+			= link_to 'I am a tutee', "/users/new_tutee", remote: true, :class => 'button'
