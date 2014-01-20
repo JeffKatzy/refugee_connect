@@ -1,9 +1,23 @@
-%nav.top-bar#navbar
-  %ul.left
-    %li.name= link_to 'Yakbat', root_path
-  %ul.rest
-    %li= link_to 'Register', new_user_path, id: 'register_btn'
-    %li= link_to 'Signin', signin_path, remote: true, id: 'login_btn'
-    %li= link_to 'Connect with facebook', '/auth/facebook', id: 'sign_in_btn'
-#login_btn_nav
-  = render 'sessions/form'
+%header
+	%nav.nav.double.padded#navigation
+		.container
+			%ul
+				.pull-left
+					%li#icon= link_to 'Yakbat', root_path
+				.pull-right
+					%li= link_to 'Sign Up', new_user_path, id: 'register_btn'
+					%li= link_to 'Login', signin_path, remote: true, id: 'login_btn'
+%section.row#hero.six.sixths
+	.row#hero_inside.eight.centered.twelfths
+		%p#hero_inside_large_text.double.padded Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna
+		%p#hero_inside_text  Ut wisi enim ad minim veniam, quis nostrud.
+		= link_to(new_user_path) do 
+			%button.blue.center#hero_inside_big_button 
+				%p
+					%i.icon-check
+					Sign Up
+		%p#hero_inside_link
+			= link_to 'Login'
+	/ #login_btn_nav
+	/ 	= render 'sessions/form'
+

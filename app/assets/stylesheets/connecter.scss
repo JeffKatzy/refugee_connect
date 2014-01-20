@@ -1,0 +1,94 @@
+@import url(http://fonts.googleapis.com/css?family=Amatic+SC);
+
+@font-face {
+  font-family: 'fiver';
+  src: url(font-path('five_minutes-webfont.otf')) format('opentype')
+}
+
+
+body {
+	background-color: rgb(221, 221, 221)
+}
+
+.container {
+	max-width: 1150px;
+	margin: 0 auto;
+}
+
+#navigation {
+	background-color: rgb(85, 85, 85)
+}
+
+#navigation a {
+	border-top: 0px;
+	background: none;
+	color: white;
+	letter-spacing: .16em;
+	font-family: Amatic SC;
+	font-size: 22px;
+}
+
+#hero {
+	height: 100%;
+	background-color: rgb(221, 221, 221);
+	min-height: 530px;
+}
+
+#hero_inside {
+	padding-top: 4%;
+	height: 100%;
+	text-align: center;
+	color: rgb(89, 85, 85);
+}
+
+#hero_inside_large_text {
+	font-size: 1.8em;
+}
+
+#hero_inside_text {
+	font-size: 1.25em;
+	margin-bottom: 20px;
+}
+
+#hero_inside_big_button {
+	text-transform: uppercase;
+	letter-spacing: .15em;
+	padding: .8em 1.3em;
+	margin-bottom: 10px;
+	border-radius: 4px;
+	font-size: 17px;
+}
+
+#hero_inside_big_button p {
+	margin-bottom: 0px	
+}
+
+#hero_inside_big_button a {
+	text-transform: uppercase;
+	letter-spacing: .15em;
+	padding: .8em 1.3em;
+	margin-bottom: 10px;
+	font-size: 17px;	
+}
+
+#icon a
+{
+	background: none;
+	color: yellow;
+}
+
+#hero_inside_link {
+	text-transform: uppercase;
+	font-size: 17px;
+	text-decoration: none;
+	letter-spacing: .13em;
+}
+
+#hero_inside_link a {
+	color: #3498db;
+	letter-spacing: .13em;
+	text-decoration: none;
+}
+
+
+

@@ -200,12 +200,6 @@ dl.vertical.four.columns {
   width: 80px
 }
 
-.tiny.button.round {
-  background-color: rgb(255, 91, 91);
-  color: black;
-  border: none;
-}
-
 .camera {
   max-height: 12px;
 }
@@ -278,7 +272,7 @@ dl.vertical.four.columns {
   padding-left: 20px;
 }
 
-#mybody {
+#mybody { 
   background: url(home/Homepage.jpg) no-repeat center top fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
