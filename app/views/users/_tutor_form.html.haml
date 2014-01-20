@@ -1,25 +1,39 @@
-Tutor Form
-= nested_form_for @user do |f|
-  = f.hidden_field :role, value: 'tutor'
-  = f.hidden_field :time_zone, value: "America/New_York"
-  = f.label :name
-  = f.text_field :name
-  = f.label :email
-  = f.text_field :email
-  = f.label :cell_number
-  = f.text_field :cell_number
-  = f.label :password
-  = f.password_field :password
-  = f.label :password_confirmation
-  = f.password_field :password_confirmation
-  = f.label :per_week, 'How many sessions do you want to teach per week?'
-  = f.select("per_week", "1" => 1, "2" => 2, "3" => 3)
-  = f.fields_for :openings do |form|
-    = form.label :day_open, "day open"
-    = form.select("day_open", {"Sunday" => "Sunday", "Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday", "Saturday" => "Saturday"})
-    = form.label :time_open, "time open"
-    = form.select("time_open", {"9 pm" => "9 pm", "10 pm" => "10 pm", "11 pm" => "11 pm" })
-    = form.link_to_remove "Remove this availability"
-  = f.link_to_add "Add a time available", :openings
-  %br
-  = f.submit
+.tutor_form.animated.bounceInDown
+  .row
+    .one.half.pull-left.padded
+      Tutor Form
+  = nested_form_for @user do |f|
+    = f.hidden_field :role, value: 'tutor'
+    = f.hidden_field :time_zone, value: "America/New_York"
+    .row
+      .one.half.pull-left.padded
+        = f.label :name
+        = f.text_field :name
+      .one.half.pull-left.padded
+        = f.label :email
+        = f.text_field :email
+    .row
+      .one.half.pull-left.padded
+        = f.label :cell_number
+        = f.text_field :cell_number
+    .row
+      .one.half.pull-left.padded
+        = f.label :password
+        = f.password_field :password
+      .one.half.pull-left.padded
+        = f.label :password_confirmation
+        = f.password_field :password_confirmation
+    .row
+      .one.half.pull-left.padded
+        = f.label :per_week, 'How many sessions do you want to teach per week?'
+        = f.select("per_week", "1" => 1, "2" => 2, "3" => 3)
+    .padded
+      = f.fields_for :openings do |form|
+        = form.label :day_open, "Day open"
+        = form.select("day_open", {"Sunday" => "Sunday", "Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday", "Saturday" => "Saturday"})
+        = form.label :time_open, "Time open"
+        = form.select("time_open", {"9 pm" => "9 pm", "10 pm" => "10 pm", "11 pm" => "11 pm" })
+        = form.link_to_remove "Remove this availability"
+      = f.link_to_add "Add a time available", :openings
+      %br
+      = f.submit
