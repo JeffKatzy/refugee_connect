@@ -34,6 +34,9 @@ gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
 gem 'twitter'
 
+group :production do 
+  gem 'rails_12factor'
+end
 
 group :assets do
   gem 'sass-rails', "  ~> 3.2.4"
