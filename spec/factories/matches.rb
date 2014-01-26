@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 # == Schema Information
 #
 # Table name: matches
@@ -10,9 +8,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  match_time :datetime
+#  available  :boolean
 #
 
-
+# Read about factories at https://github.com/thoughtbot/factory_girl
 FactoryGirl.define do
   factory :match do
     match_time DateTime.new 2013,02,14,12,30,00

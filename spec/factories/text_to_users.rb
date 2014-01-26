@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: text_to_users
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  time       :datetime
+#  body       :text
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do

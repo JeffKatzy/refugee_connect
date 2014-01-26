@@ -1,4 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
 # == Schema Information
 #
 # Table name: appointments
@@ -9,12 +8,15 @@
 #  finish_page   :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  scheduled_for :text
-#  user_id       :integer
 #  began_at      :datetime
 #  ended_at      :datetime
+#  scheduled_for :datetime
+#  tutor_id      :integer
+#  tutee_id      :integer
+#  match_id      :integer
 #
 
+# Read about factories at https://github.com/thoughtbot/factory_girl
 FactoryGirl.define do
   factory :appointment do
     scheduled_for DateTime.new 2013,02,14,12,30,00

@@ -18,6 +18,7 @@
 #  oauth_expires_at :datetime
 #  image            :string(255)
 #  time_zone        :string(255)
+#  twitter_handle   :string(255)
 #
 
 class User < ActiveRecord::Base
@@ -26,6 +27,7 @@ class User < ActiveRecord::Base
   has_many :text_from_users
   has_many :openings
   has_many :reminder_texts
+  has_many :photos
   
   has_many :text_to_users
   

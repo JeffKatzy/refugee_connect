@@ -1,1 +1,18 @@
-= @user.name
+.row#background_show
+	.three.centered.fifths#main
+		.row
+			#dashboard
+				#profile_picture.double.padded.two.fifths
+					.box#profile_box
+						%i.fa.fa-user.fa-5x#picture_icon
+				#basic_info.three.fifths.double.padded
+					.row#basic_info_top_level
+						%p 
+					.row#basic_info_bottom_level
+						%p#basic_info_user_name= @user.name
+						%p#basic_info_other_data Hello
+				#statistics
+		.main_section
+			- @user.photos.tweet_created_at_asc.each do |photo|
+				%row.padded.center
+					= image_tag photo.url

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131208183150) do
+ActiveRecord::Schema.define(:version => 20140126214024) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -97,6 +97,15 @@ ActiveRecord::Schema.define(:version => 20131208183150) do
     t.string   "time_open"
   end
 
+  create_table "photos", :force => true do |t|
+    t.integer  "user_id"
+    t.text     "url"
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
+    t.integer  "tweet_id",         :limit => 8
+    t.datetime "tweet_created_at"
+  end
+
   create_table "reminder_texts", :force => true do |t|
     t.integer  "appointment_id"
     t.datetime "time"
@@ -169,6 +178,7 @@ ActiveRecord::Schema.define(:version => 20131208183150) do
     t.datetime "oauth_expires_at"
     t.string   "image"
     t.string   "time_zone"
+    t.string   "twitter_handle"
   end
 
 end

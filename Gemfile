@@ -31,6 +31,8 @@ gem 'autoprefixer-rails'
 gem 'compass-rails'
 gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
+gem 'font-awesome-rails'
+gem 'twitter'
 
 
 group :assets do

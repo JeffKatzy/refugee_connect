@@ -8,6 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  match_time :datetime
+#  available  :boolean
 #
 
 class Match < ActiveRecord::Base

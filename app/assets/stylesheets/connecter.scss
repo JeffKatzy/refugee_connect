@@ -104,4 +104,58 @@ body {
     color: white;
 }
 
+#main {
+	height: 100%;
+	min-height: 530px;
+	background-color: rgb(66, 143, 183)
+}
 
+#sidebar {
+	height: 100%;
+	min-height: 530px;
+	background-color: lightblue;	
+}
+
+#dashboard{
+	height: 247px;
+	background: gray;
+}
+
+#profile_picture {
+	max-width: 27%;
+	height: 100%;
+}
+
+#profile_box {
+	height: 85%;
+}
+
+#picture_icon {
+	height: 100%;
+	width: 100%;
+	padding: 28%;
+}
+
+#basic_info {
+	height: 100%;
+}
+
+#basic_info_user_name {
+	font-size: 27px;
+}
+
+#user_icon {
+	height: 100%;
+}
+
+#basic_info_top_level {
+	height: 50%;
+}
+
+#basic_info_bottom_level {
+	height: 50%;
+}
+
+#background_show {
+	background-color: rgb(19, 85, 115)
+}

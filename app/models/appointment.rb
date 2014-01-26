@@ -13,6 +13,7 @@
 #  scheduled_for :datetime
 #  tutor_id      :integer
 #  tutee_id      :integer
+#  match_id      :integer
 #
 
 class Appointment < ActiveRecord::Base

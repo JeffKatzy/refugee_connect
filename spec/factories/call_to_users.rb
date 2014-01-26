@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: call_to_users
+#
+#  id             :integer          not null, primary key
+#  tutor_id       :integer
+#  tutee_id       :integer
+#  begin_time     :datetime
+#  end_time       :datetime
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  appointment_id :integer
+#
+
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do

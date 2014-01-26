@@ -18,6 +18,7 @@
 #  oauth_expires_at :datetime
 #  image            :string(255)
 #  time_zone        :string(255)
+#  twitter_handle   :string(255)
 #
 
 require 'test_helper'
