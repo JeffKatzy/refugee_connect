@@ -12,7 +12,6 @@ gem 'aws-sdk', '~> 1.3.4'
 gem 'rest-client'
 gem 'simple_form'
 gem 'nested_form'
-gem 'pry-rails'
 gem 'pry-nav'
 gem 'bcrypt-ruby', '~> 3.0.0'
 gem 'pg'
@@ -28,11 +27,10 @@ gem 'twitter'
 gem 'devise'
 gem 'multiparameter_date_time'
 gem 'autoprefixer-rails'
-gem 'compass-rails'
 gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
-gem 'twitter'
+
 
 group :production do 
   gem 'rails_12factor'

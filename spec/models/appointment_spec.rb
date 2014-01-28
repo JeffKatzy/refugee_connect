@@ -302,8 +302,7 @@ describe Appointment do
 		end
 
 		it "should only select appointments due in forty minutes" do
-			Appointment.fully_assigned.
-      where("begin_time between (?) and (?)", Time.now.utc, (Time.now.utc + 40.minutes))
+			Appointment.fully_assigned.where("begin_time between (?) and (?)", Time.now.utc, (Time.now.utc + 40.minutes))
 		end
 	end
 
