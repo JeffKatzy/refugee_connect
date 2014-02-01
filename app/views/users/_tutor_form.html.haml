@@ -1,7 +1,7 @@
 .tutor_form.animated.bounceInDown
   .row
     .one.half.pull-left.padded
-      Tutor Form
+      Teacher Form
   = nested_form_for @user do |f|
     = f.hidden_field :role, value: 'tutor'
     = f.hidden_field :time_zone, value: "America/New_York"
@@ -36,4 +36,4 @@
         = form.link_to_remove "Remove this availability"
       = f.link_to_add "Add a time available", :openings
       %br
-      = f.submit
+      = f.submit 'Sign Up'
