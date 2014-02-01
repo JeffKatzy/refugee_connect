@@ -151,7 +151,7 @@ class User < ActiveRecord::Base
   end
 
   def build_matches_for_week
-    Match.build_all_matches_for(self, Time.current.end_of_week)
+    Match.build_all_matches_for(self, Time.current + 7.days)
   end
 
   private 

@@ -75,7 +75,6 @@ class Match < ActiveRecord::Base
       	match = Match.new(match_time: start_time)
       	match.assign_user_role(first_user.id)
       	match.assign_user_role(second_user.id)
-        
         if match.invalid?
           logger.debug "#{match.errors}"
           next #notice without save
