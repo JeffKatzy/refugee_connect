@@ -1,5 +1,5 @@
 - if @matches.present?
-	%h2= "Matches for #{@auth.name}"
+	%h2= "Matches for #{@user.name}"
 	Your matching appointments:
 	= form_tag "/appointments/batch", method: "post" do
 		= hidden_field_tag 'user_id', @user.id
