@@ -27,7 +27,7 @@ class UsersController < ApplicationController
   def match
     if @auth.present?
       @user = User.find(params[:user_id]) 
-      @matches = @user.matches.available.after(Time.current).before(Time.current + 7.days).present?
+      @matches = @user.matches.available.after(Time.current).before(Time.current + 7.days)
     else 
       redirect_to root_path
     end
