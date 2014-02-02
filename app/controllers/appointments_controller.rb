@@ -4,11 +4,6 @@ class AppointmentsController < ApplicationController
     @appointment = Appointment.find(params[:id])
     @tutor = @appointment.tutor
     @tutee = @appointment.tutee
-
-    respond_to do |format|
-      format.xml { @tutee }
-      format.xml { @tutor }
-    end
   end
 
   def batch

@@ -1,23 +1,25 @@
 class UsersController < ApplicationController
   layout 'application'
-  
-  def new
-    @user = User.new
-  end
 
   def create
-    @user = User.create(params[:user])
-    session[:user_id] = @user.id
-    authentication
-    redirect_to match_users_path(@user)
+    @user = User.new(params[:user])
+    if @user.save
+      session[:user_id] = @user.id
+      authentication
+      redirect_to match_users_path(@user)
+    else 
+      render 'new'
+    end
   end
 
   def new_tutor
     @user = User.new
+    @user.openings.build
   end
 
   def new_tutee
     @user = User.new
+    @user.openings.build
   end
 
   def index

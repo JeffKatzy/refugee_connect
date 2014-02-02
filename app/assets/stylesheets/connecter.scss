@@ -7,8 +7,10 @@
 
 
 body {
-	background-color: rgb(221, 221, 221)
+	background-color: rgb(221, 221, 221);
 }
+
+
 
 .container {
 	max-width: 1150px;
@@ -161,5 +163,15 @@ body {
 }
 
 .navigation_right_side {
+	color: white;
+}
+
+.add_time_available_button a {
+	text-decoration: none;
+	color: white;
+}
+
+.add_time_available_button a:hover {
+	text-decoration: none;
 	color: white;
 }

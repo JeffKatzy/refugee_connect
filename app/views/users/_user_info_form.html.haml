@@ -1,0 +1,22 @@
+.row
+  .one.half.pull-left.padded
+    = f.label :name
+    = f.text_field :name
+  .one.half.pull-left.padded
+    = f.label :email
+    = f.text_field :email
+.row
+  .one.half.pull-left.padded
+    = f.label :cell_number
+    = f.text_field :cell_number
+.row
+  .one.half.pull-left.padded
+    = f.label :password
+    = f.password_field :password
+  .one.half.pull-left.padded
+    = f.label :password_confirmation
+    = f.password_field :password_confirmation
+.row
+  .one.half.pull-left.padded
+    = f.label :per_week, 'How many sessions do you want to teach per week?'
+    = f.select("per_week", "1" => 1, "2" => 2, "3" => 3)

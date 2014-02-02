@@ -7,4 +7,4 @@
 				.pull-right.navigation_right_side
 					%li= link_to 'Sign Up', new_user_path, id: 'register_btn' if @auth.nil?
 					%li= link_to 'Login', signin_path if @auth.nil?
-					%li.relative.middle.right.padded= "Welcome #{@user.name}" if !@auth.nil?
+					%li.relative.middle.right.padded= "Welcome #{@auth.name}" if !@auth.nil?
