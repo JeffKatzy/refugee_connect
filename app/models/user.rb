@@ -54,6 +54,9 @@ class User < ActiveRecord::Base
   after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week
   before_save :format_phone_number
   validates_plausible_phone :cell_number, :presence => true
+  validate :check_appointments_number
+
+  APPOINTMENTS_COUNT_MIN = 1
 
   def appointments
     if self.is_tutor?
@@ -167,6 +170,16 @@ class User < ActiveRecord::Base
   def create_availability_manager
     AvailabilityManager.find_or_create_by_user_id(self.id)
     self.save
+  end
+
+  def appointments_count_valid?
+    openings.count >= APPOINTMENTS_COUNT_MIN
+  end
+
+  def check_appointments_number
+    unless appointments_count_valid?
+      errors[:base] << "You must select at least one time that you are available" if self.openings.count < APPOINTMENTS_COUNT_MIN
+    end
   end
   # Facebook methods
 

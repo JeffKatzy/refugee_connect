@@ -28,6 +28,14 @@ describe User do
     FactoryGirl.create(:user).should be_valid
   end
 
+  describe '#validate' do 
+    it "requires at least one appointment" do
+      @user = FactoryGirl.build(:user)
+      @user.save
+      expect(@user).to_not be_valid
+    end
+  end
+
   describe ".create" do
     it "should create an availability manager" do
       #Do not know how to properly stub this out??

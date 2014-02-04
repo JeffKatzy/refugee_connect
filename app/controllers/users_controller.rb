@@ -7,8 +7,8 @@ class UsersController < ApplicationController
       session[:user_id] = @user.id
       authentication
       redirect_to match_users_path(@user)
-    else 
-      render 'new'
+    else
+      render action: 'new'
     end
   end
 

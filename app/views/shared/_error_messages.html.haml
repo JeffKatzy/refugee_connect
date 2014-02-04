@@ -1,0 +1,7 @@
+- if @user.present? && @user.errors.any?
+	.row.padded
+		.message.dismissible.error.fadeOut
+			%p= "Please fix the following errors and resubmit:"
+			%ol
+				- @user.errors.full_messages.each do |msg|
+					%p.red= msg
