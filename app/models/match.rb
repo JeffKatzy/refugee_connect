@@ -22,6 +22,7 @@ class Match < ActiveRecord::Base
   has_one :appointment
   after_create :make_available
   validate :too_many_apts
+  #validate :user_booked_at_that_time
 
   scope :after, ->(time) { where("match_time >= ?", time) }
   scope :before, ->(time) { where("match_time <= ?", time) }
@@ -65,12 +66,55 @@ class Match < ActiveRecord::Base
   		Match.match_create(primary_user, opp_user, datetime) 
   	end
   end
+
+  
+
+  def self.build_fake_matches_for(primary_user, users, datetime)
+    potential_users = []
+    if primary_user.role == 'tutor'
+      users.active.tutees.each do |u| 
+        if u.availability_manager.available_before?(datetime) 
+          potential_users << u
+          break if potential_users.count > 5
+        end
+      end
+    else
+      users.active.tutors.each do |u| 
+        if u.availability_manager.available_before?(datetime)
+          potential_users << u
+          break if potential_users.try(:count) > 5
+        end
+      end
+    end
+    potential_users.each do |opp_user|
+      Match.fake_match_create(primary_user, opp_user, datetime) 
+    end
+    primary_user.reload.matches
+  end
+
+
+  #you can majorly refactor this by passing in an option to the first method
+  def self.fake_match_create(first_user, second_user, datetime)
+    second_user_is_match_partner = true if first_user.match_partners.include?(second_user)
+    first_user.availability_manager.remaining_occurrences(datetime).each do |start_time|
+      end_time = start_time + 1.hour
+      match = Match.new(match_time: start_time)
+      match.assign_user_role(first_user.id)
+      match.assign_user_role(second_user.id)
+      if match.invalid?
+        logger.debug "#{match.errors}"
+        next #notice without save
+      else
+        match.save
+      end
+    end
+  end
   
   def self.match_create(first_user, second_user, datetime)
   	second_user_is_match_partner = true if first_user.match_partners.include?(second_user)
     first_user.availability_manager.remaining_occurrences(datetime).each do |start_time|
       end_time = start_time + 1.hour
-      if second_user.availability_manager.schedule.occurring_between?(start_time, end_time)
+      if second_user.availability_manager.schedule.occurring_between?(start_time, end_time) #this is the line that turns on and off depending on if exact match
       	next if second_user_is_match_partner && Match.already_a_match(first_user, second_user, start_time) #this 'already' method should be a validation
       	match = Match.new(match_time: start_time)
       	match.assign_user_role(first_user.id)
@@ -83,7 +127,10 @@ class Match < ActiveRecord::Base
         end
       end
     end
+    
   end
+
+
   #note that you may want match create to actually return the created matches
 
   def self.already_a_match(first_user, second_user, start_time)

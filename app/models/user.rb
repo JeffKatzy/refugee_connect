@@ -55,6 +55,7 @@ class User < ActiveRecord::Base
   before_save :format_phone_number
   validates_plausible_phone :cell_number, :presence => true
   validate :check_appointments_number
+  #after_create :set_time_zone if: no_time_zone
 
   APPOINTMENTS_COUNT_MIN = 1
 

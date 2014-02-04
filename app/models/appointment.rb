@@ -54,6 +54,7 @@ class Appointment < ActiveRecord::Base
   validates :tutor, presence: true
   validates :tutee, presence: true
   validate :too_many_apts
+  #validate :user_booked_at_that_time
   # validate :available_users
   
   #only allow one appointment per hour per user

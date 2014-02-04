@@ -1,22 +1,27 @@
-- if @matches.present?
-	%h2= "Matches for #{@user.name}"
-	Your matching appointments:
-	= form_tag "/appointments/batch", method: "post" do
-		= hidden_field_tag 'user_id', @user.id
-		- if @user.is_tutor?
-			- @matches.each do |match|
-				%br
-				%span= "#{match.tutee.name}'s availabilities"
-				%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
-				= check_box_tag "match_id[]", match.id
-				%br
+.row#background_show
+	- if @matches.present?
+		%h2= "Matches for #{@user.name}"
+		- if @true_matches == true
+			Your matching appointments:
 		- else
-			- @matches.each do |match|
-				%br
-				%span= "#{match.tutor.name}'s availabilities"
-				%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
-				= check_box_tag "match_id[]", match.id
+			No matching appointments at your times, but check out these other available appointments.
+		= form_tag "/appointments/batch", method: "post" do
+			= hidden_field_tag 'user_id', @user.id
+			- if @user.is_tutor?
+				- @matches.each do |match|
+					%br
+					%span= "#{match.tutee.name}'s availabilities"
+					%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
+					= check_box_tag "match_id[]", match.id
+					%br
+			- else
+				- @matches.each do |match|
+					%br
+					%span= "#{match.tutor.name}'s availabilities"
+					%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
+					= check_box_tag "match_id[]", match.id
+			%br
+			%p= submit_tag "Sign up for classes"
+	- else
+		There are no available appointments for you this week.
 		%br
-		%p= submit_tag "Sign up for classes"
-- else
-	There are no available appointments for you this week.

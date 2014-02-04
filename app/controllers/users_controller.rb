@@ -28,8 +28,13 @@ class UsersController < ApplicationController
 
   def match
     if @auth.present?
+      @true_matches = true
       @user = User.find(params[:user_id]) 
-      @matches = @user.matches.available.after(Time.current).before(Time.current + 7.days)
+      @matches = @user.matches.available.after(Time.current).before(Time.current + 7.days).limit(5)
+      if @matches.empty?
+        @true_matches = false
+        @matches = Match.build_fake_matches_for(@user, User.scoped, Time.current + 7.days).limit(5)
+      end
     else 
       redirect_to root_path
     end
