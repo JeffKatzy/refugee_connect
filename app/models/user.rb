@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :openings, reject_if: :all_blank, allow_destroy: true
 
-  after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week, :set_time_zone
+  after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week, :set_time_zone, :pull_photos
   before_save :format_phone_number
   validates_plausible_phone :cell_number, :presence => true
   validate :check_appointments_number
@@ -159,7 +159,6 @@ class User < ActiveRecord::Base
   end
 
   def set_time_zone
-
     if self.time_zone == nil
       if self.role == 'tutor'
         self.time_zone = 'America/New_York'
@@ -168,6 +167,10 @@ class User < ActiveRecord::Base
       end
     end
     self.save
+  end
+
+  def pull_photos
+    Photo.pull_tweets(self)
   end
 
   private 
