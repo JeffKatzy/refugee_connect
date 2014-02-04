@@ -27,6 +27,21 @@ body {
 	font-size: 22px;
 }
 
+#navigation li {
+	border-top: 0px;
+	background: none;
+	color: white;
+	letter-spacing: .16em;
+	font-family: Amatic SC;
+	font-size: 22px;
+}
+
+.relative.middle.right.padded.login_user_name {
+	padding-top: 15px;
+}
+
+
+
 #hero {
 	height: 100%;
 	background-color: rgb(221, 221, 221);
@@ -78,6 +93,7 @@ body {
 {
 	background: none;
 	color: yellow;
+	padding-top: 15px;
 }
 
 #hero_inside_link {
