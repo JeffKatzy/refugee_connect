@@ -3,6 +3,7 @@
     .one.half.pull-left.padded
       Learner Form
   = nested_form_for @user do |f|
+    = render 'shared/error_messages', user: @user
     = f.hidden_field :role, value: 'tutee'
     = f.hidden_field :time_zone, value: "New Delhi"
     = render 'user_info_form', f: f
@@ -13,7 +14,10 @@
       = form.select("time_open", {"7:30 am" => "7:30 am", "8:30 am" => "8:30 am", "9:30 am" => "9:30 am" })
       .row.padded
         .absolute.right= form.link_to_remove "Remove this availability"
-    .row.pad-top
+    .row.padded
       = f.link_to_add "Add available time", :openings, class: 'add_time_available_button button asphalt pad-top'
-    .row
+    .row.padded
       = f.submit 'Sign Up', class: 'green button large padded fixed center'
+    %br
+    %br
+    %br
