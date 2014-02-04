@@ -42,7 +42,7 @@ class User < ActiveRecord::Base
   has_many :match_partners_of_tutee, :through => :matches_of_tutee, source: 'match_partner_of_tutee', uniq: true
 
 
-  attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week, :time_zone
+  attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week, :time_zone, :twitter_handle
 
   scope :tutors, -> { active.where(role: 'tutor') }
   scope :tutees, -> { active.where(role: 'tutee') }
