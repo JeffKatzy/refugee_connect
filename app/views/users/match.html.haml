@@ -1,27 +1,32 @@
 .row#background_show
-	- if @matches.present?
-		%h2= "Matches for #{@user.name}"
-		- if @true_matches == true
-			Your matching appointments:
+	.row#hero_inside.six.centered.twelfths
+		- if @matches.present?
+			.box.blue.square
+				- if @true_matches == true
+					%h2 Your matching appointments:
+				- else
+					%p No matching appointments at your times, but check out these other available appointments.
+			.box.asphalt.square
+				= form_tag "/appointments/batch", method: "post" do
+					= hidden_field_tag 'user_id', @user.id
+					- if @user.is_tutor?
+						- @matches.each do |match|
+							%br
+							.row
+								%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %A") + " (EST)"
+								%span= "with #{match.tutee.name}"
+								= check_box_tag "match_id[]", match.id
+							%br
+					- else
+						- @matches.each do |match|
+							%br
+							.row
+								%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %A") + " (EST)"
+								%span= "with #{match.tutor.name}"
+								= check_box_tag "match_id[]", match.id
+					%br
+					%br
+					%p= submit_tag "Sign up for classes", class: 'green'
 		- else
-			No matching appointments at your times, but check out these other available appointments.
-		= form_tag "/appointments/batch", method: "post" do
-			= hidden_field_tag 'user_id', @user.id
-			- if @user.is_tutor?
-				- @matches.each do |match|
-					%br
-					%span= "#{match.tutee.name}'s availabilities"
-					%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
-					= check_box_tag "match_id[]", match.id
-					%br
-			- else
-				- @matches.each do |match|
-					%br
-					%span= "#{match.tutor.name}'s availabilities"
-					%span= match.match_time.in_time_zone('Eastern Time (US & Canada)').strftime("%I:%M%p on %As") + "EST"
-					= check_box_tag "match_id[]", match.id
+			There are no available appointments for you this week.
 			%br
-			%p= submit_tag "Sign up for classes"
-	- else
-		There are no available appointments for you this week.
-		%br

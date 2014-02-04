@@ -9,7 +9,7 @@ class AppointmentsController < ApplicationController
   def batch
     matches = Match.find(params[:match_id])
     Appointment.batch_create(matches) 
-    redirect_to appointments_path
+    redirect_to user_path(@auth)
   end
 
   def index
