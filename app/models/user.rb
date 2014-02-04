@@ -51,7 +51,7 @@ class User < ActiveRecord::Base
 
   accepts_nested_attributes_for :openings, reject_if: :all_blank, allow_destroy: true
 
-  after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week
+  after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week, :set_time_zone
   before_save :format_phone_number
   validates_plausible_phone :cell_number, :presence => true
   validate :check_appointments_number
@@ -158,6 +158,18 @@ class User < ActiveRecord::Base
     Match.build_all_matches_for(self, Time.current + 7.days)
   end
 
+  def set_time_zone
+
+    if self.time_zone == nil
+      if self.role == 'tutor'
+        self.time_zone = 'America/New_York'
+      elsif self.role == 'tutee'
+        self.time_zone = 'New Delhi'
+      end
+    end
+    self.save
+  end
+
   private 
 
   def format_phone_number
@@ -173,14 +185,10 @@ class User < ActiveRecord::Base
     self.save
   end
 
-  def appointments_count_valid?
-    openings.count >= APPOINTMENTS_COUNT_MIN
-  end
+  
 
   def check_appointments_number
-    unless appointments_count_valid?
-      errors[:base] << "You must select at least one time that you are available" if self.openings.count < APPOINTMENTS_COUNT_MIN
-    end
+    errors[:base] << "You must select at least one time that you are available" if self.openings.empty?
   end
   # Facebook methods
 
