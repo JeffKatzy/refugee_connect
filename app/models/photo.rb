@@ -26,9 +26,11 @@ class Photo < ActiveRecord::Base
   end
 
   def self.pull_tweets(user)
-	 	self.twitter.user_timeline(user.twitter_handle).each do |tweet|
-	    	Photo.create_photo(tweet, user)
-	  end
+  	if user.twitter_handle
+		 	self.twitter.user_timeline(user.twitter_handle).each do |tweet|
+		    Photo.create_photo(tweet, user)
+		  end
+		end
 	end
 
 	def self.update_tweets(user)
