@@ -10,7 +10,6 @@
 						%p 
 					.row#basic_info_bottom_level
 						%p#basic_info_user_name= @user.name
-						%p#basic_info_other_data Hello
 				#statistics
 		.main_section
 			- @user.photos.tweet_created_at_asc.each do |photo|
