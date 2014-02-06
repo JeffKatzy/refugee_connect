@@ -2,14 +2,8 @@
 	.three.centered.fifths#main
 		.row
 			#dashboard
-				#profile_picture.double.padded.two.fifths
-					.box#profile_box
-						%i.fa.fa-user.fa-5x#picture_icon
-				#basic_info.three.fifths.double.padded
-					.row#basic_info_top_level
-						%p 
-					.row#basic_info_bottom_level
-						%p#basic_info_user_name= @user.name
+				#basic_info.three.fifths.pad-top
+					%h1#basic_info_user_name.align-left= @user.name
 				#statistics
 		.main_section
 			- @user.photos.tweet_created_at_asc.each do |photo|
