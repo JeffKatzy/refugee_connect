@@ -29,6 +29,7 @@ task :build_appointments => :environment do
     Appointment.auto_batch_create()
     puts "done."
   end
+end
 
 task :build_matches => :environment do
 	if Time.current.saturday?
