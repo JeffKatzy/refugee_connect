@@ -79,9 +79,12 @@ class Appointment < ActiveRecord::Base
   end
 
   def self.batch_create(matches)
+    apts = []
     matches.each do |match|
       apt = match.convert_to_apt
+      apts << apt
     end
+    apts
   end
 
   def self.batch_for_this_hour
@@ -163,8 +166,16 @@ class Appointment < ActiveRecord::Base
     self.match.update_attributes(available: false)
   end
 
+  def sign_up_message_for(user)
+    if user.role == 'tutor'
+      self[:scheduled_for].in_time_zone(user.time_zone).strftime("You now have an appointment scheduled with #{self.tutee.name} at %I:%M%p on %A.")
+    else
+      self[:scheduled_for].in_time_zone(user.time_zone).strftime("You now have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
+    end
+  end
+
   def send_confirmation_text
-    tutor_body = self[:scheduled_for].in_time_zone(self.tutor.time_zone).strftime("You have have an appointment scheduled with #{self.tutee.name} at %I:%M%p on %A.")
+    tutor_body = self.sign_up_message_for(self.tutor)
     # tutee_body = self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("You have have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
     TextToUser.deliver(self.tutor, tutor_body)
     # TextToUser.deliver(self.tutee, tutee_body)

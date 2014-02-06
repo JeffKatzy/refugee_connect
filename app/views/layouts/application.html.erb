@@ -15,8 +15,12 @@
   <%= csrf_meta_tags %>
 
 </head>
-<body>
+<body>  
+
 <nav class="top-bar"><%= render 'layouts/nav' %></nav>
+
+<%= render_flash%>
+
   <%= yield %>
 </body>
 </html>

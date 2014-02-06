@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     if @user.save
       session[:user_id] = @user.id
       authentication
-      redirect_to match_users_path(@user)
+      redirect_to(match_users_path(@user))
     else
       render action: 'new'
     end

@@ -19,7 +19,7 @@ class Match < ActiveRecord::Base
   belongs_to :match_partner_of_tutor, class_name: 'User', foreign_key: :tutee_id
   belongs_to :match_partner_of_tutee, class_name: 'User', foreign_key: :tutor_id
   scope :available, where(available: true)
-  has_one :appointment
+  has_one :appointment, dependent: :destroy
   after_create :make_available
   validate :too_many_apts
   #validate :user_booked_at_that_time
@@ -164,7 +164,7 @@ class Match < ActiveRecord::Base
 		  tutee_id: self.tutee.id)
     return apt if apt.invalid?
     self.available = false
-	  apt.save
+	  return apt if apt.save
   end
 
   def make_available
