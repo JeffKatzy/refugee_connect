@@ -43,7 +43,7 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
-    user = TextFromUser.last
+    user = self.user
     if user.appointments.this_hour.present? 
       appointment = user.appointments.this_hour.first
       appointment.start_call
