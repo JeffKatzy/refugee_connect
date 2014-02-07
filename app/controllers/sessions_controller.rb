@@ -10,9 +10,9 @@ class SessionsController < ApplicationController
 		if @user.present? && @user.authenticate(params[:session][:password])
 			session[:user_id] = @user.id
 			redirect_to @user
-			flash[:success] = "Welcome to the SpeakLoud!"
+			#flash message welcome to the app
 		else
-			flash.now[:error] = 'Invalid email/password combination'
+			#flash message invalid
 			render 'new'
 		end
 	end
