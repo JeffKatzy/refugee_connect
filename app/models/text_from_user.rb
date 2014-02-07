@@ -15,6 +15,7 @@ require 'builder'
 class TextFromUser < ActiveRecord::Base
   belongs_to :user
   attr_accessible :body, :time, :user_id, :incoming_number
+  after_create :respond
 
   phony_normalize :incoming_number
 
