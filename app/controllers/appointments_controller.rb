@@ -9,7 +9,6 @@ class AppointmentsController < ApplicationController
   def batch
     matches = Match.find(params[:match_id])
     apts = Appointment.batch_create(matches) 
-    # apts.each { |apt| flash_message :notice, apt.sign_up_message_for(@auth) }
     redirect_to user_path(@auth)
   end
 
