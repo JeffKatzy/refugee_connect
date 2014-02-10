@@ -17,10 +17,10 @@ class Opening < ActiveRecord::Base
   after_create :set_time, :find_or_create_availability_manager, :add_occurrence_rules
 
   def set_time
-  	Time.zone = user.time_zone
-  	Chronic.time_class = Time.zone
-  	self.time = Chronic.parse(day_open + " " + time_open)
-    self.save
+	 Time.zone = user.time_zone
+	 Chronic.time_class = Time.zone
+	 self.time = Chronic.parse(day_open + " " + time_open)
+   self.save
   end
 
   def find_or_create_availability_manager

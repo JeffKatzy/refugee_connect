@@ -15,7 +15,7 @@ require 'builder'
 class TextFromUser < ActiveRecord::Base
   belongs_to :user
   attr_accessible :body, :time, :user_id, :incoming_number
-  after_create :respond
+  after_create :set_user, :respond
 
   phony_normalize :incoming_number
 
@@ -43,18 +43,16 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
-    t = TextFromUser.last
-    @user = User.find(t.user_id)
-    if @user.appointments.this_hour.present? 
-      appointment = @user.appointments.this_hour.first
+    if user.appointments.this_hour.present? 
+      appointment = user.appointments.this_hour.first
       appointment.start_call
     else
-      appointment = @user.appointments.next_appointment
+      appointment = user.appointments.next_appointment
       begin
         body = appointment[:scheduled_for].in_time_zone.strftime("No sessions for this hour. Your next session is at %I:%M%p on %A.")
         TextToUser.deliver(@user, body)
       rescue NoMethodError
-        Rails.logger.debug("The next session doesn't exist for this user. ID: #{@user.id}")
+        Rails.logger.debug("The next session doesn't exist for this user. ID: #{user.id}")
       end
     end
   end
@@ -73,6 +71,13 @@ class TextFromUser < ActiveRecord::Base
     appointment = user.appointments.this_hour
   end
 
+  def set_user
+    if self.find_user_from_number.present?
+      self.user = self.find_user_from_number
+    else
+      return
+    end
+  end
 
   def find_user_from_number
     User.find_by_cell_number(incoming_number)

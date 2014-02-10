@@ -15,8 +15,7 @@
 
 FactoryGirl.define do
   factory :text_from_user do
-    body "MyText"
-    time "2013-08-14 14:27:31"
-    user_id 1
+    body "Go"
+    incoming_number '12154997415'
   end
 end

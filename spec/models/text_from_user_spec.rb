@@ -14,5 +14,34 @@
 require 'spec_helper'
 
 describe TextFromUser do
-  pending "add some examples to (or delete) #{__FILE__}"
+
+	describe '#set_user' do 
+		before do 
+			User.delete_all
+			Appointment.any_instance.stub(:remove_availability_occurrence)
+			Appointment.any_instance.stub(:start_call)
+			Appointment.any_instance.stub(:send_confirmation_text)
+	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
+	    @text = FactoryGirl.build(:text_from_user)
+  	end
+
+		it "should find the user after the text is created" do
+			TextFromUser.any_instance.stub(:respond)
+			@text.save
+			expect(@text.user).to eq @appointment.tutor
+	  end
+	end
+
+  describe '#attempt_session' do 
+  	before do	
+			Appointment.any_instance.stub(:remove_availability_occurrence)
+			Appointment.any_instance.stub(:start_call)
+	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
+	    @text = FactoryGirl.build(:text_from_user)
+  	end
+
+    it "calls the users with an appointment this hour" do
+			@text.save
+    end
+  end
 end

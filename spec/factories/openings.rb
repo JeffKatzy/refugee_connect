@@ -15,5 +15,8 @@
 
 FactoryGirl.define do
   factory :opening do
+  	day_open 'Sunday'
+  	time_open '9 pm'
+  	time Time.current.change(weekday: 'Sunday', hour: 21)
   end
 end

@@ -54,7 +54,6 @@ class User < ActiveRecord::Base
   after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week, :set_time_zone, :pull_photos
   before_save :format_phone_number
   validates_plausible_phone :cell_number, :presence => true, :uniqueness => true
-  validate :check_appointments_number
   validates :email, uniqueness: true
 
   #after_create :set_time_zone if: no_time_zone

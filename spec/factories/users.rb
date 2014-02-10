@@ -28,13 +28,14 @@ FactoryGirl.define do
     email { Faker::Internet.email }
     password 'password'
     name 'jeffers'
-    cell_number '2154997415'
+    cell_number '12154997415'
+    time_zone 'New Delhi'
 
     factory :tutor_unavailable do
       role 'tutor'
       admin 'active'
       time_zone 'America/New_York'
-      cell_number '2154997415'
+      cell_number '12154997415'
       
       after(:create) do |tutor|
         time = DateTime.new 2013,02,14,12,30,00
@@ -52,7 +53,7 @@ FactoryGirl.define do
       role 'tutor'
       admin 'false'
       time_zone 'America/New_York'
-      cell_number '2154997415'
+      cell_number '12154997415'
 
       after(:create) do |tutor|
         time = DateTime.new 2013,02,14,12,30,00
@@ -68,7 +69,7 @@ FactoryGirl.define do
       role 'tutor'
       admin 'false'
       time_zone 'America/New_York'
-      cell_number '2154997415'
+      cell_number '12154997415'
       per_week 5
 
       after(:create) do |tutor|
