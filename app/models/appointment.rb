@@ -39,6 +39,7 @@ class Appointment < ActiveRecord::Base
 
   scope :this_hour, where("scheduled_for between (?) and (?)", Time.current.beginning_of_hour, Time.current.end_of_hour)
   scope :batch_for_this_hour, this_hour
+  scope :next_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour)
   
   #check to see if this still works
   belongs_to :user
@@ -97,9 +98,7 @@ class Appointment < ActiveRecord::Base
   end
 
   def self.batch_for_just_before
-    Appointment.fully_assigned.
-      where("scheduled_for between (?) and (?)", 
-        Time.current.utc.beginning_of_hour, Time.current.utc.end_of_hour)
+    Appointment.fully_assigned.next_hour
   end
 
   def self.next_appointment #next_appointment includes the current_appointment

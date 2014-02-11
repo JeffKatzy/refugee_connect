@@ -145,6 +145,25 @@ describe Appointment do
 		end
 	end
 
+	describe '.next_hour' do
+		before :each do 
+      Timecop.travel(Time.now.beginning_of_hour)
+			@next_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current + 70.minutes)
+			@ninety_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 90.minutes)
+			@one_hundred_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.now + 100.minutes)
+			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current)
+			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.current + 2.hours)
+		end
+
+		it "should return the proper three appointments" do
+			expect(Appointment.next_hour).to include(@next_hour, @ninety_minutes, @one_hundred_minutes)
+		end
+
+		it "should not include the appointments this hour or in two hours" do
+			expect(Appointment.next_hour).to_not include(@this_hour, @two_hours)
+		end
+	end
+
 	describe '.current' do
 		before :each do 
 			Timecop.travel(Time.current.beginning_of_hour)
