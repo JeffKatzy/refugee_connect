@@ -144,8 +144,18 @@ class Appointment < ActiveRecord::Base
   end
 
   def start_call
+    self.began_at = Time.current
+    self.save
+
   	self.call_to_users.build(tutor_id: tutor.id, tutee_id: tutee.id)
   	self.call_to_users.last.start_call
+  end
+
+  def complete
+    self.ended_at = Time.current.utc
+    self.save
+    self.set_status
+    TextToUser.deliver(self.tutor, 'Please text the page number that you last left off at.')
   end
 
   def set_status

@@ -39,6 +39,26 @@ describe Appointment do
 		end
 	end
 
+	describe '#complete' do
+		let(:apt) { FactoryGirl.create(:appointment, began_at: Time.current) }
+
+		before do
+			apt.complete
+		end
+
+		it "should mark the ended at time" do 
+			expect(apt.ended_at).to be_present
+		end
+
+		it "should mark the appointment as complete" do
+			expect(apt.status).to eq 'complete'
+		end
+
+		it "should send a text to the tutor" do
+			expect(TextToUser.to_receive(:deliver)).to eq 'complete'
+		end
+	end
+
 	describe 'validations' do
 		context "when users are not available" do
 			before(:each) do
