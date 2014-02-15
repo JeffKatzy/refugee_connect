@@ -56,7 +56,7 @@ class Appointment < ActiveRecord::Base
   validates :tutee, presence: true
   validate :too_many_apts
   #validate :user_booked_at_that_time
-  # validate :available_users
+   validate :available_users
   
   #only allow one appointment per hour per user
 
@@ -78,6 +78,7 @@ class Appointment < ActiveRecord::Base
       end
     end
   end
+
 
   def self.batch_create(matches)
     apts = []
@@ -188,6 +189,14 @@ class Appointment < ActiveRecord::Base
     # tutee_body = self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("You have have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
     TextToUser.deliver(self.tutor, tutor_body)
     # TextToUser.deliver(self.tutee, tutee_body)
+  end
+
+  def available_users
+    if self.tutor.present? && self.tutee.present?
+      if self.tutor.appointments.where("scheduled_for between (?) and (?)", self.scheduled_for, self.scheduled_for + 1.hour).present? || self.tutee.appointments.where("scheduled_for between (?) and (?)", self.scheduled_for, self.scheduled_for + 1.hour).present?
+        errors[:base] << "A tutor or tutee is already scheduled at that time."
+      end
+    end
   end
 
   def too_many_apts

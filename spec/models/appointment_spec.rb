@@ -92,6 +92,24 @@ describe Appointment do
 			appointment.tutee = nil
 			expect(appointment).to_not be_valid
 		end
+
+		context "when either user is not available" do
+			let(:first_appointment) { FactoryGirl.build(:appointment) }
+			let(:second_appointment) { FactoryGirl.build(:appointment, tutor: first_appointment.tutor) }
+			let(:third_appointment) { FactoryGirl.build(:appointment, tutee: first_appointment.tutee) }
+
+			it "should invalidate when a tutor already has an appointment then" do
+				first_appointment.save
+				expect(second_appointment.valid?).to be_false
+				expect(second_appointment.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
+			end
+
+			it "should invalidate when a tutee already has an appointment then" do
+				first_appointment.save
+				expect(third_appointment.valid?).to be_false
+				expect(third_appointment.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
+			end
+		end
 	end
 
 	describe "#find_start_page" do

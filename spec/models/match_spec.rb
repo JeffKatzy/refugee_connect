@@ -24,6 +24,25 @@ describe Match do
 		end
 	end
 
+	context "when either user is not available" do
+		let(:first_match) { FactoryGirl.create(:match) }
+		let(:apt) { first_match.convert_to_apt }
+		let(:second_match) { FactoryGirl.build(:match, tutor: first_match.tutor) }
+		
+
+		it "should invalidate when a tutor already has an appointment then" do
+			apt.save
+			expect(first_match.valid?).to be_false
+			expect(first_match.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
+		end
+
+		it "should invalidate when a tutee already has an appointment then" do
+			apt.save
+			expect(second_match.valid?).to be_false
+			expect(second_match.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
+		end
+	end
+
 	describe '#already_a_match' do
 		before :each do
 			Match.delete_all

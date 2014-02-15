@@ -23,6 +23,7 @@ class Match < ActiveRecord::Base
   after_create :make_available
   validate :too_many_apts
   #validate :user_booked_at_that_time
+  validate :available_users
 
   scope :after, ->(time) { where("match_time >= ?", time) }
   scope :before, ->(time) { where("match_time <= ?", time) }
@@ -170,6 +171,14 @@ class Match < ActiveRecord::Base
   def make_available
   	self.available = true
   	self.save
+  end
+
+  def available_users
+    if self.tutor.present? && self.tutee.present?
+      if self.tutor.appointments.where("scheduled_for between (?) and (?)", self.match_time, self.match_time + 1.hour).present? || self.tutee.appointments.where("scheduled_for between (?) and (?)", self.match_time, self.match_time + 1.hour).present?
+        errors[:base] << "A tutor or tutee is already scheduled at that time."
+      end
+    end
   end
 
   # def self.batch_create(user_id, matches)
