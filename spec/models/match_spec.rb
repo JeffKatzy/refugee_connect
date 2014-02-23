@@ -38,6 +38,7 @@ describe Match do
 
 		it "should invalidate when a tutee already has an appointment then" do
 			apt.save
+			second_match
 			expect(second_match.valid?).to be_false
 			expect(second_match.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
 		end
@@ -144,7 +145,7 @@ describe Match do
 			@match_to_apt = FactoryGirl.create(:match)
 			@match_to_apt.convert_to_apt
 			tutor = @match_to_apt.tutor
-			@match = FactoryGirl.create(:match, tutor: tutor)
+			@match = FactoryGirl.create(:match, match_time: @match_to_apt.match_time + 3.hours, tutor: tutor)
 			matches = tutor.reload.matches
 			expect(matches.available_until(time.end_of_week)).to_not include(@match_to_apt)
 			expect(matches.available_until(time.end_of_week)).to include(@match)
@@ -185,23 +186,6 @@ describe Match do
 
 		it "does not return users before the time" do
 	  	Match.before(Time.now + 2.weeks).should_not include @next_month, @next_month_plus
-		end
-	end
-
-	describe '.this_week' do
-		before :each do 
-			Match.delete_all
-			@next_month = FactoryGirl.create(:match, match_time: Time.now + 1.month )
-			@next_month_plus = FactoryGirl.create(:match, match_time: Time.now + 2.months )
-			@this_week = FactoryGirl.create(:match, match_time: Time.now + 1.day)
-		end
-
-		it "returns appointments for this week" do
-	  	Match.this_week.should eq [@this_week]
-		end
-
-		it "does not return users not for this week" do
-	  	Match.this_week.should_not include @next_month, @next_month_plus
 		end
 	end
 

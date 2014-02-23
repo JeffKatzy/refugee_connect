@@ -123,10 +123,10 @@ describe Appointment do
 
 		context "where the appointment is not the tutees first" do
 			it "should set the page number to the most tutee's most recent appointments" do
+				apt
 				apt.finish_page = 3
 				apt.save
 				apt_two = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: 'incomplete', tutor_id: apt.tutor.id, tutee_id: apt.tutee.id )
-				apt.save
 				apt_two.start_page.should eq apt.finish_page				
 			end
 		end
@@ -350,16 +350,18 @@ describe Appointment do
 	end
 
 
-	describe '.batch_for_just_before_reminder_text' do
+	describe '.batch_for_just_before' do
 		let(:date) { DateTime.new(2020, 2, 3, 4, 5, 6) }
+
 		before :each do
-			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: date + 20.minutes )
-			@appointment_two = FactoryGirl.create(:appointment, scheduled_for: date + 10.minutes )
-			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: date.change(hour: 8))
+			Timecop.travel(date)
+			Appointment.delete_all
+			@appointment_one = FactoryGirl.create(:appointment, scheduled_for: date + 80.minutes )
+			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: date + 8.hours)
 		end
 
 		it "should only select appointments due in forty minutes" do
-			Appointment.fully_assigned.where("begin_time between (?) and (?)", Time.now.utc, (Time.now.utc + 40.minutes))
+			expect(Appointment.batch_for_just_before).to include @appointment_one
 		end
 	end
 
@@ -413,15 +415,14 @@ describe Appointment do
 			Appointment.delete_all
 			Timecop.travel(time.beginning_of_week)
 			Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
-
 			match = FactoryGirl.create(:match, tutee: tutee_available, tutor: tutor_available)
 			match.convert_to_apt
-			match_other_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available)
-			match_same_apt_tutor = FactoryGirl.create(:match, tutor: tutor_available, tutee: tutee_available)
-			match_different_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available)
-			match_another_different_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available)
+			match_other_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available, match_time: time + 1.hour)
+			match_same_apt_tutor = FactoryGirl.create(:match, tutor: tutor_available, tutee: tutee_available, match_time: time + 1.hour)
+			match_different_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available, match_time: time + 2.hours)
+			match_another_different_tutor = FactoryGirl.create(:match, tutor: FactoryGirl.create(:tutor_available), tutee: tutee_available, match_time: time + 3.hours)
 			Appointment.auto_batch_create(users: [tutee_available], time: time.end_of_week)
-			expect(tutee_available.appointments.order(:created_at).last.match).to eq match_same_apt_tutor
+			expect(tutee_available.appointments.order(:created_at).reverse.last.match).to eq match_same_apt_tutor
 		end
 
 		# it "should handle invalid appointments" do
