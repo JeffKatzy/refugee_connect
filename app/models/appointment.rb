@@ -66,11 +66,12 @@ class Appointment < ActiveRecord::Base
     h[:time]  ||= Time.current.end_of_week
     h[:users].each do |user|
       if user.wants_more_appointments_before(h[:time])
-        Match.build_all_matches_for(user, h[:time]) if user.matches.available_until(h[:time]).empty?
+        Match.build_all_matches_for(user, h[:time]) if user.matches.available_until(h[:time]).empty? #should this be changed to, if user wants more matches
         @available_matches = user.reload.matches.available_until(h[:time])
+        
         if @available_matches.present?
-          matches = user.matches.where(tutee_id: user.appointment_partners).available_until(h[:time]) if user.is_tutor?
-          matches = user.matches.where(tutor_id: user.appointment_partners).available_until(h[:time]) if !user.is_tutor?
+          matches = user.matches.available.where(tutee_id: user.appointment_partners).available_until(h[:time]) if user.is_tutor? #similarly to above comment, we still want matches if wants more
+          matches = user.matches.available.where(tutor_id: user.appointment_partners).available_until(h[:time]) if !user.is_tutor?
           matches = @available_matches if matches.empty?
           matches.each do |match|
             match.convert_to_apt 
