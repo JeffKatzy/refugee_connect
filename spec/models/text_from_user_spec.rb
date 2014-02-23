@@ -44,4 +44,30 @@ describe TextFromUser do
 			@text.save
     end
   end
+
+  describe '#set_user' do 
+  	before do 
+  		@user = FactoryGirl.create(:tutor_available)
+  		@text = FactoryGirl.create(:text_from_user)
+  	end
+
+  	it "should set the proper user" do 
+  		expect(@text.user).to eq @user
+  	end
+  end
+
+  describe '#respond' do
+  	before do 
+  		@user = FactoryGirl.create(:tutor_available)
+  		@text = FactoryGirl.create(:text_from_user, body: body)
+  	end
+
+  	context "when text is go" do 
+  		let(:body) { 'go' }
+
+	  	it "should attempt session" do 
+	  		expect(@text).to receive(:attempt_session)
+	  	end
+  	end
+  end
 end
