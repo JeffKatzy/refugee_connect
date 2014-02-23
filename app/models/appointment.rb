@@ -126,6 +126,7 @@ class Appointment < ActiveRecord::Base
   end
 
   def find_start_page
+    self.tutee.reload
     if self.tutee && self.tutee.appointments.present? && self.tutee.appointments.most_recent.present? && self.tutee.appointments.most_recent.first.finish_page.present?
       most_recent_appointment = self.tutee.appointments.most_recent.first  
       self.start_page = most_recent_appointment.finish_page
