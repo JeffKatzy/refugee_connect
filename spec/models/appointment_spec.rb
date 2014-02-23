@@ -68,15 +68,15 @@ describe Appointment do
 				Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
 			end
 
-			let(:appointment) { FactoryGirl.build(:appointment) }
-			let(:apt_unavailable_tutor) { FactoryGirl.build(:appointment, tutor: FactoryGirl.create(:tutor_unavailable), 
-					tutee: FactoryGirl.create(:tutee_available)) }
-
 			it "should not save unless both want more appointments" do
+				tutor = FactoryGirl.create(:tutor_unavailable)
+				tutee = FactoryGirl.create(:tutee_available)
+				apt_unavailable_tutor = FactoryGirl.build(:appointment, tutor: tutor, tutee: tutee) 
 				expect(apt_unavailable_tutor).to_not be_valid
 			end
 
 			it "should not invalidate if both want more appointments" do
+				appointment = FactoryGirl.build(:appointment)
 				expect(appointment).to be_valid
 			end
 		end

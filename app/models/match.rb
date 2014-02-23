@@ -23,11 +23,11 @@ class Match < ActiveRecord::Base
   after_create :make_available
   validate :too_many_apts
   #validate :user_booked_at_that_time
-  validate :available_users
+  validate :available_tutor_and_tutee
 
   scope :after, ->(time) { where("match_time >= ?", time) }
   scope :before, ->(time) { where("match_time <= ?", time) }
-  scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
+  scope :during, ->(time) { where("match_time between (?) and (?)", time, time + 1.hour) }
   scope :until, ->(time) { after(Time.current.utc).where("match_time <= ?", time) }
 
   
@@ -51,9 +51,9 @@ class Match < ActiveRecord::Base
 
   def available_users
     if ( self.tutor.wants_more_appointments_before(self.match_time) && self.tutee.wants_more_appointments_before(self.match_time) )
-      true
+      return true
     else
-      false
+      return false
     end
   end
 
@@ -165,6 +165,7 @@ class Match < ActiveRecord::Base
 		  tutee_id: self.tutee.id)
     return apt if apt.invalid?
     self.available = false
+    self.save
 	  return apt if apt.save
   end
 
@@ -173,13 +174,16 @@ class Match < ActiveRecord::Base
   	self.save
   end
 
-  def available_users
+
+  def available_tutor_and_tutee
     if self.tutor.present? && self.tutee.present?
-      if self.tutor.appointments.where("scheduled_for between (?) and (?)", self.match_time, self.match_time + 1.hour).present? || self.tutee.appointments.where("scheduled_for between (?) and (?)", self.match_time, self.match_time + 1.hour).present?
+      if self.tutor.reload.appointments.scoped.during(self.match_time).reject { |a| a == self }.present? || self.tutee.reload.appointments.scoped.during(self.match_time).reject {|a| a == self }.present?
         errors[:base] << "A tutor or tutee is already scheduled at that time."
       end
     end
   end
+
+
 
   # def self.batch_create(user_id, matches)
   #   matches.each do |match|
@@ -194,8 +198,15 @@ class Match < ActiveRecord::Base
   # end
 
   def too_many_apts
-    if (self.tutor.too_many_apts_per_week(self.match_time) || self.tutee.too_many_apts_per_week(self.match_time) )
-      errors[:base] << "Both tutor and tutee must want more apppointments."
+    if self.tutor
+      if self.tutor.too_many_apts_per_week(self.match_time)
+        errors[:base] << "Tutor is fully booked for this week."
+      end
+    end
+    if self.tutee
+      if self.tutee.too_many_apts_per_week(self.match_time) 
+        errors[:base] << "Tutee is fully booked for this week."
+      end
     end
   end  
 end

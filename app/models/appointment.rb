@@ -22,6 +22,7 @@ class Appointment < ActiveRecord::Base
   default_scope where("tutee_id IS NOT NULL AND tutor_id IS NOT NULL")
   scope :after, ->(time) { where("scheduled_for >= ?", time) }
   scope :before, ->(time) { where("scheduled_for <= ?", time) }
+  scope :during, ->(time) { where("scheduled_for between (?) and (?)", time, time + 1.hour) }
   scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
   scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
   
@@ -193,7 +194,7 @@ class Appointment < ActiveRecord::Base
 
   def available_users
     if self.tutor.present? && self.tutee.present?
-      if self.tutor.appointments.where("scheduled_for between (?) and (?)", self.scheduled_for, self.scheduled_for + 1.hour).present? || self.tutee.appointments.where("scheduled_for between (?) and (?)", self.scheduled_for, self.scheduled_for + 1.hour).present?
+      if self.tutor.appointments.scoped.during(self.scheduled_for).reject { |a| a == self }.present? || self.tutee.appointments.scoped.during(self.scheduled_for).reject {|a| a == self }.present?
         errors[:base] << "A tutor or tutee is already scheduled at that time."
       end
     end
