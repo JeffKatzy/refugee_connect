@@ -54,6 +54,7 @@ class ReminderText < ActiveRecord::Base
       unless apt.reminder_texts.where(category: "#{category}").any?
         body = ReminderText.body(apt, category)
         TextToUser.deliver(apt.tutor, body) 
+        TextToUser.deliver(apt.tutee, body) 
         reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id) 
       end
     end

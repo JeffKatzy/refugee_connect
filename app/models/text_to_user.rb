@@ -16,12 +16,13 @@ class TextToUser < ActiveRecord::Base
   attr_accessible :body, :time, :user_id
   belongs_to :user
   belongs_to :appointment
+  BASE_URL =  "http://agile-mesa-7894.herokuapp.com/"
 
   @@client = Twilio::REST::Client.new(ENV['TW_SID'], ENV['TW_TOK'])
   @@account = @@client.account
 
   def self.deliver(user, body)
-  	@message = @@account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body)
+  	@message = @@account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body, :status_callback => BASE_URL + "text_to_users/complete/#{self.id}.xml"})
   	TextToUser.create(body: body, user_id: user.id, time: Time.now.in_time_zone('Eastern Time (US & Canada)'))
   	puts @message 
   end
