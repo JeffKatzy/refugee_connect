@@ -45,6 +45,7 @@ FactoryGirl.define do
         tutor.availability_manager.add_weekly_availability('friday', time)
         [ FactoryGirl.build(:appointment_wednesday), FactoryGirl.build(:appointment_thursday), FactoryGirl.build(:appointment_friday)].each do |apt|
           tutor.appointments << apt
+          apt.save
         end
       end
     end

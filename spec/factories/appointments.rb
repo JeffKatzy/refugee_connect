@@ -19,13 +19,23 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 FactoryGirl.define do
   factory :appointment do
-    scheduled_for DateTime.new 2013,02,14,12,30,00
+    scheduled_for (DateTime.new 2013,02,14,12,30,00).end_of_week(:tuesday)
 
     after(:build) do |appointment|
-      appointment.match = FactoryGirl.create(:match) unless appointment.match.present?
-      appointment.tutee = appointment.match.tutee
-      appointment.tutor = appointment.match.tutor
+      appointment.match = FactoryGirl.build(:match) unless appointment.match.present?
+      match = appointment.match
+      if appointment.tutee.nil?
+        appointment.tutee = (appointment.match.tutee || FactoryGirl.create(:tutee_available))
+      end
+
+      if appointment.tutor.nil?
+        appointment.tutor = (appointment.match.tutor || FactoryGirl.create(:tutor_available))
+      end
+
       appointment.save
+      appointment.match.tutor = appointment.tutor 
+      appointment.match.tutee = appointment.tutee
+      match.save
     end
 
     factory :appointment_no_tutee do

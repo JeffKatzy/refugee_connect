@@ -16,10 +16,13 @@ FactoryGirl.define do
   factory :match do
     match_time DateTime.new 2013,02,14,12,30,00
 
-    after(:build) do |match|
-      match.tutee = FactoryGirl.build(:tutee_available) unless match.tutee.present?
-      match.tutor = FactoryGirl.build(:tutor_available) unless match.tutor.present?
-      match.save
+    before(:create) do |match|
+    	if match.tutee.nil?
+    		match.tutee = FactoryGirl.create(:tutee_available)
+    	end
+    	if match.tutor.nil?
+    		match.tutor = FactoryGirl.create(:tutor_available)
+    	end
     end
   end
 end
