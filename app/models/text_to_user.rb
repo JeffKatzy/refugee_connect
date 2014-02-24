@@ -8,6 +8,7 @@
 #  body       :text
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  received   :string(255)
 #
 
 require 'builder'
