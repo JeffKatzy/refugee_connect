@@ -19,6 +19,7 @@ class AppointmentsController < ApplicationController
   def complete
     @appointment = Appointment.find(params[:id])
     @appointment.complete
+    render status: 200
   end
 
   def show

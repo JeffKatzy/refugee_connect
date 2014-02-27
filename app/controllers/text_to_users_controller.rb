@@ -4,6 +4,6 @@ class TextToUsersController < ApplicationController
 		@text = TextToUser.find(params[:id])
 		@text.received = params[:MessageStatus]
 		@text.save
-		render layout: false
+		render status: 200
 	end
 end
