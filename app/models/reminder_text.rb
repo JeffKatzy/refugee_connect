@@ -54,7 +54,7 @@ class ReminderText < ActiveRecord::Base
       unless apt.reminder_texts.where(category: "#{category}").any?
         body = ReminderText.body(apt, category)
         TextToUser.deliver(apt.tutor, body) 
-        TextToUser.deliver(apt.tutee, body) 
+        TextToUser.deliver(apt.tutee, body) unless apt.category == SET_PAGE_NUMBER
         reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id) 
       end
     end
@@ -67,7 +67,7 @@ class ReminderText < ActiveRecord::Base
     if category == BEGIN_SESSION
       "Your class at #{time} is now ready to start.  Reply to this text with the word 'go' to start the call or 'sorry' to cancel."
     elsif category == SET_PAGE_NUMBER
-      "Please text the page number that you last left off at."
+      "Reminder: Please text the page number that you last left off at."
     elsif category == PM_REMINDER
       upcoming_session + " #{time} beginning on page #{appointment.start_page}.  " + admin_session
     elsif category == JUST_BEFORE
