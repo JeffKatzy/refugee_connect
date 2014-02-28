@@ -189,7 +189,7 @@ class Appointment < ActiveRecord::Base
 
   def send_confirmation_text
     tutor_body = self.sign_up_message_for(self.tutor)
-    tutor_body = self.sign_up_message_for(self.tutee)
+    tutee_body = self.sign_up_message_for(self.tutee)
     # tutee_body = self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("You have have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
     TextToUser.deliver(self.tutor, tutor_body)
     TextToUser.deliver(self.tutee, tutee_body)
