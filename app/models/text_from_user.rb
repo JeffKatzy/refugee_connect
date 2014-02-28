@@ -43,14 +43,14 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
-    if user.appointments.this_hour.present? 
+    if self.user.appointments.this_hour.present? 
       appointment = user.appointments.this_hour.first
       appointment.start_call
     else
       appointment = user.appointments.next_appointment
       begin
         body = appointment[:scheduled_for].in_time_zone.strftime("No sessions for this hour. Your next session is at %I:%M%p on %A.")
-        TextToUser.deliver(@user, body)
+        TextToUser.deliver(self.user, body)
       rescue NoMethodError
         Rails.logger.debug("The next session doesn't exist for this user. ID: #{user.id}")
       end
@@ -74,6 +74,8 @@ class TextFromUser < ActiveRecord::Base
   def set_user
     if self.find_user_from_number.present?
       self.user = self.find_user_from_number
+      self.save
+      logger.debug "setting user to #{user}"
     else
       return
     end

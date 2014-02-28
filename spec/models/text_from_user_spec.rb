@@ -22,7 +22,7 @@ describe TextFromUser do
 			Appointment.any_instance.stub(:start_call)
 			Appointment.any_instance.stub(:send_confirmation_text)
 	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
-	    @text = FactoryGirl.build(:text_from_user)
+	    @text = FactoryGirl.create(:text_from_user)
   	end
 
 		it "should find the user after the text is created" do
