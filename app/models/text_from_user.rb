@@ -20,6 +20,7 @@ class TextFromUser < ActiveRecord::Base
   phony_normalize :incoming_number
 
   def respond
+    self.reload
     if body.downcase == "go"
       attempt_session
     elsif body.downcase == "sorry"
