@@ -37,6 +37,10 @@ body {
 	font-size: 22px;
 }
 
+#profile-picture {
+	min-height: 200px;
+}
+
 .relative.middle.right.padded.login_user_name {
 	padding-top: 15px;
 }
@@ -152,9 +156,13 @@ body {
 }
 
 #basic_info_user_name {
-	font-size: 68px;
+	font-size: 34px;
 	margin-bottom: 0px;
 	color: #838383;
+}
+
+#basic_info_profile_summary {
+	min-height: 140px;
 }
 
 #user_icon {

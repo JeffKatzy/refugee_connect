@@ -1,11 +1,26 @@
 .row#background_show
-	.three.centered.fifths#main
-		.row
-			#dashboard
-				#basic_info.three.fifths.pad-to
-					%h1#basic_info_user_name.align-left= @user.name
-				#statistics
-		.main_section
-			- @user.photos.tweet_created_at_asc.each do |photo|
-				%row.padded.center
-					= image_tag photo.url
+	.four.centered.fifths#main
+		.row.triple-pad-top
+			#info.border-top
+				.one.third.double-padded
+					#profile-picture.box.asphalt
+				.one.third.border-left.double-padded
+					%h1#basic_info_user_name=@user.name
+					#basic_info_profile_summary.box
+						Profile info
+				.one.third.double-padded
+					%h1#basic_info_user_name Upcoming sessions
+					.box
+						- @user.appointments.each do |apt|
+							= apt.scheduled_for.in_time_zone(@user.time_zone).strftime("%I:%M%p on %A with")
+							- if apt.tutor && apt.tutee
+								- if @user.role == 'tutor'
+									= apt.tutee.name
+								- else
+									= apt.tutor.name
+							- else
+								Appointment available
+			.main_section
+				- @user.photos.tweet_created_at_asc.each do |photo|
+					%row.padded.center
+						= image_tag photo.url
