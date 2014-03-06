@@ -15,11 +15,11 @@ require 'builder'
 class TextFromUser < ActiveRecord::Base
   belongs_to :user
   attr_accessible :body, :time, :user_id, :incoming_number
-  after_create :set_user, :respond
+  after_create :set_user, :twilio_response
 
   phony_normalize :incoming_number
 
-  def respond
+  def twilio_response
     self.reload
     if body.downcase == "go"
       attempt_session
