@@ -34,4 +34,12 @@ RefugeeConnect::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  config.middleware.use ExceptionNotifier,
+    sender_address: 'jek2141@columbia.edu',
+    exception_recipients: 'jeffreyerickatz@gmail.com',
+    ignore_exceptions: [ActionView::MissingTemplate]
+
+  config.action_mailer.delivery_method = :letter_opener
+
 end

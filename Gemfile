@@ -30,6 +30,8 @@ gem 'autoprefixer-rails'
 gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
+gem 'factory_girl_rails'
+gem 'exception_notifier'
 
 
 group :production do 
@@ -56,6 +58,7 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'meta_request'
+  gem 'letter_opener'
 end
 
 group :test do

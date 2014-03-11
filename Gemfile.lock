@@ -118,6 +118,7 @@ GEM
     dotenv (0.9.0)
     equalizer (0.0.9)
     erubis (2.7.0)
+    exception_notifier (1.0.0)
     execjs (2.0.2)
     factory_girl (4.3.0)
       activesupport (>= 3.0.0)
@@ -181,6 +182,8 @@ GEM
       multi_json
     launchy (2.4.2)
       addressable (~> 2.3)
+    letter_opener (1.2.0)
+      launchy (~> 2.2)
     libv8 (3.16.14.3)
     listen (2.4.0)
       celluloid (>= 0.15.2)
@@ -404,6 +407,7 @@ DEPENDENCIES
   compass-rails
   database_cleaner
   devise
+  exception_notifier
   factory_girl_rails
   faker
   fakeweb
@@ -418,6 +422,7 @@ DEPENDENCIES
   jquery-ui-rails
   koala
   launchy
+  letter_opener
   localtunnel
   meta_request
   multiparameter_date_time
