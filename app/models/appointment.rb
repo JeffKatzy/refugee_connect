@@ -14,6 +14,7 @@
 #  tutor_id      :integer
 #  tutee_id      :integer
 #  match_id      :integer
+#  lesson_id     :integer
 #
 
 class Appointment < ActiveRecord::Base
@@ -50,6 +51,7 @@ class Appointment < ActiveRecord::Base
   belongs_to :tutee, class_name: 'User', foreign_key: :tutee_id
   belongs_to :availability_manager
   belongs_to :match
+  belongs_to :lesson
   has_many :call_to_users
   has_many :reminder_texts
   after_create :find_start_page, :remove_availability_occurrence, :make_incomplete, :make_match_unavailable, :send_confirmation_text
@@ -191,9 +193,12 @@ class Appointment < ActiveRecord::Base
     tutor_body = self.sign_up_message_for(self.tutor)
     tutee_body = self.sign_up_message_for(self.tutee)
     # tutee_body = self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("You have have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
-    TextToUser.deliver(self.tutor, tutor_body)
-    TextToUser.deliver(self.tutee, tutee_body)
-    # TextToUser.deliver(self.tutee, tutee_body)
+    begin
+      TextToUser.deliver(self.tutor, tutor_body)
+      TextToUser.deliver(self.tutee, tutee_body)
+    rescue
+      "Failed in sending to user #{self.tutee.name} or #{self.tutor.name}"
+    end
   end
 
   def available_users

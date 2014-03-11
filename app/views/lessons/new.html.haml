@@ -1,0 +1,23 @@
+= nested_form_for @lesson do |f|
+	.row
+		.one.half.pull-left.padded
+			= f.label :name
+			= f.text_field :name
+	.row
+		.one.half.pull-left.padded
+			= f.label :description
+			= f.text_field :description
+	= f.fields_for :assignments do |form|
+		.one.half.pull-left
+			Add assignment
+			= form.label :instructions
+			= f.text_field :name
+		.row
+			.absolute.right= form.link_to_remove "Remove this assignment"
+	.row.padded
+		= f.link_to_add "Add assignment", :assignments, class: 'add_time_available_button button asphalt pad-top'
+	.row.padded
+		= f.submit 'Add lesson', class: 'green button large padded fixed center'
+	%br
+	%br
+	%br

@@ -40,6 +40,8 @@ class User < ActiveRecord::Base
   has_many :appointment_partners_of_tutee, :through => :appointments_of_tutee, source: 'appointment_partner_of_tutee', uniq: true
   has_many :match_partners_of_tutor, :through => :matches_of_tutor, source: 'match_partner_of_tutor', uniq: true
   has_many :match_partners_of_tutee, :through => :matches_of_tutee, source: 'match_partner_of_tutee', uniq: true
+  has_many :assignments, through: :user_assignments
+  has_many :user_assignments
 
 
   attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week, :time_zone, :twitter_handle
@@ -90,6 +92,12 @@ class User < ActiveRecord::Base
       match.tutee = self if self.role == 'tutee'
       match.save
     end
+  end
+
+  def set_current_lesson(page_number)
+    lesson = Lesson.covers_page(page_number).last
+    ul = user.user_lessons.where(lesson_id: lesson.id).first
+    ul.make_current
   end
 
   def appointment_partners

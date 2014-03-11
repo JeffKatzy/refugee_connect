@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140223210836) do
+ActiveRecord::Schema.define(:version => 20140305011129) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -32,6 +32,14 @@ ActiveRecord::Schema.define(:version => 20140223210836) do
     t.integer  "tutor_id"
     t.integer  "tutee_id"
     t.integer  "match_id"
+    t.integer  "lesson_id"
+  end
+
+  create_table "assignments", :force => true do |t|
+    t.text     "instructions"
+    t.integer  "lesson_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "availabilities", :force => true do |t|
@@ -77,6 +85,16 @@ ActiveRecord::Schema.define(:version => 20140223210836) do
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
     t.integer  "appointment_id"
+  end
+
+  create_table "lessons", :force => true do |t|
+    t.text     "name"
+    t.text     "description"
+    t.text     "objectives"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.integer  "start_page"
+    t.integer  "finish_page"
   end
 
   create_table "matches", :force => true do |t|
@@ -154,6 +172,22 @@ ActiveRecord::Schema.define(:version => 20140223210836) do
     t.integer  "finish_page"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+  end
+
+  create_table "user_assignments", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "assignment_id"
+    t.string   "status"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.integer  "user_lesson_id"
+  end
+
+  create_table "user_lessons", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "lesson_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "user_schedules", :force => true do |t|

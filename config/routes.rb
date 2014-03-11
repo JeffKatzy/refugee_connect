@@ -47,6 +47,9 @@ RefugeeConnect::Application.routes.draw do
   get 'users/match/:user_id' => 'users#match', as: :match_users
   resources :users
   resources :appointments
+  resources :lessons
+  post 'user_assignments/assign/:assignment_id', to: 'user_assignments#assign'
+
   post 'appointments/batch'
   
   

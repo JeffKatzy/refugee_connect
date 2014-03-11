@@ -1,0 +1,10 @@
+.padded
+	- @lessons.each do |lesson|
+		.row
+			= lesson.name
+		.row
+			= lesson.description
+		-lesson.assignments.each do |assignment|
+			.row.padded
+				= assignment.instructions
+				= link_to 'Assign to all users', {:controller => "user_assignments", :action => "assign", :assignment_id => assignment.id }

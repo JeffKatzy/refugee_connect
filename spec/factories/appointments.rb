@@ -14,6 +14,7 @@
 #  tutor_id      :integer
 #  tutee_id      :integer
 #  match_id      :integer
+#  lesson_id     :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
