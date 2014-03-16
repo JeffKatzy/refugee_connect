@@ -58,7 +58,7 @@ describe TextFromUser do
 
   describe '#respond' do
   	before do 
-  		@user = FactoryGirl.create(:tutor_available)
+      @appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
   		@text = FactoryGirl.create(:text_from_user, body: body)
   	end
 

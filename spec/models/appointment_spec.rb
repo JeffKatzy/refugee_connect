@@ -361,7 +361,7 @@ describe Appointment do
 			@appointment_three = FactoryGirl.create(:appointment, scheduled_for: date + 8.hours)
 		end
 
-		it "should only select appointments due in forty minutes" do
+		it "should only select appointments due in the next hour" do
 			expect(Appointment.batch_for_just_before).to include @appointment_one
 		end
 	end
