@@ -44,7 +44,9 @@ describe ReminderText do
   		it "sends reminders for appointments scheduled at 9 pm" do 
   			Timecop.travel(time + 21.hours)
   			ReminderText.apts_in_one_day
-  			ReminderText.first.appointment.should eq @nine_pm
+        text = ReminderText.first
+  			text.appointment.should eq @nine_pm
+        expect(text.category).to eq 'pm_reminder'
   			expect(ReminderText.count).to eq 1
   		end
   	end
@@ -53,7 +55,9 @@ describe ReminderText do
   		it "sends reminders for appointments scheduled at 10 pm" do 
   			Timecop.travel(time + 22.hours)
   			ReminderText.apts_in_one_day
-  			ReminderText.first.appointment.should eq @ten_pm
+        text = ReminderText.first
+        text.appointment.should eq @ten_pm
+        expect(text.category).to eq 'pm_reminder'
   			expect(ReminderText.count).to eq 1
   		end
   	end
@@ -62,7 +66,9 @@ describe ReminderText do
   		it "sends reminders for appointments scheduled at 11 pm" do 
   			Timecop.travel(time + 23.hours)
   			ReminderText.apts_in_one_day
-  			ReminderText.first.appointment.should eq @eleven_pm
+        text = ReminderText.first
+        text.appointment.should eq @eleven_pm
+        expect(text.category).to eq 'pm_reminder'
   			expect(ReminderText.count).to eq 1
   		end
   	end
@@ -94,7 +100,9 @@ describe ReminderText do
   		it "sends reminders for appointments in the next hour" do 
   			Timecop.travel(time + 21.hours)
   			ReminderText.just_before_apts
-  			ReminderText.first.appointment.should eq @nine_pm
+        text = ReminderText.first
+        text.appointment.should eq @ten_pm
+        expect(text.category).to eq "just_before_reminder"
   		end
   	end
 
@@ -102,15 +110,19 @@ describe ReminderText do
   		it "sends reminders for appointments in the next hour" do 
   			Timecop.travel(time + 22.hours)
   			ReminderText.just_before_apts
-  			ReminderText.first.appointment.should eq @ten_pm
+        text = ReminderText.first
+  			text.appointment.should eq @eleven_pm
+        expect(text.category).to eq "just_before_reminder"
   		end
   	end
 
-  	context "when it is 11 pm" do 
+  	context "when it is 8 pm" do 
   		it "sends reminders for appointments scheduled  in the next hour" do 
-  			Timecop.travel(time + 23.hours)
+  			Timecop.travel(time + 20.hours)
   			ReminderText.just_before_apts
-  			ReminderText.first.appointment.should eq @eleven_pm
+        text = ReminderText.first
+        text.appointment.should eq @nine_pm
+        expect(text.category).to eq "just_before_reminder"
   		end
   	end
   end

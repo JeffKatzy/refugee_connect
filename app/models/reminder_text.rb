@@ -45,7 +45,7 @@ class ReminderText < ActiveRecord::Base
   end
 
   def self.just_before_apts
-  	appointments_batch = Appointment.batch_for_just_before
+  	appointments_batch = Appointment.where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour).fully_assigned
   	ReminderText.send_reminder_text(appointments_batch, JUST_BEFORE)	
   end
 
@@ -54,8 +54,8 @@ class ReminderText < ActiveRecord::Base
       unless apt.reminder_texts.where(category: "#{category}").any?
         body = ReminderText.body(apt, category)
         TextToUser.deliver(apt.tutor, body) 
-        TextToUser.deliver(apt.tutee, body) unless apt.category == SET_PAGE_NUMBER
-        reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id) 
+        TextToUser.deliver(apt.tutee, body) unless category == SET_PAGE_NUMBER
+        reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id, category: category) 
       end
     end
   end
