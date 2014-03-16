@@ -28,19 +28,26 @@ describe Match do
 		let(:first_match) { FactoryGirl.create(:match) }
 		let(:apt) { first_match.convert_to_apt }
 		let(:second_match) { FactoryGirl.build(:match, tutor: first_match.tutor) }
+		let(:third_match) { FactoryGirl.build(:match, tutee: first_match.tutee) }
 		
+
+		it "should not invalidate when a tutor does not already have an appointment then" do
+			apt.save
+			expect(first_match.valid?).to be_true
+		end
 
 		it "should invalidate when a tutor already has an appointment then" do
 			apt.save
-			expect(first_match.valid?).to be_false
-			expect(first_match.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
+			second_match
+			expect(second_match.valid?).to be_false
+			expect(second_match.errors.messages[:base].pop).to eq "A tutor is already scheduled at that time."
 		end
 
 		it "should invalidate when a tutee already has an appointment then" do
 			apt.save
 			second_match
-			expect(second_match.valid?).to be_false
-			expect(second_match.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
+			expect(third_match.valid?).to be_false
+			expect(third_match.errors.messages[:base].pop).to eq "A tutee is already scheduled at that time."
 		end
 	end
 

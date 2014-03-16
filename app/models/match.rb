@@ -176,9 +176,14 @@ class Match < ActiveRecord::Base
 
 
   def available_tutor_and_tutee
-    if self.tutor.present? && self.tutee.present?
-      if self.tutor.reload.appointments.scoped.during(self.match_time).reject { |a| a == self }.present? || self.tutee.reload.appointments.scoped.during(self.match_time).reject {|a| a == self }.present?
-        errors[:base] << "A tutor or tutee is already scheduled at that time."
+    if self.tutor.present? 
+      if self.tutor.reload.appointments.scoped.during(self.match_time).reject { |a| a.match == self }.present? 
+        errors[:base] << "A tutor is already scheduled at that time."
+      end
+    end
+    if self.tutee.present?
+      if self.tutee.reload.appointments.scoped.during(self.match_time).reject {|a| a.match == self }.present?
+        errors[:base] << "A tutee is already scheduled at that time."
       end
     end
   end
