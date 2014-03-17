@@ -31,7 +31,7 @@ gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
 gem 'factory_girl_rails'
-gem 'exception_notifier'
+gem 'geocoder'
 
 
 group :production do 

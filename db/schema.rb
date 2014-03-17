@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140305011129) do
+ActiveRecord::Schema.define(:version => 20140316205041) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -95,6 +95,15 @@ ActiveRecord::Schema.define(:version => 20140305011129) do
     t.datetime "updated_at",  :null => false
     t.integer  "start_page"
     t.integer  "finish_page"
+  end
+
+  create_table "locations", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "matches", :force => true do |t|
