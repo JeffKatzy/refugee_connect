@@ -24,6 +24,7 @@
 class User < ActiveRecord::Base
   has_secure_password
   has_one :availability_manager
+  has_one :location
   has_many :text_from_users
   has_many :openings
   has_many :reminder_texts

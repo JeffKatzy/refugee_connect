@@ -5,3 +5,5 @@
 //= require jquery_nested_form
 //= require groundwork/js/groundwork.all.js
 //= require 'connect.js'
+//= require 'maps.js'
+//= require underscore
