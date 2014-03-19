@@ -4,7 +4,8 @@
 			#info.border-top
 				.one.third.double-padded
 					#map
-						#map_canvas
+						#map_canvas.round
+						.padded.align-center= @user.location.formatted_address if @user.location
 				.one.third.border-left.double-padded
 					%h1#basic_info_user_name=@user.name
 					#basic_info_profile_summary.box

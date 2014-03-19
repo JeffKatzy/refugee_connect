@@ -16,4 +16,9 @@ class Location < ActiveRecord::Base
   belongs_to :user
   geocoded_by :address
   after_validation :geocode, :if => :address_changed?
+
+  def formatted_address
+  	geo = Geocoder.search(self.address)
+    geo.first.data["formatted_address"]
+  end
 end
