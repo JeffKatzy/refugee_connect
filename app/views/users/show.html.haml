@@ -1,12 +1,12 @@
 .row#background_show
 	.four.centered.fifths#main
 		.row.triple-pad-top
-			#info.border-top
+			#info
 				.one.third.double-padded
 					#map
 						#map_canvas.round
 						.padded.align-center= @user.location.formatted_address if @user.location
-				.one.third.border-left.double-padded
+				.one.third.double-padded
 					%h1#basic_info_user_name=@user.name
 					#basic_info_profile_summary.box
 						Profile info

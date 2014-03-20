@@ -6,4 +6,3 @@
 //= require groundwork/js/groundwork.all.js
 //= require 'connect.js'
 //= require 'maps.js'
-//= require underscore

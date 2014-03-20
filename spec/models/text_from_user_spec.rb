@@ -56,7 +56,7 @@ describe TextFromUser do
   	end
   end
 
-  describe '#respond' do
+  describe '#twilio_response' do
   	before do 
       @appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
   		@text = FactoryGirl.create(:text_from_user, body: body)
