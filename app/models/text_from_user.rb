@@ -20,8 +20,10 @@ class TextFromUser < ActiveRecord::Base
   phony_normalize :incoming_number
 
   def twilio_response
+    Rails.logger.info("#{self.id} now responding to the word #{body} at #{Time.current}")
     self.reload
     if body.downcase == "go"
+      Rails.logger.info("#{self.id} now attempting session at #{Time.current}")
       attempt_session
     elsif body.downcase == "sorry"
       TextToUser.deliver(user, "Thanks for letting us know, we'll find someone else.")
