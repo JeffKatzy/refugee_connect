@@ -30,7 +30,6 @@ gem 'autoprefixer-rails'
 gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
-gem 'factory_girl_rails'
 gem 'geocoder'
 
 
