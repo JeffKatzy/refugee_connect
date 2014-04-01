@@ -16,6 +16,8 @@ require 'spec_helper'
 describe TextSignup do
   describe "register(text)" do 
 
+    ## After users signup, you need to trigger matches, and appointment creation.
+
     before :each do 
       TextToUser.stub(:deliver) 
       text_signup.navigate_signup(text)

@@ -203,8 +203,8 @@ class User < ActiveRecord::Base
   end
 
   def incomplete_mobile_signup?
-    return false if @user.text_signup.empty?
-    return true if @user.text_signup.status != 'complete'
+    return false if self.text_signup.nil?
+    return true if self.text_signup.status != 'complete'
     false
   end
 
