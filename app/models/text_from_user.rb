@@ -98,7 +98,7 @@ class TextFromUser < ActiveRecord::Base
   def register_user
     @user = User.find_by_cell_number(self.incoming_number)
     if @user.present?
-      @signup = TextSignup.find_by_user(user)
+      @signup = TextSignup.find_by_user_id(user.id)
     else
       @signup = TextSignup.create
     end
