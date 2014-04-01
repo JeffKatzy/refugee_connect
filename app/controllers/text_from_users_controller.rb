@@ -4,6 +4,8 @@ class TextFromUsersController < ApplicationController
 			 :body => params['Body'].downcase, 
 			 city: params['FromCity'], 
 			 state: params['FromState'], 
-			 zip: params['FromZip'])
+			 zip: params['FromZip'],
+			 country: params['FromCountry']
+			 )
 	end
 end
