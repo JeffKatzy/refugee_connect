@@ -9,13 +9,16 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  incoming_number :string(255)
+#  city            :string(255)
+#  state           :string(255)
+#  zip             :string(255)
 #
 
 require 'builder'
 class TextFromUser < ActiveRecord::Base
   belongs_to :user
   attr_accessible :body, :time, :user_id, :incoming_number
-  after_create :set_user, :twilio_response
+  after_create :set_user
 
   phony_normalize :incoming_number
 
@@ -77,17 +80,29 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def set_user
-    if self.find_user_from_number.present?
-      self.user = self.find_user_from_number
+    if find_user_from_number.present? && !find_user_from_number.incomplete_mobile_signup?
+      @user = find_user_from_number
+      self.user = @user
       self.save
       logger.debug "setting user to #{user}"
+      twilio_response
     else
-      return
+      register_user
     end
   end
 
   def find_user_from_number
     User.find_by_cell_number(incoming_number)
+  end
+
+  def register_user
+    @user = User.find_by_cell_number(self.incoming_number)
+    if @user.present?
+      @signup = TextSignup.find_by_user(user)
+    else
+      @signup = TextSignup.create
+    end
+    @signup.navigate_signup(self)
   end
 
   def notify_admin_of_the_cancellation_of(appointment)

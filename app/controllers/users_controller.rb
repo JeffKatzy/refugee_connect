@@ -12,6 +12,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def create_omniauth
+    @user = User.from_omniauth(env["omniauth.auth"])
+    session[:user_id] = @user.id
+    if @user.new_user == true
+      redirect_to new_user_path
+    else
+      redirect_to user_path(@user.id)
+    end
+  end
+
   def new_tutor
     @user = User.new
     @user.openings.build

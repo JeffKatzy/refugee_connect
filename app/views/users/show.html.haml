@@ -3,25 +3,23 @@
 		.row.triple-pad-top
 			#info
 				.one.third.double-padded
+					%h1#basic_info_user_name.pad-bottom.align-center.responsive
+						= @user.location.geocoder_address_info.try(:city) + ", " + @user.location.geocoder_address_info.try(:state) if @user.location
 					#map
-						#map_canvas.round
-						.padded.align-center= @user.location.formatted_address if @user.location
+						#map_canvas.rounded
 				.one.third.double-padded
-					%h1#basic_info_user_name=@user.name
+					%h1#basic_info_user_name.pad-bottom.responsive=@user.name
 					#basic_info_profile_summary.box
-						Profile info
+						= "Classes completed: #{pluralize(@user.appointments.complete.count, "class")}"
+						- if @user.is_tutor?
+							%p= "Current students: #{pluralize(@user.appointment_partners.count, "student")}"
+						- else
+							%p= "Current teachers: #{pluralize(@user.appointment_partners.count, "teacher")}"
 				.one.third.double-padded
-					%h1#basic_info_user_name Upcoming sessions	
+					%h1#basic_info_user_name.pad-bottom.responsive Upcoming sessions	
 					.box
-						- @user.appointments.each do |apt|
-							= apt.scheduled_for.in_time_zone(@user.time_zone).strftime("%I:%M%p on %A with")
-							- if apt.tutor && apt.tutee
-								- if @user.role == 'tutor'
-									= apt.tutee.name
-								- else
-									= apt.tutor.name
-							- else
-								Appointment available
+						- @user.availability_manager.remaining_occurrences(Time.current + 14.days).each do |occurrence|
+							%p= occurrence.in_time_zone(@user.time_zone).strftime("%B %-d at %I:%M%p on %A")
 			.main_section
 				- if @user.role == 'tutee'
 					- @user.photos.tweet_created_at_asc.each do |photo|

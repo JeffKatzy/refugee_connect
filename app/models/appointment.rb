@@ -151,6 +151,7 @@ class Appointment < ActiveRecord::Base
 
   def start_call
     self.began_at = Time.current
+    self.status = 'In Progress'
     self.save
 
   	self.call_to_users.build(tutor_id: tutor.id, tutee_id: tutee.id)

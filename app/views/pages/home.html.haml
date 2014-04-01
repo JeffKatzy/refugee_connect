@@ -4,12 +4,12 @@
 			Teach skills to the people who need them most.
 			Tutor directly and learn their story.
 		%p#hero_inside_text  It starts with one phone call
-		.row.three.centered.twelfths
-			= link_to(new_user_path) do 
+		.row.six.centered.twelfths
+			= link_to('auth/facebook') do 
 				%button.yb_button.blue.center#hero_inside_big_button 
 					%p
 						%i.icon-check
-						Sign Up
+						Sign In With Facebook
 		%p#hero_inside_link
 			= link_to 'Login', new_session_path
 

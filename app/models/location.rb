@@ -9,16 +9,24 @@
 #  longitude  :float
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  city       :string(255)
+#  state      :string(255)
+#  zip        :string(255)
 #
 
 class Location < ActiveRecord::Base
-  attr_accessible :address, :latitude, :longitude, :user_id
+  attr_accessible :address, :latitude, :longitude, :user_id, :city, :state, :zip
   belongs_to :user
   geocoded_by :address
   after_validation :geocode, :if => :address_changed?
 
-  def formatted_address
-  	geo = Geocoder.search(self.address)
-    geo.first.data["formatted_address"]
+  def geocoder_address_info
+  	begin
+  		geo = Geocoder.search(self.address)
+    	geo.first
+    rescue
+		  nil
+    end
   end
+
 end

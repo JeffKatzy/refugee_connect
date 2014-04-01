@@ -9,6 +9,9 @@
 #  longitude  :float
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  city       :string(255)
+#  state      :string(255)
+#  zip        :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

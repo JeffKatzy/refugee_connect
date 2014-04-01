@@ -19,6 +19,13 @@ body {
 	height: 100%;
 }
 
+.rounded {
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px; /* future proofing */
+	-khtml-border-radius: 15px; /* for old Konqueror browsers */
+}
+
 .container {
 	max-width: 1150px;
 	margin: 0 auto;
@@ -74,13 +81,14 @@ body {
 }
 
 #hero_inside_text {
-	font-size: 1.25em;
+	font-size: 1em;
 	margin-bottom: 20px;
 }
 
 #hero_inside_big_button {
 	text-transform: uppercase;
 	margin-bottom: 20px;
+	width: 400px;
 }
 
 .yb_button {

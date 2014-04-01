@@ -27,8 +27,12 @@ class SessionsController < ApplicationController
 	end
 
 	def create_omniauth
-    user = User.from_omniauth(env['omniauth.auth'])
-    session[:user_id] = user.id
-    redirect_to users_path
+    @user = User.from_omniauth(env["omniauth.auth"])
+    session[:user_id] = @user.id
+    if @user.new_user == true
+      redirect_to new_user_path
+    else
+      redirect_to user_path(@user.id)
+    end
   end
 end

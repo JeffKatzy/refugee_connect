@@ -9,6 +9,9 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  incoming_number :string(255)
+#  city            :string(255)
+#  state           :string(255)
+#  zip             :string(255)
 #
 
 require 'spec_helper'

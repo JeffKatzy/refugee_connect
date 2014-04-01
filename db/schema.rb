@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140316205041) do
+ActiveRecord::Schema.define(:version => 20140328023140) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -87,6 +87,29 @@ ActiveRecord::Schema.define(:version => 20140316205041) do
     t.integer  "appointment_id"
   end
 
+  create_table "facebook_users", :force => true do |t|
+    t.string   "uid"
+    t.string   "provider"
+    t.string   "oauth_token"
+    t.string   "profile_picture"
+    t.string   "oauth_expires_at"
+    t.integer  "user_id"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+  end
+
+  create_table "facebooks", :force => true do |t|
+    t.string   "add_facebook_info_to_users"
+    t.string   "uid"
+    t.string   "oauth_token"
+    t.string   "profile_picture"
+    t.datetime "oauth_expires_at"
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+    t.integer  "user_id"
+    t.string   "provider"
+  end
+
   create_table "lessons", :force => true do |t|
     t.text     "name"
     t.text     "description"
@@ -104,6 +127,9 @@ ActiveRecord::Schema.define(:version => 20140316205041) do
     t.float    "longitude"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
   end
 
   create_table "matches", :force => true do |t|
@@ -156,6 +182,18 @@ ActiveRecord::Schema.define(:version => 20140316205041) do
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
     t.string   "incoming_number"
+    t.string   "city"
+    t.string   "state"
+    t.string   "zip"
+  end
+
+  create_table "text_signups", :force => true do |t|
+    t.string   "status"
+    t.integer  "user_id"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+    t.string   "days_available"
+    t.string   "day_missing_time"
   end
 
   create_table "text_to_users", :force => true do |t|

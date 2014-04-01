@@ -76,6 +76,7 @@ group :test do
   gem 'faker'
   gem 'selenium-webdriver'
   gem 'twilio-test-toolkit'
+  gem 'vcr'
 end
 
 

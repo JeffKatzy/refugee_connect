@@ -23,11 +23,19 @@ class CallToUser < ActiveRecord::Base
   @@account = @@client.account
 
   def start_call
-  	@call = @@account.calls.create({:from => '+12673172085', :to => self.tutor.cell_number, :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml", :status_callback => BASE_URL + "appointments/complete/#{self.appointment.id}.xml"})
-  	puts @call
+    begin
+    	@call = @@account.calls.create({:from => '+12673172085', 
+        :to => self.tutor.cell_number, 
+        :url => BASE_URL + "appointments/calluser/#{self.appointment.id}.xml", 
+        :status_callback => BASE_URL + "appointments/complete/#{self.appointment.id}.xml"})
+    	puts @call
+    rescue e
+      raise e
+    end
   	self.begin_time = Time.now.in_time_zone('Eastern Time (US & Canada)') 
   	self.save
   end
+
 end
 
 

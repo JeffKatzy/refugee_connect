@@ -25,6 +25,9 @@ class User < ActiveRecord::Base
   has_secure_password
   has_one :availability_manager
   has_one :location
+  has_one :facebook_user
+  has_one :text_signup
+
   has_many :text_from_users
   has_many :openings
   has_many :reminder_texts
@@ -56,8 +59,8 @@ class User < ActiveRecord::Base
 
   after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week, :set_time_zone, :pull_photos
   before_save :format_phone_number
-  validates_plausible_phone :cell_number, :presence => true, :uniqueness => true
-  validates :email, uniqueness: true
+  attr_accessor :new_user
+  # validates_plausible_phone :cell_number, :presence => true, :uniqueness => true
 
   #after_create :set_time_zone if: no_time_zone
 
@@ -187,48 +190,40 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.from_omniauth(auth)
+    where(auth.slice(:uid)).first_or_initialize.tap do |user|
+      user.uid = auth.uid
+      user.oauth_token = auth.credentials.token
+      user.oauth_expires_at = Time.at(auth.credentials.expires_at)
+      user.password = SecureRandom.hex(9)
+      user.name = auth.info.name
+      user.image = auth.info.image
+      user.save
+    end
+  end
+
+  def incomplete_mobile_signup?
+    return false if @user.text_signup.empty?
+    return true if @user.text_signup.status != 'complete'
+    false
+  end
+
   private 
 
   def format_phone_number
     if self.is_tutor?
-      self.cell_number = PhonyRails.normalize_number(cell_number, :country_code => 'US')
+      self.cell_number = PhonyRails.normalize_number(cell_number)
     else
-      self.cell_number = PhonyRails.normalize_number(cell_number, :country_code => 'IN')
+      self.cell_number = PhonyRails.normalize_number(cell_number)
     end
   end
 
   def create_availability_manager
     AvailabilityManager.find_or_create_by_user_id(self.id)
     self.save
-  end
-
-  
+  end  
 
   def check_appointments_number
     errors[:base] << "You must select at least one time that you are available" if self.openings.empty?
   end
-  # Facebook methods
-
-  # def self.from_omniauth(auth)
-  #   where(auth.slice(:provider, :uid)).first_or_initialize.tap do |user|
-  #     user.provider = auth.provider
-  #     user.uid = auth.uid
-  #     user.name = auth.info.name
-  #     user.oauth_token = auth.credentials.token
-  #     user.oauth_expires_at = Time.at(auth.credentials.expires_at)
-  #     user.save!
-  #   end
-  # end
-
-  # def facebook
-  #   @facebook ||= Koala::Facebook::API.new(oauth_token)
-  # end
-
-  # def friends
-  #   facebook.fql_query('SELECT name, pic_square, uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me())')
-  # end
-
-  # def college_friends
-  #   query(self.college, 'education')
-  # end
 end
