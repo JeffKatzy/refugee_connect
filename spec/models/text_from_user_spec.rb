@@ -48,15 +48,29 @@ describe TextFromUser do
     end
   end
 
-  describe '#set_user' do 
-  	before do 
-  		@user = FactoryGirl.create(:tutor_available)
-  		@text = FactoryGirl.create(:text_from_user)
-  	end
+  describe '#set_user' do
+    context "with complete mobile signup" do 
+    	before do 
+    		@user = FactoryGirl.create(:tutor_available)
+    		@text = FactoryGirl.create(:text_from_user)
+    	end
 
-  	it "should set the proper user" do 
-  		expect(@text.user).to eq @user
-  	end
+    	it "should set the proper user" do 
+    		expect(@text.user).to eq @user
+    	end
+    end
+
+    context "with an incomplete mobile signup" do
+      before do 
+        @user = FactoryGirl.create(:tutor_available)
+        @text_signup = FactoryGirl.create(:text_signup, user: @user)
+        @text = FactoryGirl.create(:text_from_user)
+      end
+
+      it "sets the user" do
+        expect(@text.user).to eq @user
+      end
+    end
   end
 
   describe '#twilio_response' do

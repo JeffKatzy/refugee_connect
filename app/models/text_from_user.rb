@@ -80,11 +80,9 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def set_user
-    if find_user_from_number.present? && !find_user_from_number.incomplete_mobile_signup?
-      @user = find_user_from_number
-      self.user = @user
-      self.save
-      logger.debug "setting user to #{user}"
+    find_user_from_number
+    if (@user.present? && !@user.incomplete_mobile_signup?)
+      
       twilio_response
     else
       register_user
@@ -92,13 +90,16 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def find_user_from_number
-    User.find_by_cell_number(incoming_number)
+    @user = User.find_by_cell_number(incoming_number)
+    self.user = @user
+    self.save
+    logger.debug "setting user to #{user}"
   end
 
   def register_user
     @user = User.find_by_cell_number(self.incoming_number)
     if @user.present?
-      @signup = TextSignup.find_by_user_id(user.id)
+      @signup = TextSignup.find_by_user_id(self.user.id)
     else
       @signup = TextSignup.create
     end
