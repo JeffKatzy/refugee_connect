@@ -49,8 +49,10 @@ class TextSignup < ActiveRecord::Base
   def navigate_signup(text)
   	if self.status.to_s.empty?
   		register(text)
-  	elsif self.status == 'user_without_name'
+  	elsif self.status == 'user_initialized'
   		request_name
+  	elsif self.status == 'user_name_requested'
+  		attempt_to_find_name
   	elsif self.status == 'user_with_name'
   		request_class_days
   	elsif self.status ==  'class_days_requested'
@@ -66,29 +68,42 @@ class TextSignup < ActiveRecord::Base
   	end
   end
 
-  def register(text)
-	  user = User.create(password: SecureRandom.hex(9), cell_number: text.incoming_number)
+  def initialize_user
+  	user = User.create(password: SecureRandom.hex(9), cell_number: text.incoming_number)
 	  location = user.build_location(city: text.city, state: text.state, zip: text.zip)
 	  self.status = 'user_without_name'
 	  self.user = user
 	  self.save
 	  set_user_time_zone
 	  user.save
-
-	  if text.body.downcase.match(/name/).nil?
-	      body = "Welcome to SpeakLoud!"
-	      navigate_signup(text)
-	  else
-	    user.name = text.body.downcase.split(/name/).delete_if(&:empty?).join(" ").split.map(&:capitalize).join(" ")
-	    user.save
-	    self.status = 'user_with_name'
-	    self.save
-	  end
 	end
+
+  def register(text)
+  	initialize_user
+  	self.state = 'user_initialized'
+  	body = "Welcome to SpeakLoud!"
+	  attempt_to_find_name
+	end
+
+	def attempt_to_find_name
+		if text.body.downcase.match(/name/).nil?  
+		  navigate_signup(text)
+		else
+		  find_name
+		end
+	end
+
+	def find_name
+  	user.name = text.body.downcase.split(/name/).delete_if(&:empty?).join(" ").split.map(&:capitalize).join(" ")
+	  user.save
+	  self.status = 'user_with_name'
+	  self.save
+  end
 
 	def request_name
 		@body += "Tell us your name by testing the word name followed by your name.\n For example name Jeff."
 		TextToUser.deliver(user, @body)
+		self.status = 'user_name_requested'
 	end
 
 	def request_class_days
