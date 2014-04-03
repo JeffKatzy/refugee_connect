@@ -131,6 +131,55 @@ describe TextSignup do
       end
     end
 
+    describe '#attempt_to_find_name' do
+      before do 
+        TextToUser.stub(:deliver) 
+        @user = FactoryGirl.create(:tutor_available)
+        @text_signup = FactoryGirl.create(:text_signup)
+      end
+
+      context "when user_name_requested and 'Name' not typed" do
+        let(:text) { FactoryGirl.create(:text_from_user, body: 'Jeff') }
+
+        it "keeps the state at attempt_to_find_name" do 
+          @text_signup.navigate_signup(text)
+          expect(@text_signup.status).to eq 'user_name_requested'
+        end
+      end
+
+      context "when user_name_requested and 'Name' typed" do
+        let(:text) { FactoryGirl.create(:text_from_user, body: 'Name Jeff') }
+
+        it "sets the status to user_with_name" do 
+          @text_signup.navigate_signup(text)
+          expect(@text_signup.status).to eq 'class_days_requested'
+        end
+      end
+    end
+
+  describe '#set_days_available(text)' do
+
+    before do 
+      TextToUser.stub(:deliver) 
+      @user = FactoryGirl.create(:tutor_available)
+      @text_signup = FactoryGirl.create(:text_signup, status: 'class_days_requested')
+    end
+
+    context "when responding with days and state class_days_requested" do
+      let(:text) { FactoryGirl.create(:text_from_user, body: '1 2 3') }
+
+      it "sets the state to class_days_set" do 
+        @text_signup.navigate_signup(text)
+        expect(@text_signup.status).to eq 'class_days_set'
+      end
+
+      it "sets the days_available to 123" do 
+        @text_signup.navigate_signup(text)
+        expect(@text_signup.days_available).to eq '123'
+      end
+    end
+  end  
+
   describe 'request time for day' do
     before :each do 
       TextToUser.stub(:deliver) 

@@ -15,6 +15,5 @@
 
 FactoryGirl.define do
   factory :text_signup do
-  	status 'user_without_name'
   end
 end

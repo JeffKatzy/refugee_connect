@@ -29,26 +29,9 @@ class TextSignup < ActiveRecord::Base
   	["7:30 am", "8:30 am", "9:30 am"]
   end
 
-  def set_user_time_zone
-  	user = self.user
-  	if user.location.state == 'New York'
-  		user.time_zone = 'America/New_York'
-  	elsif user.location.country == 'India'
-  		user.time_zone = 'New Delhi'
-  	end
-  	user.save
-  end
-
-  def day_missing_time
-  	if days_available
-  		number = days_available.first.to_i
-  		weekday[number]
-  	end
-  end
-
   def navigate_signup(text)
   	if self.status.to_s.empty?
-  		register(text)
+  		initialize_user(text)
   	elsif self.status == 'user_initialized'
   		request_name
   	elsif self.status == 'user_name_requested'
@@ -68,32 +51,47 @@ class TextSignup < ActiveRecord::Base
   	end
   end
 
-  def initialize_user
+  def set_user_time_zone
+  	user = self.user
+  	if user.location.state == 'New York'
+  		user.time_zone = 'America/New_York'
+  	elsif user.location.country == 'India'
+  		user.time_zone = 'New Delhi'
+  	end
+  	user.save
+  end
+
+  def day_missing_time
+  	if days_available
+  		number = days_available.first.to_i
+  		weekday[number]
+  	end
+  end
+
+  def initialize_user(text)
   	user = User.create(password: SecureRandom.hex(9), cell_number: text.incoming_number)
 	  location = user.build_location(city: text.city, state: text.state, zip: text.zip)
-	  self.status = 'user_without_name'
 	  self.user = user
 	  self.save
 	  set_user_time_zone
 	  user.save
+	  self.status = 'user_initialized'
+	  self.save
+	  body = "Welcome to SpeakLoud!"
+	  attempt_to_find_name(text)
+	  navigate_signup(text)
 	end
 
-  def register(text)
-  	initialize_user
-  	self.state = 'user_initialized'
-  	body = "Welcome to SpeakLoud!"
-	  attempt_to_find_name
-	end
-
-	def attempt_to_find_name
-		if text.body.downcase.match(/name/).nil?  
-		  navigate_signup(text)
+	def attempt_to_find_name(text)
+		if text.body.downcase.match(/name/).nil?
+			@body = "Sorry, we couldn't understand that.  Please tell us your name by first typing the word name followed by your name.\n"
+		  TextToUser.deliver(user, @body)
 		else
-		  find_name
+		  find_name(text)
 		end
 	end
 
-	def find_name
+	def find_name(text)
   	user.name = text.body.downcase.split(/name/).delete_if(&:empty?).join(" ").split.map(&:capitalize).join(" ")
 	  user.save
 	  self.status = 'user_with_name'
@@ -101,25 +99,25 @@ class TextSignup < ActiveRecord::Base
   end
 
 	def request_name
-		@body += "Tell us your name by testing the word name followed by your name.\n For example name Jeff."
+		@body += "Tell us your name by typing the word name followed by your name.\n For example name Jeff."
 		TextToUser.deliver(user, @body)
 		self.status = 'user_name_requested'
+		self.save
 	end
 
 	def request_class_days
-		@body = "Thanks! You are now signed up with your name.  Which day are you available?\n
-	    1. Monday \n 2. Tuesday \n 3. Wednesday \n 4. Thursday \n 5. Friday \n
-	    For example type 1, 2 if you are available on Monday and Tuesday."
-	    TextToUser.deliver(user, @body)
-	    self.status = 'class_days_requested'
+		@body = "Thanks!  When are you available?\n 1. Mon 2. Tues 3. Wednes 4. Thurs 5. Fri \n
+    For example type 1, 2 for Monday and Tuesday."
+    TextToUser.deliver(user, @body)
+    self.status = 'class_days_requested'
+    self.save
 	end
 
 	def set_days_available(text)
 		self.days_available = text.body.gsub(/\D/, '')
 		if self.days_available.empty?
-			@body = "Sorry, we couldn't understand that.  Please tell us which days you are available.\n
-			1. Monday \n 2. Tuesday \n 3. Wednesday \n 4. Thursday \n 5. Friday \n
-	    For example type 1, 2 if you are available on Monday and Tuesday."
+			@body = "Sorry, when are you are available? \n 1. Monday \n 2. Tuesday \n 3. Wednesday \n 4. Thursday \n 5. Friday
+	    For example type 1, 2 for Monday and Tuesday."
 			TextToUser.deliver(user, @body)
 		else
 			self.status = 'class_days_set'

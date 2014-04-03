@@ -18,6 +18,8 @@ require 'spec_helper'
 
 describe TextFromUser do
 
+
+
 	describe '#set_user' do 
 		before do 
 			User.delete_all
@@ -69,6 +71,20 @@ describe TextFromUser do
 
       it "sets the user" do
         expect(@text.user).to eq @user
+      end
+    end
+  end
+
+  describe '#request_name' do
+    context "when user_initialized" do
+      before do 
+        @user = FactoryGirl.create(:tutor_available)
+        @text_signup = FactoryGirl.create(:text_signup, user: @user, status: 'user_initialized')
+        @text = FactoryGirl.create(:text_from_user)
+      end
+
+      it "sets the status to user_name_requested" do
+        expect(@text_signup.status).to eq 'user_name_requested'
       end
     end
   end
