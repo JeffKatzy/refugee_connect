@@ -170,12 +170,17 @@ describe TextSignup do
 
       it "sets the state to class_days_set" do 
         @text_signup.navigate_signup(text)
-        expect(@text_signup.status).to eq 'class_days_set'
+        expect(@text_signup.status).to eq 'class_time_requested'
       end
 
       it "sets the days_available to 123" do 
         @text_signup.navigate_signup(text)
         expect(@text_signup.days_available).to eq '123'
+      end
+
+      it 'asks the user to submit a time' do
+        @text_signup.navigate_signup(text)
+        expect(@text_signup.body).to include 'What time on'
       end
     end
   end  

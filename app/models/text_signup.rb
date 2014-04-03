@@ -35,7 +35,7 @@ class TextSignup < ActiveRecord::Base
   	elsif self.status == 'user_initialized'
   		request_name
   	elsif self.status == 'user_name_requested'
-  		attempt_to_find_name
+  		attempt_to_find_name(text)
   	elsif self.status == 'user_with_name'
   		request_class_days
   	elsif self.status ==  'class_days_requested'
@@ -122,6 +122,7 @@ class TextSignup < ActiveRecord::Base
 		else
 			self.status = 'class_days_set'
 			self.save
+			navigate_signup(text)
 		end
 	end
 
