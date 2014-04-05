@@ -242,6 +242,29 @@ describe TextSignup do
           opening = @texting_user.openings.first
           expect(opening.time.hour).to eq 8
         end
+
+        context "upon texting another time it" do
+          let(:text) { FactoryGirl.build :text_from_user, body: '1' }
+
+          before :each do 
+            text_signup.navigate_signup(text)
+          end
+
+          it "sets the second time" do 
+            expect(text_signup.body).to include "Great! You now have a class set for Tuesday."
+          end
+
+          it "creates a second opening" do 
+            text.stub(:user).and_return(@texting_user)
+            expect(@texting_user.openings.count).to eq 2
+          end
+
+          it "creates an opening for the proper day" do
+            text.stub(:user).and_return(@texting_user)
+            opening = @texting_user.openings.last
+            expect(opening.time.strftime("%A")).to eq "Tuesday"
+          end
+        end
       end
 
   		context "and there are not days available" do

@@ -140,6 +140,7 @@ class TextSignup < ActiveRecord::Base
 			@body += "Great! You now have a class set for #{day_missing_time}.  "
 			self.days_available[0] = ''
 			self.save
+			puts "the number of days now available are #{self.days_available}"
 			if days_available.present?
 				self.status = 'class_days_set'
 				self.save
