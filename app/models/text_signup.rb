@@ -12,7 +12,7 @@
 #
 
 class TextSignup < ActiveRecord::Base
-  attr_accessible :status, :user_id, :city, :state, :zip
+  attr_accessible :status, :days_available, :day_missing_time
   attr_accessor :body
   belongs_to :user
   after_initialize :set_body
@@ -134,17 +134,16 @@ class TextSignup < ActiveRecord::Base
 	end
 
 	def look_for_time(text)
-		if text.body.match(/[123]/).present?
+		if text.body.match(/[123]/).present? && self.days_available.present?
 			time = times_open[text.body.to_i]
 			Opening.create(user_id: text.user.id, day_open: day_missing_time, time_open: time)
 			@body += "Great! You now have a class set for #{day_missing_time}.  "
-			self.days_available[0] = ''
+			self.days_available = self.days_available[1..-1]
 			self.save
-			if days_available.present?
-				self.status = 'class_days_set'
-				self.save
-				navigate_signup(text)
-			end
+			puts "the number of days now available are #{self.days_available}, version 2"
+			self.status = 'class_days_set'
+			self.save
+			navigate_signup(text)
 		else
 			@body = "Please enter a valid time for #{day_missing_time}.  "
 			request_time_for_day(day_missing_time)
