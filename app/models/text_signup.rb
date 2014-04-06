@@ -159,18 +159,22 @@ class TextSignup < ActiveRecord::Base
 		self.body = "Now signup for twitter.  Its easy.  Text the word 'START' to the shortened number 53000.  When twitter gives you a username, send that to us and you are set."
 		TextToUser.deliver(user, @body)
 		self.status = 'twitter_signup_requested'
+		self.save
 	end
 
 	def attempt_to_find_twitter_name(text)
+		puts "In attempt to find twitter name"
 		if text.body.downcase.match(/twitter/).nil?
 			@body = "Sorry, please enter your name by first typing the word TWITTER followed by your username.\n"
 		  TextToUser.deliver(user, @body)
 		else
+			puts "twitter name not nil"
 		  find_twitter_name(text)
 		end
 	end
 
 	def find_twitter_name(text)
+		puts "In find twitter name"
 		user.twitter_handle = text.body.downcase.split(/twitter/).delete_if(&:empty?).join(" ").split.join(" ")
 		user.save
 		@body = "You are all done! Congrats and we look forward to your first class!"
