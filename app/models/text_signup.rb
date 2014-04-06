@@ -155,7 +155,8 @@ class TextSignup < ActiveRecord::Base
 
 	def request_twitter_signup
 		user = self.user
-		self.body += "Now signup for twitter.  Its easy.  Text the word 'START' to the shortened number 53000.  When twitter gives you a username, send that to us and you are set."
+		puts "#{self.body}"
+		self.body = "Now signup for twitter.  Its easy.  Text the word 'START' to the shortened number 53000.  When twitter gives you a username, send that to us and you are set."
 		TextToUser.deliver(user, @body)
 		self.status = 'twitter_signup_requested'
 	end
