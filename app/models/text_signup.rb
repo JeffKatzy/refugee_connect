@@ -46,6 +46,8 @@ class TextSignup < ActiveRecord::Base
   		look_for_time(text)
   	elsif (self.status == 'class_days_set' && !self.days_available.present?)
   		request_twitter_signup
+  	elsif self.status == 'twitter_signup_requested'
+  		attempt_to_find_twitter_name(text)
   	else
   		puts 'No matches'
   	end
@@ -91,6 +93,7 @@ class TextSignup < ActiveRecord::Base
 		end
 	end
 
+	
 	def find_name(text)
   	user.name = text.body.downcase.split(/name/).delete_if(&:empty?).join(" ").split.map(&:capitalize).join(" ")
 	  user.save
@@ -152,7 +155,26 @@ class TextSignup < ActiveRecord::Base
 
 	def request_twitter_signup
 		user = self.user
-		self.body += "Now to send pictures to us you must first sign up for twitter.  Don't worry, its very easy.  Just text the word 'START' to the shortened number 53000.  When twitter gives you your username, send that into us and you are all set."
+		self.body += "Now signup for twitter.  Its easy.  Text the word 'START' to the shortened number 53000.  When twitter gives you a username, send that to us and you are set."
 		TextToUser.deliver(user, @body)
+		self.status = 'twitter_signup_requested'
+	end
+
+	def attempt_to_find_twitter_name(text)
+		if text.body.downcase.match(/twitter/).nil?
+			@body = "Sorry, please enter your name by first typing the word TWITTER followed by your username.\n"
+		  TextToUser.deliver(user, @body)
+		else
+		  find_twitter_name(text)
+		end
+	end
+
+	def find_twitter_name(text)
+		user.twitter_handle = text.body.downcase.split(/twitter/).delete_if(&:empty?).join(" ").split.join(" ")
+		user.save
+		@body = "You are all done! Congrats and we look forward to your first class!"
+		TextToUser.deliver(user, @body)
+		self.status = 'complete'
+		self.save
 	end
 end

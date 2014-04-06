@@ -25,6 +25,14 @@ class Photo < ActiveRecord::Base
     end
   end
 
+  def self.check_user(user)
+  	begin
+  		Photo.twitter.user(user.twitter_handle)
+  	rescue
+  		errors[:base] << "Both tutor and tutee must want more apppointments."
+  	end
+  end
+
   def self.pull_tweets(user)
   	if user.twitter_handle
 		 	self.twitter.user_timeline(user.twitter_handle).each do |tweet|
@@ -38,6 +46,8 @@ class Photo < ActiveRecord::Base
 	    Photo.create_photo(tweet, user)
 	  end
 	end
+
+
 
 	def self.create_photo(tweet, user)
 		unless tweet.media.empty?

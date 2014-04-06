@@ -59,12 +59,16 @@ class User < ActiveRecord::Base
 
   after_create :create_availability_manager, :add_per_week_to_availability_manager, :init, :build_matches_for_week, :set_time_zone, :pull_photos
   before_save :format_phone_number
+  validate :check_user_twitter, if: :twitter_handle_changed?
+
   attr_accessor :new_user
   # validates_plausible_phone :cell_number, :presence => true, :uniqueness => true
 
   #after_create :set_time_zone if: no_time_zone
 
   APPOINTMENTS_COUNT_MIN = 1
+
+  
 
   def appointments
     if self.is_tutor?
@@ -80,6 +84,10 @@ class User < ActiveRecord::Base
       appointment.tutee = self if self.role == 'tutee'
       appointment.save
     end
+  end
+
+  def check_user_twitter
+    Photo.check_user(self)
   end
 
   def matches

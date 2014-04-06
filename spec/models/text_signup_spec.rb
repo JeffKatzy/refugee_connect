@@ -283,10 +283,39 @@ describe TextSignup do
         end
 
   			it "asks for a twitter signup" do
-          expect(text_signup.body).to include "Now to send pictures to us"
+          expect(text_signup.body).to include "Now we need you to signup for twitter"
   			end
   		end 
   	end
+
+    describe 'find_twitter_name' do 
+      let(:text) { FactoryGirl.build :text_from_user, body: 'twitter jeffkatzy' }
+
+      before :each do 
+        @texting_user = FactoryGirl.create(:user)
+        text.stub(:user).and_return(@texting_user)
+        text_signup.stub(:user).and_return(@texting_user)
+        text_signup.status = 'twitter_signup_requested'
+        text_signup.save
+        text_signup.navigate_signup(text)
+      end
+
+      context "when the person enters the correct name" do
+        it "sets the status to complete" do
+          expect(text_signup.status).to eq 'complete'
+        end
+
+        it "texts the user that he is done" do
+          expect(text_signup.body).to include 'You are all done'
+        end
+      end
+
+      context "when the user enters a name that is not found" do 
+        it "tells the user that could not find his name" do
+          # expect(text_signup.body).to include 'You are all done'
+        end
+      end
+    end
   end
 
 end
