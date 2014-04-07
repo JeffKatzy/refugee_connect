@@ -48,6 +48,27 @@ describe TextSignup do
         expect(text_signup.user.time_zone).to eq 'America/New_York'
       end
 
+      context 'without a found user location' do
+        
+
+        context 'with country code of the US' do
+          let(:text) { FactoryGirl.build :text_from_user, city: '', state: '', zip: '' }
+          it "sets the role and time zone" do 
+            expect(text_signup.user.role).to eq 'tutor'
+            expect(text_signup.user.time_zone).to eq 'America/New_York'
+          end
+        end
+
+        context 'with country code of India' do
+          let(:text) { FactoryGirl.build :text_from_user, incoming_number: '912154997415', city: '', state: '', zip: '' }
+
+          it "sets the role and time zone" do 
+            expect(text_signup.user.role).to eq 'tutee'
+            expect(text_signup.user.time_zone).to eq 'New Delhi'
+          end
+        end
+      end 
+
   		context "without his name" do
         let(:text) { FactoryGirl.build :text_from_user, body: 'Cool' }
 		  	it "sets the body to 'Tell us your name' " do
@@ -99,8 +120,8 @@ describe TextSignup do
     before :each do 
       TextToUser.stub(:deliver) 
     end
-
-    let(:text_signup) { FactoryGirl.create :text_signup}
+    let(:user) { FactoryGirl.create(:tutor_available) }
+    let(:text_signup) { FactoryGirl.create :text_signup, user: user}
 
       context "when the state is class_days_requested" do
         context "and the user enters back the appropriate digits" do
@@ -162,7 +183,7 @@ describe TextSignup do
     before do 
       TextToUser.stub(:deliver) 
       @user = FactoryGirl.create(:tutor_available)
-      @text_signup = FactoryGirl.create(:text_signup, status: 'class_days_requested')
+      @text_signup = FactoryGirl.create(:text_signup, status: 'class_days_requested', user: @user)
     end
 
     context "when responding with days and state class_days_requested" do
@@ -190,8 +211,9 @@ describe TextSignup do
       TextToUser.stub(:deliver) 
     end
 
-    let(:text_signup) { FactoryGirl.create :text_signup}
-
+    let(:user) { FactoryGirl.create :tutor_available}
+    let(:text_signup) { FactoryGirl.create :text_signup, user: user}
+    
   	context "when the user has set class days" do
   		context "and there are days available" do
         let(:text) { FactoryGirl.build :text_from_user, body: '9' }
@@ -253,7 +275,7 @@ describe TextSignup do
           end
 
           it "sets the second time" do 
-            expect(text_signup.body).to include "Great! You now have a class set for Tuesday."
+            expect(text_signup.body).to include "Now signup for twitter"
           end
 
           it "creates a second opening" do 
@@ -283,7 +305,7 @@ describe TextSignup do
         end
 
   			it "asks for a twitter signup" do
-          expect(text_signup.body).to include "Now we need you to signup for twitter"
+          expect(text_signup.body).to include "Now signup for twitter"
   			end
   		end 
   	end

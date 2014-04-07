@@ -190,6 +190,17 @@ class User < ActiveRecord::Base
     self.save
   end
 
+  def set_time_zone_from_number
+    if self.cell_number[0] == '1'
+      self.role = 'tutor'
+      self.time_zone = 'America/New_York'
+    elsif self.cell_number[0..1] == '91'
+      self.role = 'tutee'
+      self.time_zone = 'New Delhi'
+    end
+    self.save
+  end
+
   def pull_photos
     begin
       Photo.pull_tweets(self)

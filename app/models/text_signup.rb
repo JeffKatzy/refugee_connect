@@ -22,11 +22,15 @@ class TextSignup < ActiveRecord::Base
   end
 
   def weekday
-  	['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  	['unavailable','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
   end
 
-  def times_open
+  def times_open_tutee
   	["7:30 am", "8:30 am", "9:30 am"]
+  end
+
+  def times_open_tutor
+  	["9:00 pm", "10:00 pm", "11:00 pm"]
   end
 
   def navigate_signup(text)
@@ -53,12 +57,14 @@ class TextSignup < ActiveRecord::Base
   	end
   end
 
-  def set_user_time_zone
+  def set_user_time_zone_and_role
   	user = self.user
   	if user.location.state == 'New York'
   		user.time_zone = 'America/New_York'
   	elsif user.location.country == 'India'
   		user.time_zone = 'New Delhi'
+  	else
+  		user.set_time_zone_from_number
   	end
   	user.save
   end
@@ -75,7 +81,7 @@ class TextSignup < ActiveRecord::Base
 	  location = user.build_location(city: text.city, state: text.state, zip: text.zip)
 	  self.user = user
 	  self.save
-	  set_user_time_zone
+	  set_user_time_zone_and_role
 	  user.save
 	  self.status = 'user_initialized'
 	  self.save
@@ -129,8 +135,17 @@ class TextSignup < ActiveRecord::Base
 		end
 	end
 
+	def available_times
+		if self.user.role == 'tutor'
+			times_open_tutor
+		else
+			times_open_tutee
+		end
+	end
+
 	def request_time_for_day(day_missing_time)
-		@body += "What time on #{day_missing_time} are you available? Are you available at 7:30 am, 8:30 am or 9:30 am?"
+		available_times
+		@body += "What time on #{day_missing_time} are you available? Are you available at #{available_times.join(" ")}?"
 		TextToUser.deliver(user, @body)
 		self.status = 'class_time_requested'
 		self.save
@@ -138,7 +153,7 @@ class TextSignup < ActiveRecord::Base
 
 	def look_for_time(text)
 		if text.body.match(/[123]/).present? && self.days_available.present?
-			time = times_open[text.body.to_i]
+			time = available_times[text.body.to_i]
 			Opening.create(user_id: text.user.id, day_open: day_missing_time, time_open: time)
 			@body += "Great! You now have a class set for #{day_missing_time}.  "
 			self.days_available = self.days_available[1..-1]
