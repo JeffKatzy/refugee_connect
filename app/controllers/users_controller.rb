@@ -22,13 +22,20 @@ class UsersController < ApplicationController
     end
   end
 
+  def new 
+    @user = User.find(session[:user_id]) if session[:user_id]
+    @user = User.new unless session[:user_id]
+  end
+
   def new_tutor
-    @user = User.new
+    @user = User.find(session[:user_id]) if session[:user_id]
+    @user = User.new unless session[:user_id]
     @user.openings.build
   end
 
   def new_tutee
-    @user = User.new
+    @user = User.find(session[:user_id]) if session[:user_id]
+    @user = User.new unless session[:user_id]
     @user.openings.build
   end
 

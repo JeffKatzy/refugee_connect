@@ -10,9 +10,7 @@ class SessionsController < ApplicationController
 		if @user.present? && @user.authenticate(params[:session][:password])
 			session[:user_id] = @user.id
 			redirect_to @user
-			#flash message welcome to the app
 		else
-			#flash message invalid
 			render 'new'
 		end
 	end
@@ -27,8 +25,8 @@ class SessionsController < ApplicationController
 	end
 
 	def create_omniauth
-    @user = User.from_omniauth(env["omniauth.auth"])
-    session[:user_id] = @user.id
+	    @user = User.from_omniauth(env["omniauth.auth"])
+	    session[:user_id] = @user.id
     if @user.new_user == true
       redirect_to new_user_path
     else

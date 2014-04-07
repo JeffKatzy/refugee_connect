@@ -218,6 +218,7 @@ class User < ActiveRecord::Base
       user.name = auth.info.name
       user.image = auth.info.image
       user.save
+      user.new_user = true
     end
   end
 

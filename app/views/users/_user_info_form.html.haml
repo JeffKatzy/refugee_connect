@@ -1,10 +1,11 @@
-.row
-  .one.half.pull-left.padded
-    = f.label :name
-    = f.text_field :name
-  .one.half.pull-left.padded
-    = f.label :email
-    = f.text_field :email
+- if @user.name
+  .row.padded
+    Thanks #{@user.name}! Now we just need a few things more.
+- else @user.name
+  .row
+    .one.half.pull-left.padded
+      = f.label :name
+      = f.text_field :name
 .row
   .one.half.pull-left.padded
     = f.label :cell_number
@@ -12,13 +13,14 @@
   .one.half.pull-left.padded
     = f.label :twitter_handle
     = f.text_field :twitter_handle
-.row
-  .one.half.pull-left.padded
-    = f.label :password
-    = f.password_field :password
-  .one.half.pull-left.padded
-    = f.label :password_confirmation
-    = f.password_field :password_confirmation
+- unless @user.password_digest
+  .row
+    .one.half.pull-left.padded
+      = f.label :password
+      = f.password_field :password
+    .one.half.pull-left.padded
+      = f.label :password_confirmation
+      = f.password_field :password_confirmation
 .row
   .one.half.pull-left.padded
     = f.label :per_week, 'How many sessions do you want to teach per week?'

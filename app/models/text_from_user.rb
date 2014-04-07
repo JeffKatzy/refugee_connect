@@ -82,7 +82,6 @@ class TextFromUser < ActiveRecord::Base
   def set_user
     find_user_from_number
     if (@user.present? && !@user.incomplete_mobile_signup?)
-      
       twilio_response
     else
       register_user
