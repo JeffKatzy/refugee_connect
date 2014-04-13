@@ -2,13 +2,14 @@
 #
 # Table name: text_to_users
 #
-#  id         :integer          not null, primary key
-#  user_id    :integer
-#  time       :datetime
-#  body       :text
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  received   :string(255)
+#  id             :integer          not null, primary key
+#  user_id        :integer
+#  time           :datetime
+#  body           :text
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  received       :string(255)
+#  appointment_id :integer
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

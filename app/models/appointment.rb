@@ -54,6 +54,8 @@ class Appointment < ActiveRecord::Base
   belongs_to :lesson
   has_many :call_to_users
   has_many :reminder_texts
+  has_many :text_from_users
+  has_many :text_to_users
   after_create :find_start_page, :remove_availability_occurrence, :make_incomplete, :make_match_unavailable, :send_confirmation_text
   validates :tutor, presence: true
   validates :tutee, presence: true

@@ -175,6 +175,20 @@ describe ReminderText do
   end
 
   describe "send_reminder_text" do
+    before :each do 
+      ReminderText.delete_all
+      TextToUser.any_instance.stub(:send_text)
+    end
+
+    it 'marks the reminder text with the proper appointments' do
+      @user = FactoryGirl.create(:user)
+      apt_just_before_text = FactoryGirl.create(:appointment, tutor: @user, tutee: @user)
+      apt_pm_text = FactoryGirl.create(:appointment, scheduled_for: Time.current + 3.hours, tutor: @user, tutee: @user)
+      apts = [apt_pm_text, apt_just_before_text]
+      ReminderText.send_reminder_text(apts, "begin_session")
+      expect(ReminderText.all.map(&:appointment).uniq).to eq [apts.first, apts.last]
+    end
+
   	context "when apt already had a text of that type" do
   		it "does not resend the text" do 
   			ReminderText.delete_all
@@ -183,10 +197,11 @@ describe ReminderText do
 
   			apt_just_before_text = FactoryGirl.create(:appointment)
   			apt_pm_text = FactoryGirl.create(:appointment)
+        apts = [apt_pm_text, apt_just_before_text]
 
   			apt_pm_text.reminder_texts << pm_reminder_text
   			apt_just_before_text.reminder_texts << just_before_text
-  			apts = [apt_pm_text, apt_just_before_text]
+  			
   			ReminderText.send_reminder_text(apts, "pm_reminder")
   			expect(ReminderText.all.count).to eq 3
   			expect(ReminderText.last.appointment).to eq apt_just_before_text

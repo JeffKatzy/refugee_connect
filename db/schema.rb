@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140401021821) do
+ActiveRecord::Schema.define(:version => 20140412210224) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -187,6 +187,7 @@ ActiveRecord::Schema.define(:version => 20140401021821) do
     t.string   "state"
     t.string   "zip"
     t.string   "country"
+    t.integer  "appointment_id"
   end
 
   create_table "text_signups", :force => true do |t|
@@ -202,9 +203,10 @@ ActiveRecord::Schema.define(:version => 20140401021821) do
     t.integer  "user_id"
     t.datetime "time"
     t.text     "body"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
     t.string   "received"
+    t.integer  "appointment_id"
   end
 
   create_table "tutoring_session_builders", :force => true do |t|

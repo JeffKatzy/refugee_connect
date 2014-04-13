@@ -2,13 +2,14 @@
 #
 # Table name: text_to_users
 #
-#  id         :integer          not null, primary key
-#  user_id    :integer
-#  time       :datetime
-#  body       :text
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  received   :string(255)
+#  id             :integer          not null, primary key
+#  user_id        :integer
+#  time           :datetime
+#  body           :text
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  received       :string(255)
+#  appointment_id :integer
 #
 
 require 'builder'
@@ -25,11 +26,18 @@ class TextToUser < ActiveRecord::Base
   def self.deliver(user, body)
     begin
   	 @text = TextToUser.create(body: body, user_id: user.id, time: Time.now.in_time_zone('Eastern Time (US & Canada)'))
-      @message = @@account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body, :status_callback => BASE_URL + "text_to_users/complete/#{@text.id}.xml")
-  	 puts @message 
+     @text.send_text(user, body)
     rescue => e
       "Failed in sending to user #{user.name} the message #{body}"
       raise e
     end
+    @text
   end
+
+  def send_text(user, body)
+    @message = @@account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body, :status_callback => BASE_URL + "text_to_users/complete/#{self.id}.xml")
+    puts @message  
+  end
+
+  # find the text message you relate to
 end

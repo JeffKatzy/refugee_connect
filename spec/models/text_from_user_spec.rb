@@ -12,6 +12,8 @@
 #  city            :string(255)
 #  state           :string(255)
 #  zip             :string(255)
+#  country         :string(255)
+#  appointment_id  :integer
 #
 
 require 'spec_helper'
@@ -91,7 +93,10 @@ describe TextFromUser do
 
   describe '#twilio_response' do
   	before do 
+      TextToUser.any_instance.stub(:send_text)
+      Appointment.delete_all
       @appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
+      ReminderText.begin_session
   		@text = FactoryGirl.create(:text_from_user, body: body)
   	end
 
@@ -100,6 +105,7 @@ describe TextFromUser do
 
 	  	it "should attempt session" do 
 	  		expect(@text).to receive(:attempt_session)
+        expect(@appointment).to receive(:start_call)
 	  	end
   	end
   end

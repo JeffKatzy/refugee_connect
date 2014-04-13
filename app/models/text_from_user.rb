@@ -12,11 +12,14 @@
 #  city            :string(255)
 #  state           :string(255)
 #  zip             :string(255)
+#  country         :string(255)
+#  appointment_id  :integer
 #
 
 require 'builder'
 class TextFromUser < ActiveRecord::Base
   belongs_to :user
+  belongs_to :appointment
   attr_accessible :body, :time, :user_id, :incoming_number
   after_create :set_user
 
@@ -50,10 +53,11 @@ class TextFromUser < ActiveRecord::Base
   #the only thing untested is attempt session.
   def attempt_session
     self.user.reload
-    if self.user.appointments.this_hour.present? 
-      appointment = user.appointments.where("scheduled_for between (?) and (?)", Time.current.beginning_of_hour, Time.current.end_of_hour).first
+    last_text = user.text_to_users.last
+    apt = last_text.appointment
+    # if apt.scheduled_for.hour == Time.current.hour
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
-      appointment.start_call
+      apt.start_call
     else
       appointment = user.appointments.next_appointment
       begin
@@ -69,7 +73,6 @@ class TextFromUser < ActiveRecord::Base
     appointment = user.appointments.needs_text.most_recent.first
     appointment.finish_page = body.to_i  
     appointment.save
-
     user.set_current_lesson(appointment.finish_page)
     TextToUser.deliver(user, "Thanks, we just saved the page number.")
   end

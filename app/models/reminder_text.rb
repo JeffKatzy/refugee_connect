@@ -53,8 +53,12 @@ class ReminderText < ActiveRecord::Base
     appointments_batch.each do |apt|
       unless apt.reminder_texts.where(category: "#{category}").any?
         body = ReminderText.body(apt, category)
-        TextToUser.deliver(apt.tutor, body) 
-        TextToUser.deliver(apt.tutee, body) unless category == SET_PAGE_NUMBER
+        tutor_text = TextToUser.deliver(apt.tutor, body) 
+        tutee_text = TextToUser.deliver(apt.tutee, body) unless category == SET_PAGE_NUMBER
+        tutor_text.appointment = apt
+        tutee_text.appointment = apt
+        tutor_text.save
+        tutee_text.save
         reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id, category: category) 
       end
     end

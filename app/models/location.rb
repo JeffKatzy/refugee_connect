@@ -12,6 +12,7 @@
 #  city       :string(255)
 #  state      :string(255)
 #  zip        :string(255)
+#  country    :string(255)
 #
 
 class Location < ActiveRecord::Base
