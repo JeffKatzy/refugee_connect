@@ -18,7 +18,8 @@
 #
 
 class Appointment < ActiveRecord::Base
-  attr_accessible :finish_page, :start_page, :status, :scheduled_for, :tutor_id, :began_at, :ended_at, :tutee_id, :availability_manager_id
+  include MultiparameterDateTime
+  attr_accessible :finish_page, :start_page, :status, :scheduled_for, :tutor_id, :began_at, :ended_at, :tutee_id, :availability_manager_id, :scheduled_for_date_part, :scheduled_for_time_part
 
   default_scope where("tutee_id IS NOT NULL AND tutor_id IS NOT NULL")
   scope :after, ->(time) { where("scheduled_for >= ?", time) }
@@ -44,6 +45,9 @@ class Appointment < ActiveRecord::Base
   scope :next_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour)
   
   #check to see if this still works
+
+   multiparameter_date_time :scheduled_for
+
   belongs_to :user
   belongs_to :appointment_partner_of_tutor, class_name: 'User', foreign_key: :tutee_id
   belongs_to :appointment_partner_of_tutee, class_name: 'User', foreign_key: :tutor_id

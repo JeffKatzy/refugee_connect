@@ -55,7 +55,7 @@ class TextFromUser < ActiveRecord::Base
     self.user.reload
     last_text = user.text_to_users.last
     apt = last_text.appointment
-    # if apt.scheduled_for.hour == Time.current.hour
+    if apt.scheduled_for.hour == Time.current.hour
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
       apt.start_call
     else

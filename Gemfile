@@ -31,6 +31,8 @@ gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
 gem 'geocoder'
+gem 'best_in_place'
+gem 'multiparameter_date_time'
 
 
 group :production do 

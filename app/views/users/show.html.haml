@@ -2,24 +2,30 @@
 	.four.centered.fifths#main
 		.row.triple-pad-top
 			#info
-				.one.third.double-padded
+				.one.fourth.double-padded
 					%h1#basic_info_user_name.pad-bottom.align-center.responsive
 						= @user.location.geocoder_address_info.try(:city) + ", " + @user.location.geocoder_address_info.try(:state) if @user.location
 					#map
 						#map_canvas.rounded
-				.one.third.double-padded
-					%h1#basic_info_user_name.pad-bottom.responsive=@user.name
+				.one.fourth.double-padded
+					%h1#basic_info_user_name.pad-bottom.responsive= best_in_place @user, :name, :type => :select, :collection => [["Jeff", "Jeff"], ["8:30", "8:30"], ["9:30", "9:30"], ["10:30", "10:30"]], :display_as => :name
 					#basic_info_profile_summary.box
 						= "Classes completed: #{pluralize(@user.appointments.complete.count, "class")}"
 						- if @user.is_tutor?
 							%p= "Current students: #{pluralize(@user.appointment_partners.count, "student")}"
 						- else
 							%p= "Current teachers: #{pluralize(@user.appointment_partners.count, "teacher")}"
-				.one.third.double-padded
-					%h1#basic_info_user_name.pad-bottom.responsive Upcoming sessions	
+				.one.fourth.double-padded
+					%h1#basic_info_user_name.pad-bottom.responsive Upcoming availabilities
 					.box
 						- @user.availability_manager.remaining_occurrences(Time.current + 14.days).each do |occurrence|
 							%p= occurrence.in_time_zone(@user.time_zone).strftime("%B %-d at %I:%M%p on %A")
+				.one.fourth.double-padded
+					%h1#basic_info_user_name.pad-bottom.responsive Upcoming Apts
+					.box
+						- @user.appointments.after(Time.current).each do |apt|
+							%p= best_in_place apt, :scheduled_for_time_part, :type => :select, :collection => [["7:30 am", "7:30 am"], ["8:30 am", "8:30 am"], ["9:30 am", "9:30 am"], ["10:30 am", "10:30 am"]]
+							= best_in_place apt, :scheduled_for_date_part, :type => :date
 			.main_section
 				- if @user.role == 'tutee'
 					- @user.photos.tweet_created_at_asc.each do |photo|

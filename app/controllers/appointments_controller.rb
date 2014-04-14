@@ -1,4 +1,5 @@
 class AppointmentsController < ApplicationController
+  respond_to :html, :json
 
   def calluser #this connects the student to the refugee in the scheduled phone call
     @appointment = Appointment.find(params[:id])
@@ -20,6 +21,12 @@ class AppointmentsController < ApplicationController
     @appointment = Appointment.find(params[:id])
     @appointment.complete
     render status: 200
+  end
+
+  def update
+    @appointment = Appointment.find(params[:id])
+    @appointment.update_attributes(params[:appointment])
+    respond_with @appointment
   end
 
   def show
