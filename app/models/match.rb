@@ -117,21 +117,23 @@ class Match < ActiveRecord::Base
       end_time = start_time + 1.hour
       if second_user.availability_manager.schedule.occurring_between?(start_time, end_time) #this is the line that turns on and off depending on if exact match
       	next if second_user_is_match_partner && Match.already_a_match(first_user, second_user, start_time) #this 'already' method should be a validation
-      	match = Match.new(match_time: start_time)
-      	match.assign_user_role(first_user.id)
-      	match.assign_user_role(second_user.id)
-        if match.invalid?
-          logger.debug "#{match.errors}"
-          next #notice without save
-        else 
-          match.save
-        end
+      	Match.match_from_users_and_time(first_user, second_user, start_time)
       end
     end
-    
   end
 
-
+  def self.match_from_users_and_time(first_user, second_user, start_time)
+    match = Match.new(match_time: start_time)
+    match.assign_user_role(first_user.id)
+    match.assign_user_role(second_user.id)
+    if match.invalid?
+      logger.debug "#{match.errors}"
+      return match
+    else 
+      match.save
+      return match
+    end
+  end
   #note that you may want match create to actually return the created matches
 
   def self.already_a_match(first_user, second_user, start_time)

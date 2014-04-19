@@ -57,6 +57,15 @@ class UsersController < ApplicationController
     end
   end
 
+  def manual_match
+    user = User.find(params[:user_id])
+    index = params[:index].to_i
+    time = user.availability_manager.remaining_occurrences(Time.current + 14.days)[index]
+    match = Match.match_from_users_and_time(user, @auth, time)
+    apt = match.convert_to_apt
+    redirect_to user
+  end
+
   def show
     @user = User.find(params[:id])
   end

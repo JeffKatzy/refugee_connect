@@ -5,9 +5,11 @@ RefugeeConnect::Application.routes.draw do
   match 'users/new_tutee', to: 'users#new_tutee'
   get 'users/cancel' => 'users#cancel'
   get 'users/match/:user_id' => 'users#match', as: :match_users
+  get 'users/manual_match/:user_id/:index' => 'users#manual_match'
   resources :users
   resources :appointments
   resources :lessons
+  resources :matches
   post 'user_assignments/assign/:assignment_id', to: 'user_assignments#assign'
 
   post 'appointments/batch'
