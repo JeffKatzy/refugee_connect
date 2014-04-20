@@ -25,7 +25,7 @@ describe AvailabilityManager do
       availability_manager.schedule_hash.should be_a_kind_of(Hash)
     end
 
-    it 'should have a start time in the users timezone' do 
+    it 'should have a start time in the UTC timezone' do 
       availability_manager.schedule.start_time.zone.should == "UTC"
     end
   end

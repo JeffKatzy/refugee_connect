@@ -60,7 +60,7 @@ class Appointment < ActiveRecord::Base
   has_many :reminder_texts
   has_many :text_from_users
   has_many :text_to_users
-  after_create :find_start_page, :remove_availability_occurrence, :make_incomplete, :make_match_unavailable, :send_confirmation_text
+  after_create :find_start_page, :make_incomplete, :make_match_unavailable, :send_confirmation_text
   validates :tutor, presence: true
   validates :tutee, presence: true
   validate :too_many_apts
@@ -122,15 +122,6 @@ class Appointment < ActiveRecord::Base
 
   def self.needs_page_number
     where('status == complete AND finish_page == nil')
-  end
-
-  def remove_availability_occurrence
-    if tutor.present?
-      tutor.availability_manager.remove_occurrence(self.scheduled_for)
-    end
-    if tutee.present?
-      tutee.availability_manager.remove_occurrence(self.scheduled_for)
-    end
   end
 
   def find_start_page

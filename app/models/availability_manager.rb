@@ -50,22 +50,16 @@ class AvailabilityManager < ActiveRecord::Base
 
   def remove_occurrence(datetime)
     schedule.add_exception_time(datetime)
+    save_schedule
   end
 
   def occurrence_rules
     schedule.recurrence_rules
-  end
-
-  def occurrences_this_or_next_week
-    if remaining_occurrences_this_week.empty?
-      remaining_occurrences_next_week 
-    else
-      remaining_occurrences_this_week
-    end
-  end
+  end 
 
   def remaining_occurrences(datetime)
-    schedule.occurrences(datetime).select { |time| time > Time.current }
+    occurrences = schedule.occurrences(datetime).select { |time| time > Time.current }
+    occurrences - user.appointments.after(Time.current).before(datetime).map(&:scheduled_for)
   end
 
   def available_before?(datetime)
