@@ -27,6 +27,12 @@ class UsersController < ApplicationController
     @user = User.new unless session[:user_id]
   end
 
+  def update
+    u = User.find(params[:id])
+    u.update_attributes(params[:user])
+    redirect_to u
+  end
+
   def new_tutor
     @user = User.find(session[:user_id]) if session[:user_id]
     @user = User.new unless session[:user_id]
