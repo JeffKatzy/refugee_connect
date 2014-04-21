@@ -46,7 +46,8 @@ class UsersController < ApplicationController
   end
 
   def index
-    @users = User.all
+    @tutors = User.where(role: 'tutor')
+    @tutees = User.where(role: 'tutee')
   end
 
   def match

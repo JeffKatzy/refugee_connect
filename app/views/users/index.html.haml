@@ -1,2 +1,11 @@
-- @users.each do |user|
-  %p= user.name
+.row
+	.one.sixth
+	.two.sixths
+		%p Tutors
+		- @tutors.each do |tutor|
+			%p= link_to tutor.name, user_path(tutor)
+	.two.sixths
+		%p Tutees
+		- @tutees.each do |tutee|
+			%p= link_to tutee.name, user_path(tutee)
+	.one.sixth
