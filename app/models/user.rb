@@ -228,6 +228,16 @@ class User < ActiveRecord::Base
     false
   end
 
+  def potential_partner_with?(user)
+    if self.role == 'tutor' && user.role == 'tutee'
+      true
+    elsif self.role == 'tutee' && user.role == 'tutor'
+      true
+    else
+      false
+    end
+  end
+
   private 
 
   def format_phone_number
