@@ -26,13 +26,17 @@
 					%h1#basic_info_user_name.pad-bottom.responsive Upcoming Apts
 					.box
 						- @user.appointments.after(Time.current).each do |apt|
-							= best_in_place apt, :scheduled_for_date_part, :type => :date
-							= best_in_place apt, :scheduled_for_time_part, :type => :select, :collection => [["7:30 am", "7:30 am"], ["8:30 am", "8:30 am"], ["9:30 am", "9:30 am"], ["10:30 am", "10:30 am"]]
-							- if @user.is_tutor?
-								= "with #{apt.tutee.name}"
-							- else
-								= "with #{apt.tutor.name}" 
-							Click to edit
+							.row
+								= apt.id
+								- if @auth.is_tutor?
+									= best_in_place apt, :scheduled_for_est_date_part, :type => :date
+									= best_in_place apt, :scheduled_for_est_time_part, :type => :select, :collection => [["9:00 pm", "9:00 pm"], ["10:00 pm", "10:00 pm"], ["11:00 pm", "11:00 pm"]]
+									= "with #{apt.tutee.name}"
+								- else
+									= best_in_place apt, :scheduled_for_ist_date_part, :type => :date
+									= best_in_place apt, :scheduled_for_ist_time_part, :type => :select, :collection => [["7:30 am", "7:30 am"], ["8:30 am", "8:30 am"], ["9:30 pm", "9:30 am"]]
+									= "with #{apt.tutor.name}" 
+								Click to edit
 			.main_section
 				- if @user.role == 'tutee'
 					- @user.photos.tweet_created_at_asc.each do |photo|

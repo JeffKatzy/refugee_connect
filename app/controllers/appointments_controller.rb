@@ -25,7 +25,11 @@ class AppointmentsController < ApplicationController
 
   def update
     @appointment = Appointment.find(params[:id])
-    @appointment.update_attributes(params[:appointment])
+    if @auth.is_tutor?
+      @appointment.set_scheduled_for_est(params[:appointment])
+    else
+      @appointment.set_scheduled_for_ist(params[:appointment])
+    end
     if @appointment.previous_changes.keys.include?("scheduled_for")
       @appointment.status = 'pending'
       @appointment.save

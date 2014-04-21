@@ -46,7 +46,9 @@ class Appointment < ActiveRecord::Base
   
   #check to see if this still works
 
+   multiparameter_date_time :scheduled_for_est
    multiparameter_date_time :scheduled_for
+   multiparameter_date_time :scheduled_for_ist
 
   belongs_to :user
   belongs_to :appointment_partner_of_tutor, class_name: 'User', foreign_key: :tutee_id
@@ -106,6 +108,43 @@ class Appointment < ActiveRecord::Base
   def self.batch_for_one_day_from_now
     Appointment.fully_assigned.where("scheduled_for between (?) and (?)", 
       (Time.current.utc + 24.hours).beginning_of_hour, (Time.current.utc + 24.hours).end_of_hour)
+  end
+
+  def scheduled_for_est
+    self.scheduled_for.in_time_zone("America/New_York")
+  end
+
+  def scheduled_for_ist
+    self.scheduled_for.in_time_zone("New Delhi")
+  end
+
+  def set_scheduled_for_est(params)
+    if params[:scheduled_for_est_time_part]
+      new_time = Chronic.parse(params[:scheduled_for_est_time_part])
+      old_time = Chronic.parse(self.scheduled_for_est_time_part)
+      self.advance(old_time, new_time)
+      self.save(validate: false)
+    else params[:scheduled_for_est_date_part]
+      self.scheduled_for = (Time.parse(params[:scheduled_for_est_date_part] + " " + scheduled_for_est_time_part + " est")).utc
+      self.save
+    end
+  end
+
+  def set_scheduled_for_ist(params)
+    if params[:scheduled_for_ist_time_part]
+      new_time = Chronic.parse(params[:scheduled_for_ist_time_part])
+      old_time = Chronic.parse(self.scheduled_for_ist_time_part)
+      self.advance(old_time, new_time)
+      self.save(validate: false)
+    else params[:scheduled_for_ist_date_part]
+      self.scheduled_for = (Time.parse(params[:scheduled_for_ist_date_part] + " " + scheduled_for_ist_time_part + " ist")).utc
+      self.save
+    end
+  end
+
+  def advance(old_time, new_time)
+    diff_in_hours = (new_time - old_time)/(60*60)
+    self.scheduled_for += diff_in_hours.hours
   end
 
   def self.batch_for_just_before
