@@ -10,6 +10,10 @@
 					%p
 						%i.icon-check
 						Sign In With Facebook
-		%p#hero_inside_link
-			= link_to 'Login', new_session_path
+			%p#hero_inside_link
+				.span
+					.one.half
+						= link_to 'Login without Facebook', new_session_path
+					.one.half
+						= link_to("Signup without Facebook", new_user_path)
 
