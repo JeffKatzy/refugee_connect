@@ -54,12 +54,18 @@ class ReminderText < ActiveRecord::Base
       unless apt.reminder_texts.where(category: "#{category}").any?
         body = ReminderText.body(apt, category)
         tutor_text = TextToUser.deliver(apt.tutor, body) 
-        tutee_text = TextToUser.deliver(apt.tutee, body) unless category == SET_PAGE_NUMBER
         tutor_text.appointment = apt
-        tutee_text.appointment = apt
         tutor_text.save
-        tutee_text.save
         reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id, category: category) 
+        begin
+          tutee_text = TextToUser.deliver(apt.tutee, body) 
+          tutee_text.appointment = apt
+          tutee_text.save
+        rescue
+          return puts "could not send to tutee"
+          tutee_text.received = "could_not_send"
+          tutee_text.save
+        end
       end
     end
   end
