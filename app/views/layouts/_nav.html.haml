@@ -8,5 +8,5 @@
 					%li= link_to 'Sign Up', new_user_path, id: 'register_btn' if @auth.nil?
 					%li= link_to 'Login', signin_path if @auth.nil?
 					%li.relative.middle.right.padded= link_to 'Browse Users', users_path if @auth.present?
-					%li.relative.middle.right.padded.login_user_name= "Welcome #{@auth.name}" if @auth.present?
+					%li.relative.middle.right.padded= link_to "Welcome #{@auth.name}", user_path(@auth) if @auth.present?
 					%li.relative.middle.right.padded= link_to 'Signout', signout_path if @auth.present?
