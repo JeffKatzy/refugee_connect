@@ -29,7 +29,7 @@ class Photo < ActiveRecord::Base
   	begin
   		Photo.twitter.user(user.twitter_handle)
   	rescue
-  		errors[:base] << "Both tutor and tutee must want more apppointments."
+  		return true
   	end
   end
 

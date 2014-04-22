@@ -68,8 +68,6 @@ class User < ActiveRecord::Base
 
   APPOINTMENTS_COUNT_MIN = 1
 
-  
-
   def appointments
     if self.is_tutor?
       appointments_of_tutor || appointments_of_tutee
@@ -87,7 +85,9 @@ class User < ActiveRecord::Base
   end
 
   def check_user_twitter
-    Photo.check_user(self)
+    if self.twitter_handle.present?
+      Photo.check_user(self)
+    end
   end
 
   def matches
