@@ -108,7 +108,7 @@ class User < ActiveRecord::Base
 
   def set_current_lesson(page_number)
     lesson = Lesson.covers_page(page_number).last
-    ul = user.user_lessons.where(lesson_id: lesson.id).first
+    ul = self.user_lessons.where(lesson_id: lesson.id).first
     ul.make_current
   end
 

@@ -76,7 +76,7 @@ class TextFromUser < ActiveRecord::Base
     appointment = user.appointments.needs_text.most_recent.first
     appointment.finish_page = body.to_i  
     appointment.save
-    user.set_current_lesson(appointment.finish_page)
+    # user.set_current_lesson(appointment.finish_page)
     TextToUser.deliver(user, "Thanks, we just saved the page number.")
   end
 
