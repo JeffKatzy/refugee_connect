@@ -52,12 +52,15 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
+    puts "here"
     self.user.reload
     last_text = user.text_to_users.last
-    apt = last_text.appointment
-    if apt.scheduled_for.hour == Time.current.hour
+    self.appointment = last_text.appointment
+    self.save
+    if appointment.scheduled_for.hour == Time.current.hour
+      puts "now here"
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
-      apt.start_call
+      appointment.start_call
     else
       appointment = user.appointments.next_appointment
       begin

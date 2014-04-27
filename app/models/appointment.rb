@@ -190,7 +190,7 @@ class Appointment < ActiveRecord::Base
     self.status = 'In Progress'
     self.save
 
-  	self.call_to_users.build(tutor_id: tutor.id, tutee_id: tutee.id)
+  	self.call_to_users.build(tutor_id: self.tutor.id, tutee_id: self.tutee.id)
   	self.call_to_users.last.start_call
   end
 
