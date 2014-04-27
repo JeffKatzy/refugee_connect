@@ -77,7 +77,7 @@ class TextFromUser < ActiveRecord::Base
     puts "in set_new_page"
     appointment = user.appointments.needs_text.most_recent.first
     appointment.finish_page = body.to_i  
-    appointment.save
+    appointment.save(validate: false)
     puts "updating appointment #{appointment.id} with page number #{body.to_i} and it saved as #{appointment.finish_page}"
     # user.set_current_lesson(appointment.finish_page)
     TextToUser.deliver(user, "Thanks, we just saved the page number.")
