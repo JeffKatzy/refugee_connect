@@ -93,20 +93,34 @@ describe TextFromUser do
 
   describe '#twilio_response' do
   	before do 
+      User.delete_all
       TextToUser.any_instance.stub(:send_text)
       Appointment.delete_all
-      @appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
-      ReminderText.begin_session
-  		@text = FactoryGirl.create(:text_from_user, body: body)
+      @appointment  = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: status)
   	end
+
+    let(:text) { FactoryGirl.create(:text_from_user, body: body) }
 
   	context "when text is go" do 
   		let(:body) { 'go' }
+      let(:status) { 'incomplete' }
+      ReminderText.begin_session
 
 	  	it "should attempt session" do 
-	  		expect(@text).to receive(:attempt_session)
+        text
         expect(@appointment).to receive(:start_call)
 	  	end
   	end
+
+    context "when text is 3" do 
+      let(:body) { '3' }
+      let(:status) { 'complete' }
+
+      it "should set the page" do 
+        text
+        @appointment.reload
+        expect(@appointment.finish_page).to eq 3
+      end
+    end
   end
 end

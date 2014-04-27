@@ -41,6 +41,7 @@ class TextFromUser < ActiveRecord::Base
       end
     elsif body.to_i != 0
       if user.appointments.needs_text.present?
+        puts "about to call set_new_page"
         set_new_page 
       else
         TextToUser.deliver(user, "We can only save page numbers for sessions where you did not tell us page number.")
@@ -52,13 +53,13 @@ class TextFromUser < ActiveRecord::Base
 
   #the only thing untested is attempt session.
   def attempt_session
-    puts "here"
+    puts "in attempt_session"
     self.user.reload
     last_text = user.text_to_users.last
     self.appointment = last_text.appointment
     self.save
     if appointment.scheduled_for.hour == Time.current.hour
-      puts "now here"
+      puts "about to call start_call"
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
       appointment.start_call
     else
@@ -73,6 +74,7 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def set_new_page
+    puts "in set_new_page"
     appointment = user.appointments.needs_text.most_recent.first
     appointment.finish_page = body.to_i  
     appointment.save
