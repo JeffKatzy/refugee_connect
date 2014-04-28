@@ -9,7 +9,7 @@
     = render 'user_info_form', f: f
     = f.fields_for :openings do |form|
       = form.label :day_open, "day open"
-      = form.select("day_open", {"Sunday" => "Sunday", "Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday", "Saturday" => "Saturday"})
+      = form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
       = form.label :time_open, "time open"
       = form.select("time_open", {"7:30 am" => "7:30 am", "8:30 am" => "8:30 am", "9:30 am" => "9:30 am" })
       .row.padded
