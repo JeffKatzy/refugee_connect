@@ -8,4 +8,5 @@
 //= require 'connect.js'
 //= require 'maps.js'
 //= require jquery.purr
+//= require bootstrap/modal
 //= require best_in_place

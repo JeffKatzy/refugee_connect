@@ -32,6 +32,7 @@ gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
 gem 'geocoder'
 gem 'best_in_place'
+gem 'bootstrap-sass', '~> 3.1.1'
 
 
 group :production do 

@@ -1,3 +1,11 @@
+.modal.fade#myModal{'role' => 'dialog', 'aria-labelledby' => 'myModalLabel', 'aria-hidden' => 'true'} 
+	.modal-dialog
+		.modal-content
+			.modal-header
+				.modal-title
+					Hello
+				.modal-body
+					Body
 .row#background_show
 	.four.centered.fifths#main
 		.row.triple-pad-top
@@ -22,6 +30,7 @@
 							= occurrence.in_time_zone(@user.time_zone).strftime("%B %-d at %I:%M%p on %A")
 							= link_to 'Signup', "manual_match/#{@user.id}/#{idx}" if @auth.potential_partner_with?(@user)
 							%br
+						.button.green{'data-toggle' => 'modal', 'data-target' => '#myModal'} Hello
 				.one.fourth.double-padded
 					%h1#basic_info_user_name.pad-bottom.responsive Upcoming Apts
 					.box
