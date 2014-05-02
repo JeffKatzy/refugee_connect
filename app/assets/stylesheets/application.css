@@ -1,7 +1,7 @@
 /*
- *= require 'connecter.scss'
+ *= require bootstrap_and_overrides
  *= require 'groundwork/css/groundwork.css'
  *= require jquery.ui.all
  *= require font-awesome
- *= require bootstrap
+ *= require 'connecter.scss'
 */
