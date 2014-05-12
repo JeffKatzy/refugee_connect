@@ -7,7 +7,7 @@
 }
 
 body {
-	background-color: rgb(221, 221, 221);
+	
 }
 
 #map {
@@ -31,8 +31,64 @@ body {
 	margin: 0 auto;
 }
 
+#shloka { 
+  background-image: image-url('shlokasphoto.jpg'); 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 550px;
+  width: 1272px;
+  margin-bottom: 40px;
+
+  };
+
+ .homepage-header {
+ 	max-width: 980px;
+ 	padding: 6em 0;
+ 	margin: auto;
+ 	color: #303030;
+ }
+
+ .mission_statement {
+ 	color: #303030;
+ 	text-align: center;
+ }
+
+ .homepage-herotext {
+ 	margin-left: auto;
+ 	max-width: 313px;
+ 	color: #303030;
+ }
+
+ .homepage-hero-paragraph{
+ 	margin-left: auto;
+	max-width: 430px;
+ }
+
+.nav {
+	border: none;
+}
+
+.explanation {
+	background-color: white;
+}
+
+.homepage_button_wrapper {
+		text-align: right;
+		max-width: 960px;
+	}
+
 #navigation {
-	background-color: rgb(85, 85, 85)
+	background-color: #303030;
+}
+
+.apply_font {
+	font-family: 'PT Sans';
+}
+
+.roboto {
+	font-family: 'Roboto';	
 }
 
 #navigation a {
@@ -40,8 +96,9 @@ body {
 	background: none;
 	color: white;
 	letter-spacing: .16em;
-	font-family: Amatic SC;
-	font-size: 22px;
+	font-size: 13px;
+	font-family: 'Roboto';	
+	color: #e5e3e3;
 }
 
 #navigation li {
@@ -49,7 +106,6 @@ body {
 	background: none;
 	color: white;
 	letter-spacing: .16em;
-	font-family: Amatic SC;
 	font-size: 22px;
 }
 
@@ -93,10 +149,12 @@ body {
 
 .yb_button {
 	letter-spacing: .15em;
-	padding: .8em 1.3em;
+	padding: .3em;
 	margin-bottom: 10px;
 	border-radius: 4px;
 	font-size: 17px;
+	margin: 0px 0px;
+	clear: both;
 }
 
 #hero_inside_big_button p {
@@ -114,7 +172,6 @@ body {
 #icon a
 {
 	background: none;
-	color: yellow;
 	padding-top: 15px;
 }
 

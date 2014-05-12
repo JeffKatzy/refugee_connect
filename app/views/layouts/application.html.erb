@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
+<link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
   <meta charset="utf-8" />
 
   <!-- Set the viewport width to device width for mobile -->
@@ -8,9 +11,11 @@
 
   <!-- <title>Welcome to Foundation | Homepage</title> -->
   <title>SpeakLoud</title>
+
   <%= stylesheet_link_tag  "application", :media => "all" %>
 
   <%= javascript_include_tag "application" %>
+
   <%= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=#{ENV['GOOGLE']}&sensor=false" %>
   <%= csrf_meta_tags %>
 

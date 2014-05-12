@@ -1,0 +1,30 @@
+%section.row.six.sixths
+	.row.two.sixths.centered
+		= render 'shared/error_messages', user: @user
+	.row.five.sixths
+		%p.pull-left.padded
+			= link_to 'I want to teach', "/users/new_tutor", remote: true, :class => 'button tiny radius padded', id: 'new_tutor_button'
+			= link_to 'I want to learn', "/users/new_tutee", remote: true, :class => 'button tiny radius padded', id: 'new_tutee_button'
+	.row.six.twelfths#hero_inside_large_text.color-gray.padded
+		I can teach...
+.row.padded
+	.row#openings_grid
+		.row
+			- ['Timing', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'].each do |day|
+				.one.fifth.three-up-small-tablet.two-up-mobile
+					.box.background-blue
+						= day
+		- ['8 pm', '9 pm', '10 pm'].each do |time|
+			.equalize.row
+				.one.fifth.three-up-small-tablet.two-up-mobile
+					.box.background-blue
+						%h4= "#{time}"
+				- ['Monday', 'Tuesday', 'Wednesday', 'Thursday'].each do |day|
+					.one.fifth.three-up-small-tablet.two-up-mobile
+						.box.available.row{:'data-day' => "#{day}", :'data-time' => "#{time}"}
+							%h4.centered= "#{day} at #{time}" 
+							.one.half
+								= image_tag "pic1-100-100.jpg"
+							.one.half
+								%p Abishek
+								%p New Delhi, India

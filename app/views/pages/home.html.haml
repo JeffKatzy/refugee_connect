@@ -1,19 +1,14 @@
-%section.row#hero.six.sixths
-	.row#hero_inside.eight.centered.twelfths
-		%p#hero_inside_large_text.double.padded 
-			Teach skills to the people who need them most.
-			Tutor directly and learn their story.
-		%p#hero_inside_text  It starts with one phone call
-		.row.six.centered.twelfths
+.container_home
+	#shloka
+		.homepage-header
+			%h1.homepage-herotext
+				Teach English to the ones who need it most
+			.homepage-hero-paragraph
+				%h3.pull-right It begins with one phone call.
 			= link_to('auth/facebook') do 
-				%button.yb_button.blue.center#hero_inside_big_button 
-					%p
-						%i.icon-check
-						Sign In With Facebook
-			%p#hero_inside_link
-				.span
-					.one.half
-						= link_to 'Login without Facebook', new_session_path
-					.one.half
-						= link_to("Signup without Facebook", new_user_path)
+				%button.yb_button.blue.center.pull-right
+					%p Sign up
+	%section.explanation
+		%h3.mission_statement We're on a mission to bring education to those who need it most.  Join us.
+		.calls_to_action
 
