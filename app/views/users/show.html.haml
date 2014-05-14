@@ -46,7 +46,7 @@
 					%h1#basic_info_user_name.pad-bottom.responsive Upcoming availabilities
 					.box
 						- @user.availability_manager.remaining_occurrences(Time.current + 14.days).each_with_index do |occurrence, idx|
-							= occurrence.in_time_zone(@user.time_zone).strftime("%B %-d at %l:%M %p on %A")
+							= occurrence.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")
 							= link_to 'Signup', "manual_match/#{@user.id}/#{idx}" if @auth.potential_partner_with?(@user)
 							%br
 						- if @auth == @user
