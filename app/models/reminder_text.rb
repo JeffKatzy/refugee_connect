@@ -30,7 +30,7 @@ class ReminderText < ActiveRecord::Base
   #perhaps use state machine here
 
   def self.begin_session
-    appointments_batch = Appointment.batch_for_this_hour  	
+    appointments_batch = Appointment.batch_for_begin_text  	
     ReminderText.send_reminder_text(appointments_batch, BEGIN_SESSION) 
   end
 

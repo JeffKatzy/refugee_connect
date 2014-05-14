@@ -37,11 +37,11 @@ class Appointment < ActiveRecord::Base
   scope :in_half_a_day, where("scheduled_for between (?) and (?)", Time.current.utc + 16.hours, (Time.current.utc + 16.7.hours))
   scope :in_forty_minutes, where("scheduled_for between (?) and (?)", Time.current.utc, (Time.current.utc + 40.minutes))
   scope :fully_assigned, where("tutee_id IS NOT NULL AND tutor_id IS NOT NULL")
+  scope :unstarted, where("began_at IS NULL")
 
   scope :most_recent, complete.recent_inclusive
 
   scope :this_hour, where("scheduled_for between (?) and (?)", Time.current.beginning_of_hour, Time.current.end_of_hour)
-  scope :batch_for_this_hour, this_hour
   scope :next_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour)
   
   #check to see if this still works
@@ -101,8 +101,8 @@ class Appointment < ActiveRecord::Base
     apts
   end
 
-  def self.batch_for_this_hour
-    Appointment.fully_assigned.after(Time.current.beginning_of_hour.utc).before(Time.current.end_of_hour.utc)
+  def self.batch_for_begin_text
+    Appointment.fully_assigned.unstarted.after(Time.current.utc.beginning_of_hour).before(Time.current.utc)
   end
 
   def self.batch_for_one_day_from_now

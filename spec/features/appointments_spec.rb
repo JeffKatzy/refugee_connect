@@ -34,7 +34,7 @@ describe 'Appointments' do
 			hour = apt_time.hour
 			date = DateTime.new 2013,day,month,hour,00,00
 			Timecop.travel(date)
-			Appointment.batch_for_this_hour.should eq [Appointment.last]
+			Appointment.batch_for_begin_text.should eq [Appointment.last]
 			ReminderText.begin_session
 			visit '/text_from_user/+12154997415/Go'
 			Timecop.return

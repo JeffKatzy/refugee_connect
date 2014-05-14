@@ -317,22 +317,36 @@ describe Appointment do
 		end
 	end
 
-	describe '.batch_for_this_hour' do
+	describe '.batch_for_begin_text' do
+		let(:began_at) { nil }
+		let(:hour_plus_twenty) { Time.current.utc.beginning_of_hour + 20.minutes }
+		let(:hour_plus_ten) { Time.current.utc.beginning_of_hour + 10.minutes }
+
 		before :each do
-			Timecop.travel(Time.current.beginning_of_hour + 7.minutes)
-			@this_hour = FactoryGirl.create(:appointment, scheduled_for: Time.current + 10.minutes, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))
-			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: Time.current + 20.minutes, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))	
-			@two_hours = FactoryGirl.create(:appointment, scheduled_for: Time.current + 2.hours)
+			Timecop.travel(Time.current.utc.beginning_of_hour + 15.minutes)
+			@this_hour = FactoryGirl.create(:appointment, scheduled_for: hour_plus_ten, began_at: began_at, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))
+			@twenty_minutes = FactoryGirl.create(:appointment, scheduled_for: hour_plus_twenty, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))	
+			@two_hours_before = FactoryGirl.create(:appointment, scheduled_for: Time.current.utc.beginning_of_hour - 2.hours)
 		end
 
-		it "should only select appointments from this hour" do
-			Appointment.batch_for_this_hour.should include @this_hour, @twenty_minutes
-			# Appointment.fully_assigned.after(Time.now.beginning_of_hour).before(Time.now.end_of_hour).should eq [@appointment_one, @appointment_two]
+		it "should not include appointments before this hour" do
+			Appointment.batch_for_begin_text.should_not include @two_hours_before
 		end
 
-		it "should include appointments at the beginning of the hour" do
-			@appointment_four = FactoryGirl.create(:appointment, scheduled_for: Time.current.beginning_of_hour, tutor: FactoryGirl.build(:tutor_available), tutee: FactoryGirl.build(:tutee_available))
-			Appointment.batch_for_this_hour.should include @this_hour, @twenty_minutes, @appointment_four
+		it "should include appointments this hour, scheduled before the current time" do
+			Appointment.batch_for_begin_text.should include @this_hour
+		end
+
+		it "should not include appointments after the current time" do
+			Appointment.batch_for_begin_text.should_not include @twenty_minutes
+		end
+
+		context "when it already started" do
+			let(:began_at) { hour_plus_ten }
+
+			it "should not include appointments" do
+				Appointment.batch_for_begin_text.should_not include @this_hour
+			end
 		end
 	end
 
