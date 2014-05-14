@@ -5,10 +5,25 @@
 				Teach English to the ones who need it most
 			.homepage-hero-paragraph
 				%h3.pull-right It begins with one phone call.
-			= link_to('auth/facebook') do 
-				%button.yb_button.blue.center.pull-right
-					%p Sign up
+			.signup_buttons.pull-right
+				%p.big_button_paragraph
+					= link_to('auth/facebook') do 
+						%button.yb_button.blue
+							Get started
+				.signup_links
+					%p
+						= link_to('Sign up without facebook', new_user_path)
+					%p
+						= link_to('Login without facebook', new_session_path)
 	%section.explanation
-		%h3.mission_statement We're on a mission to bring education to those who need it most.  Join us.
+		%h2.mission_statement 
+			%p For thirty-five minutes a week, connect with the rest of the world.
+			%p
+				= link_to('auth/facebook') do 
+					%button.yb_button.blue
+						Get started
 		.calls_to_action
+			.box-1
+			.box-2
+			.box-3
 

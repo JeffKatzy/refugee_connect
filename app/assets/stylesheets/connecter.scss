@@ -10,6 +10,10 @@ body {
 	
 }
 
+header {
+	background-color: #303030;
+}
+
 #map {
 	height: 300px;
 }
@@ -30,6 +34,19 @@ body {
 	max-width: 1150px;
 	margin: 0 auto;
 }
+
+.signup_buttons {
+	clear: both;
+}
+
+.signup_links {
+	font-size: 13px;
+	p {
+		margin: 0px;
+	}
+}
+
+
 
 #shloka { 
   background-image: image-url('shlokasphoto.jpg'); 
@@ -53,6 +70,9 @@ body {
  .mission_statement {
  	color: #303030;
  	text-align: center;
+ 	max-width: 30em;
+	margin-left: auto;
+	margin-right: auto;
  }
 
  .homepage-herotext {
@@ -149,7 +169,7 @@ body {
 
 .yb_button {
 	letter-spacing: .15em;
-	padding: .3em;
+	padding: .4em;
 	margin-bottom: 10px;
 	border-radius: 4px;
 	font-size: 17px;
