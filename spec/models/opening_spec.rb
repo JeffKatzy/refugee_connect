@@ -30,4 +30,28 @@ describe Opening do
   		expect(opening.time.hour).to eq 21
   	end
   end
+
+  describe '#build_specific_opening' do 
+    time = Time.current.change(weekday: 'Sunday', hour: 21, minute: 30)
+    let(:opening) { FactoryGirl.create(:opening, time: time ) }
+    before :each do 
+      @specific_opening = opening.build_specific_opening
+    end
+
+    it "builds the specific_opening with the same weekday" do
+      expect(@specific_opening.scheduled_for.utc.wday).to eq opening.time.utc.wday
+    end
+
+    it "builds the specific_opening with the same hour" do
+      expect(@specific_opening.scheduled_for.utc.hour).to eq opening.time.utc.hour
+    end
+
+    it "builds the specific_opening with the same minute" do
+      expect(@specific_opening.scheduled_for.utc.min).to eq 30
+    end
+
+    it "builds the specific opening for the current week" do
+      expect(@specific_opening.scheduled_for.beginning_of_week).to eq Time.current.beginning_of_week
+    end
+  end
 end

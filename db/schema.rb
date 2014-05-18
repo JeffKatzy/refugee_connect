@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140412210224) do
+ActiveRecord::Schema.define(:version => 20140518005313) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -151,6 +151,15 @@ ActiveRecord::Schema.define(:version => 20140412210224) do
     t.string   "time_open"
   end
 
+  create_table "pages", :force => true do |t|
+    t.integer  "page_number"
+    t.string   "lesson"
+    t.string   "book"
+    t.text     "image"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
   create_table "photos", :force => true do |t|
     t.integer  "user_id"
     t.text     "url"
@@ -174,6 +183,24 @@ ActiveRecord::Schema.define(:version => 20140412210224) do
     t.text     "schedule"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "specific_openings", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "opening_id"
+    t.integer  "appointment_id"
+    t.datetime "scheduled_for"
+    t.string   "status"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+  end
+
+  create_table "text_coordinators", :force => true do |t|
+    t.integer  "appointment_id"
+    t.integer  "user_id"
+    t.integer  "text_signup_id"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "text_from_users", :force => true do |t|

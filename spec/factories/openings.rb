@@ -16,7 +16,8 @@
 FactoryGirl.define do
   factory :opening do
   	day_open 'Sunday'
-  	time_open '9 pm'
-  	time Time.current.change(weekday: 'Sunday', hour: 21)
+  	time_open '9:30 pm'
+  	time Time.current.change(weekday: 'Sunday', hour: 21, minute: 30)
+  	user { FactoryGirl.create :tutor_available }
   end
 end

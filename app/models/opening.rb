@@ -31,4 +31,18 @@ class Opening < ActiveRecord::Base
     weekday = self.time.utc.strftime("%A")
   	self.user.availability_manager.add_weekly_availability(weekday, self.time.utc)
   end
+
+  def build_specific_openings
+    openings = User.active.map(&:openings)
+    openings.each do |opening|
+      build_opening
+    end
+  end
+
+  def build_specific_opening
+    Time.zone = user.time_zone
+    Chronic.time_class = Time.zone
+    time = Chronic.parse(day_open + " " + time_open, context: :future)
+    SpecificOpening.create(user_id: self.user_id, scheduled_for: time, opening_id: self.id)
+  end
 end
