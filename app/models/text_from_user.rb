@@ -31,7 +31,7 @@ class TextFromUser < ActiveRecord::Base
     if body.downcase == "go"
       Rails.logger.info("#{self.id} now attempting session at #{Time.current}")
       attempt_session
-    elsif body.downcase == "sorry"
+    elsif body.downcase == "c"
       TextToUser.deliver(user, "Thanks for letting us know, we'll find someone else.")
       appointment = user.appointments.next_appointment
       if appointment.present? 

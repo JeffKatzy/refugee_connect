@@ -62,7 +62,7 @@ class Appointment < ActiveRecord::Base
   has_many :reminder_texts
   has_many :text_from_users
   has_many :text_to_users
-  after_create :find_start_page, :make_incomplete, :make_match_unavailable, :send_confirmation_text
+  after_create :find_start_page, :make_incomplete, :send_confirmation_text
   validates :tutor, presence: true
   validates :tutee, presence: true
   validate :too_many_apts

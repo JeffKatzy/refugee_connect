@@ -46,6 +46,7 @@ class User < ActiveRecord::Base
   has_many :match_partners_of_tutee, :through => :matches_of_tutee, source: 'match_partner_of_tutee', uniq: true
   has_many :assignments, through: :user_assignments
   has_many :user_assignments
+  has_many :specific_openings
 
 
   attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :per_week, :time_zone, :twitter_handle

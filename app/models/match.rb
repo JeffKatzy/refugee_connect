@@ -190,20 +190,6 @@ class Match < ActiveRecord::Base
     end
   end
 
-
-
-  # def self.batch_create(user_id, matches)
-  #   matches.each do |match|
-  #     matching_user_id = match.first.to_i
-  #     matching_time = match.last.to_datetime
-  #     apt = Appointment.new(scheduled_for: matching_time)
-  #     apt.assign_user_role(matching_user_id)
-  #     apt.assign_user_role(user_id.to_i)
-  #     apt.status = 'incomplete'
-  #     apt.save 
-  #   end
-  # end
-
   def too_many_apts
     if self.tutor
       if self.tutor.too_many_apts_per_week(self.match_time)

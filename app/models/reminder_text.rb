@@ -26,6 +26,7 @@ class ReminderText < ActiveRecord::Base
   SET_PAGE_NUMBER = "set_page_number"
   PM_REMINDER = "pm_reminder"
   JUST_BEFORE = "just_before_reminder"
+  TODAY_CONFIRMATION = 'today_confirmation'
   
   #perhaps use state machine here
 
@@ -42,6 +43,16 @@ class ReminderText < ActiveRecord::Base
   def self.apts_in_one_day
   	appointments_batch = Appointment.batch_for_one_day_from_now
   	ReminderText.send_reminder_text(appointments_batch, PM_REMINDER)
+  end
+
+  def self.apts_today
+    appointments_batch = Appointment.batch_today
+    ReminderText.send_reminder_text(appointments_batch, TODAY_CONFIRMATION)
+  end
+
+  def self.unconfirmed_apts_today
+    appointments_batch = Appointment.batch_today.unconfirmed
+    ReminderText.send_reminder_text(appointments_batch, TODAY_CONFIRMATION)
   end
 
   def self.just_before_apts
@@ -73,9 +84,11 @@ class ReminderText < ActiveRecord::Base
   def self.body(appointment, category)
     time = appointment.scheduled_for_to_text('tutor')
     upcoming_session = "Tutoring Reminder: upcoming session at"
-    admin_session = "Please email jek2141@columbia.edu to reschedule or cancel the session." 
+    admin_session = "Please email jek2141@columbia.edu to reschedule or cancel the session."
     if category == BEGIN_SESSION
-      "Your class at #{time} is now ready to start.  Reply to this text with the word 'go' to start the call or 'sorry' to cancel."
+      "Your class at #{time} is now ready to start.  Reply to this text with the word 'go' to start the call or 'c' to cancel."
+    elsif category == TODAY_CONFIRMATION
+      "Can you still teach at #{time}?  Text back 'Y' to confirm or text 'C' to cancel.  Confirm in the next hour or we need to find someone else."
     elsif category == SET_PAGE_NUMBER
       "Reminder: Please text the page number that you last left off at."
     elsif category == PM_REMINDER

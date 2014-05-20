@@ -12,9 +12,10 @@
 #
 
 class Opening < ActiveRecord::Base
-  attr_accessible :day_open, :time_open, :user_id, :time
+  attr_accessible :day_open, :time_open, :user_id
   belongs_to :user
-  after_create :set_time, :find_or_create_availability_manager, :add_occurrence_rules
+  has_many :specific_openings
+  after_create :set_time, :find_or_create_availability_manager, :add_occurrence_rules, :build_specific_opening
 
   def set_time
 	 Time.zone = user.time_zone
@@ -32,17 +33,8 @@ class Opening < ActiveRecord::Base
   	self.user.availability_manager.add_weekly_availability(weekday, self.time.utc)
   end
 
-  def build_specific_openings
-    openings = User.active.map(&:openings)
-    openings.each do |opening|
-      build_opening
-    end
-  end
-
   def build_specific_opening
-    Time.zone = user.time_zone
-    Chronic.time_class = Time.zone
-    time = Chronic.parse(day_open + " " + time_open, context: :future)
-    SpecificOpening.create(user_id: self.user_id, scheduled_for: time, opening_id: self.id)
+    sob = SpecificOpeningBuilder.new([self])
+    sob.build_specific_openings.first
   end
 end

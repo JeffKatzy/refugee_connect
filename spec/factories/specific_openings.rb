@@ -10,15 +10,14 @@
 #  status         :string(255)
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  user_role      :string(255)
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
   factory :specific_opening do
-    user_id 1
-    opening_id 1
-    appointment_id 1
+    status 'available'
     scheduled_for "2014-05-17 20:53:13"
   end
 end

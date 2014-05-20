@@ -32,26 +32,28 @@ describe Opening do
   end
 
   describe '#build_specific_opening' do 
-    time = Time.current.change(weekday: 'Sunday', hour: 21, minute: 30)
+    time = Time.current.change(weekday: 'Monday', hour: 21, minute: 30)
     let(:opening) { FactoryGirl.create(:opening, time: time ) }
-    before :each do 
-      @specific_opening = opening.build_specific_opening
+    let(:specific_opening) { opening.specific_openings.first }
+    
+    before do
+      Timecop.travel(Time.current.beginning_of_week)
     end
 
     it "builds the specific_opening with the same weekday" do
-      expect(@specific_opening.scheduled_for.utc.wday).to eq opening.time.utc.wday
+      expect(specific_opening.scheduled_for.utc.wday).to eq opening.time.utc.wday
     end
 
     it "builds the specific_opening with the same hour" do
-      expect(@specific_opening.scheduled_for.utc.hour).to eq opening.time.utc.hour
+      expect(specific_opening.scheduled_for.utc.hour).to eq opening.time.utc.hour
     end
 
     it "builds the specific_opening with the same minute" do
-      expect(@specific_opening.scheduled_for.utc.min).to eq 30
+      expect(specific_opening.scheduled_for.utc.min).to eq 30
     end
 
     it "builds the specific opening for the current week" do
-      expect(@specific_opening.scheduled_for.beginning_of_week).to eq Time.current.beginning_of_week
+      expect(specific_opening.scheduled_for.beginning_of_week).to eq Time.current.beginning_of_week
     end
   end
 end
