@@ -19,7 +19,7 @@
 
 class Appointment < ActiveRecord::Base
   include MultiparameterDateTime
-  attr_accessible :finish_page, :start_page, :status, :scheduled_for, :tutor_id, :began_at, :ended_at, :tutee_id, :availability_manager_id, :scheduled_for_date_part, :scheduled_for_time_part
+  attr_accessible :finish_page, :start_page, :status, :scheduled_for, :tutor_id, :began_at, :ended_at, :tutee_id, :scheduled_for_date_part, :scheduled_for_time_part
 
   default_scope where("tutee_id IS NOT NULL AND tutor_id IS NOT NULL")
   scope :after, ->(time) { where("scheduled_for >= ?", time) }
@@ -55,51 +55,16 @@ class Appointment < ActiveRecord::Base
   belongs_to :appointment_partner_of_tutee, class_name: 'User', foreign_key: :tutor_id
   belongs_to :tutor, class_name: 'User', foreign_key: :tutor_id
   belongs_to :tutee, class_name: 'User', foreign_key: :tutee_id
-  belongs_to :availability_manager
-  belongs_to :match
   belongs_to :lesson
   has_many :call_to_users
   has_many :reminder_texts
   has_many :text_from_users
   has_many :text_to_users
-  after_create :find_start_page, :make_incomplete, :send_confirmation_text
+  after_create :find_start_page, :make_incomplete
   validates :tutor, presence: true
   validates :tutee, presence: true
-  validate :too_many_apts
-  #validate :user_booked_at_that_time
-   validate :available_users
   
   #only allow one appointment per hour per user
-
-  def self.auto_batch_create(h = {})
-    h[:users] ||= User.tutees.active
-    h[:time]  ||= Time.current.end_of_week
-    h[:users].each do |user|
-      if user.wants_more_appointments_before(h[:time])
-        Match.build_all_matches_for(user, h[:time]) if user.matches.available_until(h[:time]).empty? #should this be changed to, if user wants more matches
-        @available_matches = user.reload.matches.available_until(h[:time])
-        
-        if @available_matches.present?
-          matches = user.matches.available.where(tutee_id: user.appointment_partners).available_until(h[:time]) if user.is_tutor? #similarly to above comment, we still want matches if wants more
-          matches = user.matches.available.where(tutor_id: user.appointment_partners).available_until(h[:time]) if !user.is_tutor?
-          matches = @available_matches if matches.empty?
-          matches.each do |match|
-            match.convert_to_apt 
-          end
-        end
-      end
-    end
-  end
-
-
-  def self.batch_create(matches)
-    apts = []
-    matches.each do |match|
-      apt = match.convert_to_apt
-      apts << apt
-    end
-    apts
-  end
 
   def self.batch_for_begin_text
     Appointment.fully_assigned.unstarted.after(Time.current.utc.beginning_of_hour).before(Time.current.utc)
@@ -212,46 +177,6 @@ class Appointment < ActiveRecord::Base
 
   def make_incomplete
     self.status = 'incomplete'
-  end
-
-  def make_match_unavailable
-    self.match.update_attributes(available: false)
-  end
-
-  def sign_up_message_for(user)
-    if user.role == 'tutor'
-      self[:scheduled_for].in_time_zone(user.time_zone).strftime("You now have an appointment scheduled with #{self.tutee.name} at %I:%M%p on %A.")
-    else
-      self[:scheduled_for].in_time_zone(user.time_zone).strftime("You now have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
-    end
-  end
-
-  def send_confirmation_text
-    tutor_body = self.sign_up_message_for(self.tutor)
-    tutee_body = self.sign_up_message_for(self.tutee)
-    # tutee_body = self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("You have have an appointment scheduled with #{self.tutor.name} at %I:%M%p on %A.")
-    begin
-      TextToUser.deliver(self.tutor, tutor_body)
-      TextToUser.deliver(self.tutee, tutee_body)
-    rescue
-      "Failed in sending to user #{self.tutee.name} or #{self.tutor.name}"
-    end
-  end
-
-  def available_users
-    if self.tutor.present? && self.tutee.present?
-      if self.tutor.appointments.scoped.during(self.scheduled_for).reject { |a| a == self }.present? || self.tutee.appointments.scoped.during(self.scheduled_for).reject {|a| a == self }.present?
-        errors[:base] << "A tutor or tutee is already scheduled at that time."
-      end
-    end
-  end
-
-  def too_many_apts
-    if self.tutor.present? && self.tutee.present?
-      if (self.tutor.too_many_apts_per_week(self.scheduled_for) || self.tutee.too_many_apts_per_week(self.scheduled_for) )
-        errors[:base] << "Both tutor and tutee must want more apppointments."
-      end
-    end
   end
 
   def scheduled_for_to_text(user_role)
