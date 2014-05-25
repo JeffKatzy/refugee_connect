@@ -18,6 +18,48 @@ describe ReminderText do
   	FactoryGirl.create(:reminder_text).should be_valid
   end
 
+  before :each do
+    TextToUser.stub(:deliver).and_return(true)
+  end
+
+  describe '.confirm_specific_openings' do
+    let(:time) {DateTime.new(2013,02,13,00,00,00)}
+
+    before :each do
+      ReminderText.delete_all
+      SpecificOpening.delete_all
+      @eleven_thirty_pm = FactoryGirl.create(:specific_opening, 
+        scheduled_for: Time.current.change(hour: 11, min: 30),
+        user: FactoryGirl.build(:tutor_available)
+        )
+
+      @twelve_thirty_pm = FactoryGirl.create(:specific_opening, 
+        scheduled_for: Time.current.change(hour: 12, min: 30),
+        user: FactoryGirl.build(:tutor_available)
+        )
+    end
+
+    context "when it is 9 am" do 
+      it "sends confirmation requests for specific openings scheduled for the day" do 
+        Timecop.travel(Time.current)
+        ReminderText.confirm_specific_openings
+        text = ReminderText.first
+        expect(text.user).to eq @eleven_thirty_pm.user
+        expect(text.category).to eq 'request_confirmation'
+        expect(@eleven_thirty_pm.reload.status).to eq 'requested_confirmation'
+        expect(ReminderText.count).to eq 2
+      end
+
+      it 'does not resend confirmation requests' do
+        Timecop.travel(Time.current)
+        ReminderText.confirm_specific_openings
+        expect(ReminderText.count).to eq 2
+        ReminderText.confirm_specific_openings
+        expect(ReminderText.count).to eq 2
+      end
+    end
+  end
+
   describe "apts_in_one_day" do
   	let(:time) {DateTime.new(2013,02,13,00,00,00)}
   	before :each do

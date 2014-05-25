@@ -18,6 +18,6 @@
 FactoryGirl.define do
   factory :specific_opening do
     status 'available'
-    scheduled_for "2014-05-17 20:53:13"
+    scheduled_for Time.current
   end
 end

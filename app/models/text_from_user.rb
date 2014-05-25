@@ -28,17 +28,17 @@ class TextFromUser < ActiveRecord::Base
   def twilio_response
     Rails.logger.info("#{self.id} now responding to the word #{body} at #{Time.current}")
     self.reload
-    if body.downcase == "go"
+    body = self.body.downcase.strip
+    if body == "go"
       Rails.logger.info("#{self.id} now attempting session at #{Time.current}")
       attempt_session
-    elsif body.downcase == "c"
-      TextToUser.deliver(user, "Thanks for letting us know, we'll find someone else.")
-      appointment = user.appointments.next_appointment
-      if appointment.present? 
-        notify_admin_of_the_cancellation_of(appointment)
-        appointment.status = "cancelled by #{user.id}"
-        appointment.save
-      end
+    elsif body == "y"
+      opening = find_specific_opening
+      opening.confirm
+      TextToUser.deliver(user, "Great you are all set.  You will receive a text from us at the scheduled time")
+    elsif body == 'n'
+      opening = find_specific_opening
+      opening.cancel
     elsif body.to_i != 0
       if user.appointments.needs_text.present?
         puts "about to call set_new_page"
@@ -56,7 +56,7 @@ class TextFromUser < ActiveRecord::Base
     puts "in attempt_session"
     self.user.reload
     last_text = user.text_to_users.last
-    self.appointment = last_text.appointment
+    appointment = self.appointment = last_text.appointment
     self.save
     if appointment.scheduled_for.hour == Time.current.hour
       puts "about to call start_call"
@@ -65,11 +65,22 @@ class TextFromUser < ActiveRecord::Base
     else
       appointment = user.appointments.next_appointment
       begin
-        body = appointment[:scheduled_for].in_time_zone.strftime("No sessions for this hour. Your next session is at %I:%M%p on %A.")
+        body = appointment[:scheduled_for].in_time_zone.
+          strftime("No sessions for this hour. Your next session is at %I:%M%p on %A.")
         TextToUser.deliver(self.user, body)
       rescue NoMethodError
         Rails.logger.debug("The next session doesn't exist for this user. ID: #{user.id}")
       end
+    end
+  end
+
+  def find_specific_opening
+    specific_opening = user.specific_openings.today.first
+    if specific_opening && specific_opening.status == 'available'
+      specific_opening
+    else
+      send_error_text
+      nil
     end
   end
 
@@ -84,10 +95,9 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def send_error_text
-    body = "We could not understand your text. Please type 'go' to call the student, 'call off' to 
-    call off the call, or enter the page number you last left off at."
+    body = "We could not understand your text. Please type 'go' to call the student, 'y' to 
+    confirm your appointmet or 'n' to cancel."
     TextToUser.deliver(user, body)
-    appointment = user.appointments.this_hour
   end
 
   def set_user

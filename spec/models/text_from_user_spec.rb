@@ -20,13 +20,11 @@ require 'spec_helper'
 
 describe TextFromUser do
 
-
-
 	describe '#set_user' do 
 		before do 
 			User.delete_all
-			Appointment.any_instance.stub(:remove_availability_occurrence)
 			Appointment.any_instance.stub(:start_call)
+      CallToUser.any_instance.stub(:start_call)
 			Appointment.any_instance.stub(:send_confirmation_text)
 	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
 	    @text = FactoryGirl.create(:text_from_user)
@@ -95,26 +93,55 @@ describe TextFromUser do
   	before do 
       User.delete_all
       TextToUser.any_instance.stub(:send_text)
+      CallToUser.any_instance.stub(:start_call)
       Appointment.delete_all
-      @appointment  = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: status)
   	end
 
-    let(:text) { FactoryGirl.create(:text_from_user, body: body) }
+    let(:text) { FactoryGirl.create(:text_from_user, body: body, incoming_number: '+12154997415') }
+    let(:specific_opening) { FactoryGirl.create :specific_opening, 
+        status: 'available', 
+        scheduled_for: Time.current + 3.hours,
+        user:  FactoryGirl.create(:tutor_available, cell_number: '+12154997415') }
 
   	context "when text is go" do 
   		let(:body) { 'go' }
-      let(:status) { 'incomplete' }
-      ReminderText.begin_session
 
 	  	it "should attempt session" do 
-        text
+        @appointment  = FactoryGirl.create(:appointment, 
+        scheduled_for: Time.current, 
+        status: 'incomplete', 
+        tutor: FactoryGirl.create(:tutor_available, cell_number: '+12154997415') ) 
+        ReminderText.begin_session
+
         expect(@appointment).to receive(:start_call)
+        text
 	  	end
   	end
 
+    context "when text is 'y' " do
+      let(:body) { 'y' }
+      
+      it "it confirms the specific opening" do 
+        specific_opening
+        text
+        expect(specific_opening.reload.status).to eq 'confirmed'
+      end
+    end
+
+    context "when text is 'n' " do
+      let(:body) { 'n' }
+      let(:status) { 'incomplete' }
+
+      it "it cancels the specific opening" do 
+        specific_opening
+        text
+        expect(specific_opening.reload.status).to eq 'canceled'
+      end
+    end
+
     context "when text is 3" do 
-      let(:body) { '3' }
-      let(:status) { 'complete' }
+      let(:body) { '3' } 
+      @appointment  = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: 'complete')
 
       it "should set the page" do 
         text

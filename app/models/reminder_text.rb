@@ -14,24 +14,16 @@
 class ReminderText < ActiveRecord::Base
   attr_accessible :appointment_id, :category, :time, :user_id
   belongs_to :appointment
-  # scope :begin_sessions, where(category: 'begin_session')
-  # scope :set_page_numbers, where(category: 'set_page_number')
-  # scope :pm_reminders, where(category: 'pm_reminder')
-  # scope :just_befores, where(category: 'just_before')
-
-  belongs_to :appointment
   belongs_to :user
 
   BEGIN_SESSION = "begin_session"
   SET_PAGE_NUMBER = "set_page_number"
   PM_REMINDER = "pm_reminder"
   JUST_BEFORE = "just_before_reminder"
-  TODAY_CONFIRMATION = 'today_confirmation'
-  
-  #perhaps use state machine here
+  REQUEST_CONFIRMATION = 'request_confirmation'
 
   def self.begin_session
-    appointments_batch = Appointment.batch_for_begin_text  	
+    appointments_batch = Appointment.batch_for_begin_text   
     ReminderText.send_reminder_text(appointments_batch, BEGIN_SESSION) 
   end
 
@@ -40,24 +32,18 @@ class ReminderText < ActiveRecord::Base
     ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
   end
 
-  def self.apts_in_one_day
-  	appointments_batch = Appointment.batch_for_one_day_from_now
-  	ReminderText.send_reminder_text(appointments_batch, PM_REMINDER)
+  def self.confirm_specific_openings
+    specific_openings_batch = SpecificOpening.available.today
+    ReminderText.ask_if_available(specific_openings_batch, REQUEST_CONFIRMATION)
   end
 
-  def self.apts_today
-    appointments_batch = Appointment.batch_today
-    ReminderText.send_reminder_text(appointments_batch, TODAY_CONFIRMATION)
-  end
-
-  def self.unconfirmed_apts_today
-    appointments_batch = Appointment.batch_today.unconfirmed
-    ReminderText.send_reminder_text(appointments_batch, TODAY_CONFIRMATION)
-  end
-
-  def self.just_before_apts
-  	appointments_batch = Appointment.where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour).fully_assigned
-  	ReminderText.send_reminder_text(appointments_batch, JUST_BEFORE)	
+  def self.ask_if_available(specific_openings_batch, category)
+    specific_openings_batch.each do |specific_opening|
+      body = ReminderText.body(specific_opening, category)
+      tutor_text = TextToUser.deliver(specific_opening.user, body)
+      specific_opening.update_attributes(status: 'requested_confirmation')
+      reminder_text = ReminderText.create(time: Time.now, user_id: specific_opening.user.id, category: category) 
+    end
   end
 
   def self.send_reminder_text(appointments_batch, category)
@@ -81,14 +67,14 @@ class ReminderText < ActiveRecord::Base
     end
   end
 
-  def self.body(appointment, category)
-    time = appointment.scheduled_for_to_text('tutor')
+  def self.body(object, category)
+    time = object.scheduled_for_to_text('tutor')
     upcoming_session = "Tutoring Reminder: upcoming session at"
     admin_session = "Please email jek2141@columbia.edu to reschedule or cancel the session."
     if category == BEGIN_SESSION
       "Your class at #{time} is now ready to start.  Reply to this text with the word 'go' to start the call or 'c' to cancel."
-    elsif category == TODAY_CONFIRMATION
-      "Can you still teach at #{time}?  Text back 'Y' to confirm or text 'C' to cancel.  Confirm in the next hour or we need to find someone else."
+    elsif category == REQUEST_CONFIRMATION
+      "Can you still teach at #{time}?  Text back 'Y' to confirm or text 'N' to cancel."
     elsif category == SET_PAGE_NUMBER
       "Reminder: Please text the page number that you last left off at."
     elsif category == PM_REMINDER
