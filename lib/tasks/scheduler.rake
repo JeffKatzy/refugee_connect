@@ -1,3 +1,4 @@
+desc "This task is called by the Heroku scheduler add-on"
 task :begin_session_text => :environment do
   puts "beginning session"
   ReminderText.begin_session
