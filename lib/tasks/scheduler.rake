@@ -23,22 +23,10 @@ task :just_before_apts => :environment do
   puts "done."
 end
 
-task :build_appointments => :environment do
-  if Time.current.saturday?
-    puts "building weekly appointments"
-    Appointment.auto_batch_create()
+task :confirm_openings => :environment do
+    ReminderText.confirm_specific_openings
     puts "done."
   end
-end
-
-task :build_matches => :environment do
-	if Time.current.saturday?
-		puts "building weekly matches matches"
-		User.active.each do |user|
-			Match.build_all_matches_for(user, Time.current + 7.days)
-		end
-		puts "done."
-	end
 end
 
 
