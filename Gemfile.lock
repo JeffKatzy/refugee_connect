@@ -418,6 +418,7 @@ DEPENDENCIES
   guard
   guard-rspec
   haml
+  httparty
   ice_cube
   jquery-rails
   jquery-ui-rails
