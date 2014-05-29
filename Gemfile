@@ -30,7 +30,6 @@ gem 'groundworkcss'
 gem 'therubyracer', :platforms => :ruby
 gem 'font-awesome-rails'
 gem 'geocoder'
-gem 'net-http-spy'
 gem 'best_in_place'
 gem 'bootstrap-sass', '~> 3.1.1'
 gem 'httparty'
