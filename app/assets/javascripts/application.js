@@ -10,3 +10,8 @@
 //= require jquery.purr
 //= require bootstrap/modal
 //= require best_in_place
+//= require jquery.ui.widget
+//= require jquery.iframe-transport
+//= require jquery.fileupload
+//= require cloudinary/jquery.cloudinary
+//= require attachinary

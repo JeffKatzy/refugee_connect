@@ -33,6 +33,8 @@ gem 'geocoder'
 gem 'best_in_place'
 gem 'bootstrap-sass', '~> 3.1.1'
 gem 'httparty'
+gem 'attachinary'
+gem 'cloudinary'
 
 
 group :production do 

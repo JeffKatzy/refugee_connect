@@ -1,0 +1,5 @@
+%section.row#hero.six.sixths
+  .row.two.sixths.centered
+    - @bookpages.each do |page|
+      - if page.photos.present?
+        = cl_image_tag(page.photos.first.path, { size: '300x300' })

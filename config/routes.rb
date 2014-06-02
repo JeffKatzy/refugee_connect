@@ -7,9 +7,13 @@ RefugeeConnect::Application.routes.draw do
   resources :users
   resources :appointments
   resources :lessons
+
+  resources :matches
+  resources :bookpages
   post 'user_assignments/assign/:assignment_id', to: 'user_assignments#assign'
 
   post 'appointments/batch'
+  mount Attachinary::Engine => "/attachinary"
   
   
 

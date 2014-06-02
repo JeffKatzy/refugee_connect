@@ -1,0 +1,19 @@
+---
+development:
+  cloud_name: dcohkb68x
+  api_key: '867316781213713'
+  api_secret: _sInUKqJWXPtAe47AQHg8UC-tVg
+  enhance_image_tag: true
+  static_image_support: false
+production:
+  cloud_name: dcohkb68x
+  api_key: '867316781213713'
+  api_secret: _sInUKqJWXPtAe47AQHg8UC-tVg
+  enhance_image_tag: true
+  static_image_support: true
+test:
+  cloud_name: dcohkb68x
+  api_key: '867316781213713'
+  api_secret: _sInUKqJWXPtAe47AQHg8UC-tVg
+  enhance_image_tag: true
+  static_image_support: false

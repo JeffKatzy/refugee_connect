@@ -11,7 +11,8 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140518043856) do
+
+ActiveRecord::Schema.define(:version => 20140602223755) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -41,6 +42,22 @@ ActiveRecord::Schema.define(:version => 20140518043856) do
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
   end
+
+  create_table "attachinary_files", :force => true do |t|
+    t.integer  "attachinariable_id"
+    t.string   "attachinariable_type"
+    t.string   "scope"
+    t.string   "public_id"
+    t.string   "version"
+    t.integer  "width"
+    t.integer  "height"
+    t.string   "format"
+    t.string   "resource_type"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+  end
+
+  add_index "attachinary_files", ["attachinariable_type", "attachinariable_id", "scope"], :name => "by_scoped_parent"
 
   create_table "availabilities", :force => true do |t|
     t.integer  "user_id"
@@ -75,6 +92,23 @@ ActiveRecord::Schema.define(:version => 20140518043856) do
     t.boolean  "available"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "book_pages", :force => true do |t|
+    t.string   "title"
+    t.integer  "page_number"
+    t.string   "image"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  create_table "bookpages", :force => true do |t|
+    t.string   "title"
+    t.integer  "page_number"
+    t.string   "image"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.integer  "appointment_id"
   end
 
   create_table "call_to_users", :force => true do |t|

@@ -1,0 +1,11 @@
+%section.row#hero.six.sixths
+  .row.two.sixths.centered
+    Upload Page
+    = form_for @bookpage, :html => {:multipart => true} do |f|
+      %p
+        = f.label :page_number
+        = f.text_field :page_number
+      %p
+        = f.attachinary_file_field :photos
+      %p
+        = f.submit
