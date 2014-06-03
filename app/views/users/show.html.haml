@@ -74,3 +74,4 @@
 			- if @user.location && @user.location.latitude && @user.location.longitude
 				%script
 					= "display_map(#{@user.location.latitude}, #{@user.location.longitude});"	
+			= render 'work'

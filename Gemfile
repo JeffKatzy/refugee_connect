@@ -35,6 +35,7 @@ gem 'bootstrap-sass', '~> 3.1.1'
 gem 'httparty'
 gem 'attachinary'
 gem 'cloudinary'
+gem 'will_paginate'
 
 
 group :production do 

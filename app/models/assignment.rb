@@ -14,6 +14,7 @@ class Assignment < ActiveRecord::Base
 
   belongs_to :lesson
   has_many :users, through: :user_assignments
+  has_many :user_assignments
   has_many :bookpages
 
   accepts_nested_attributes_for :bookpages, reject_if: :all_blank, allow_destroy: true

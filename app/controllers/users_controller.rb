@@ -53,5 +53,9 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     @user.openings.build
+    @assignments = Assignment.paginate(:page => params[:page])
+    @user_assignments = @assignments.map do |a|
+      a = a.user_assignments.where(user_id: @user.id).first || a.user_assignments.create(user_id: @user.id)
+    end
   end
 end

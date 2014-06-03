@@ -186,7 +186,6 @@ describe Appointment do
 		end
 
 		it "should not include the appointments this hour or in two hours" do
-			binding.pry
 			expect(Appointment.next_hour).to_not include(@this_hour, @two_hours)
 		end
 	end
