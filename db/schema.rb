@@ -11,7 +11,6 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-
 ActiveRecord::Schema.define(:version => 20140602223755) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
@@ -106,9 +105,9 @@ ActiveRecord::Schema.define(:version => 20140602223755) do
     t.string   "title"
     t.integer  "page_number"
     t.string   "image"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
-    t.integer  "appointment_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.integer  "assignment_id"
   end
 
   create_table "call_to_users", :force => true do |t|

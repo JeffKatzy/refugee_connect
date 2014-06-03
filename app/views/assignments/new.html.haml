@@ -1,0 +1,22 @@
+.row
+  .one.half.pull-left.padded
+    Assignment
+    = nested_form_for @assignment do |f|
+      = f.label :assignment_instructions
+      = f.text_field :instructions
+      = f.fields_for :bookpages do |form|
+        %p
+          = form.label :page_number
+          = form.text_field :page_number
+        %p
+          = form.attachinary_file_field :photos
+          .row.padded
+            .absolute.right= form.link_to_remove "Remove page"
+      .row.padded
+        = f.link_to_add "Add page", :bookpages, class: 'add_time_available_button button asphalt pad-top'
+        .row.padded
+          .absolute.left
+            = f.submit 'Sign Up', class: 'green button large padded fixed center'
+        %br
+        %br
+        %br

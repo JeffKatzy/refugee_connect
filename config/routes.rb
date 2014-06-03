@@ -7,6 +7,7 @@ RefugeeConnect::Application.routes.draw do
   resources :users
   resources :appointments
   resources :lessons
+  resources :assignments
 
   resources :matches
   resources :bookpages

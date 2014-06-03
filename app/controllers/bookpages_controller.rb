@@ -4,7 +4,6 @@ class BookpagesController < ApplicationController
 	end
 
 	def create
-
 		@bookpage = Bookpage.new(params[:bookpage])
     if @bookpage.save
       redirect_to bookpages_path
