@@ -1,9 +1,10 @@
-%header
+%header.max-width
 	%nav.nav.double.padded#navigation
 		.container
 			%ul
 				.pull-left
-					%li#icon= link_to 'SpeakLoud', root_path
+					%li#icon= link_to 'SpeakLoud.org', root_path
+					%p#icon.pad-left It's your call
 				.pull-right.navigation_right_side
 					%li= link_to 'Sign Up', new_user_path, id: 'register_btn' if @auth.nil?
 					%li= link_to 'Login', signin_path if @auth.nil?

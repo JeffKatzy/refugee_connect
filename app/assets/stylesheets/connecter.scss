@@ -10,6 +10,26 @@ body {
 	
 }
 
+.shadow {
+  -moz-box-shadow:    3px 3px 5px 6px #ccc;
+  -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+  box-shadow:         3px 3px 5px 6px #ccc;
+}
+
+#page-wrap {
+	max-width: 1272px;
+}
+
+#home-problem {
+	color: #0089CA;
+	border-top: 1px solid gray;
+	border-bottom: 1px solid gray;
+}
+
+#home-problem-title {
+	text-align: center;
+}
+
 header {
 	background-color: #303030;
 }

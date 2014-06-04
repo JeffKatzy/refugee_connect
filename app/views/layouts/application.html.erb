@@ -20,6 +20,8 @@
   <%= csrf_meta_tags %>
   <%= cloudinary_js_config %>
 </head>
+<div class="row">
+<div id="page-wrap" class="one centered whole shadow">
 <body>  
 
 <nav class="top-bar"><%= render 'layouts/nav' %></nav>
@@ -28,4 +30,6 @@
 
   <%= yield %>
 </body>
+</div>
+</div>
 </html>
