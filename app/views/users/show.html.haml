@@ -1,30 +1,4 @@
-.modal.fade#myModal{'role' => 'dialog', 'aria-labelledby' => 'myModalLabel', 'aria-hidden' => 'true'} 
-	.modal-dialog
-		.modal-content
-			.modal-header
-				.modal-title
-					= @user.name
-				.modal-body
-					= "Current Availabilities" if (@user.openings - [@opening]).present?
-					- @user.openings.first((@user.openings.length - 1)).each do |opening|
-						%p= "#{opening.day_open} at #{opening.time_open}"
-					.row
-						.center Add New opening
-					= nested_form_for @user do |f|
-						= f.fields_for :openings do |form|
-							- if form.object == @user.openings.last
-								= hidden_field :user_id, value: @user.id
-								= form.label :day_open, "day open"
-								= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
-								= form.label :time_open, "time open"
-								= form.select("time_open", {"7:30 am" => "7:30 am", "8:30 am" => "8:30 am", "9:30 am" => "9:30 am" })
-								.row.padded
-									%p.right= form.link_to_remove "Remove this availability"
-						.row
-							= f.submit 'Submit availability', class: 'green button large padded fixed center'
-						%br
-						%br
-						%br
+= render "openings_modal"
 .row#background_show
 	.four.centered.fifths#main
 		.row.triple-pad-top
@@ -51,20 +25,6 @@
 						- if @auth == @user
 							.button.green{'data-toggle' => 'modal', 'data-target' => '#myModal'}= "Add times available"
 				.one.fourth.double-padded
-					%h1#basic_info_user_name.pad-bottom.responsive Upcoming Apts
-					.box
-						- @user.appointments.after(Time.current).each do |apt|
-							.row
-								= apt.id
-								- if @auth.is_tutor?
-									= best_in_place apt, :scheduled_for_est_date_part, :type => :date
-									= best_in_place apt, :scheduled_for_est_time_part, :type => :select, :collection => [["9:00 pm", "9:00 pm"], ["10:00 pm", "10:00 pm"], ["11:00 pm", "11:00 pm"]]
-									= "with #{apt.tutee.name}"
-								- else
-									= best_in_place apt, :scheduled_for_ist_date_part, :type => :date
-									= best_in_place apt, :scheduled_for_ist_time_part, :type => :select, :collection => [["7:30 am", "7:30 am"], ["8:30 am", "8:30 am"], ["9:30 am", "9:30 am"]]
-									= "with #{apt.tutor.name}" 
-								Click to edit
 			.main_section
 				- if @user.role == 'tutee'
 					- @user.photos.tweet_created_at_asc.each do |photo|

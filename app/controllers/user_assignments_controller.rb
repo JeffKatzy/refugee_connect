@@ -9,8 +9,6 @@ class UserAssignmentsController < ApplicationController
 		redirect_to lessons_path
 	end
 
-	def index
-		binding.pry
 	end
 
 	def update

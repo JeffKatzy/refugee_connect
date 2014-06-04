@@ -1,8 +1,13 @@
 .row
-	- @user_assignments.each do |ua|
-		- ua.assignment.bookpages.each do |page|
-			- if page.photos.present?
-				= cl_image_tag(page.photos.first.path, { size: '300x300' })
-				.row
-					= best_in_place ua, :status, :type => :textarea, classes: 'background-gray'
-					%p Click to edit status
+	.two.sixths
+	.two.sixths
+		%h1 Assignments
+		- @user_assignments.each do |ua|
+			- ua.assignment.bookpages.each do |page|
+				- if page.photos.present?
+					= cl_image_tag(page.photos.first.path, { size: '300x300' })
+					.row
+						%span Status (click to edit)
+						= best_in_place ua, :status, :type => :textarea, classes: 'background-gray'
+
+
