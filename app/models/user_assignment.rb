@@ -15,4 +15,5 @@ class UserAssignment < ActiveRecord::Base
   attr_accessible :assignment_id, :status, :user_id
   belongs_to :user
   belongs_to :assignment
+  has_many :comments
 end

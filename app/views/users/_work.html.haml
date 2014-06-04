@@ -7,7 +7,7 @@
 				- if page.photos.present?
 					= cl_image_tag(page.photos.first.path, { size: '300x300' })
 					.row
-						%span Status (click to edit)
-						= best_in_place ua, :status, :type => :textarea, classes: 'background-gray'
+						%span Comment (click to edit)
+						= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, classes: 'background-gray'
 
 

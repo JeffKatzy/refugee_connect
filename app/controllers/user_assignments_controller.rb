@@ -9,7 +9,6 @@ class UserAssignmentsController < ApplicationController
 		redirect_to lessons_path
 	end
 
-	end
 
 	def update
 		@user_assignment = UserAssignment.find(params[:id])

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140602223755) do
+ActiveRecord::Schema.define(:version => 20140604003133) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -118,6 +118,14 @@ ActiveRecord::Schema.define(:version => 20140602223755) do
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
     t.integer  "appointment_id"
+  end
+
+  create_table "comments", :force => true do |t|
+    t.text     "comment_text"
+    t.integer  "tutor_id"
+    t.integer  "user_assignment_id"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   create_table "facebook_users", :force => true do |t|

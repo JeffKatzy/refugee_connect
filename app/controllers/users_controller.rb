@@ -57,5 +57,9 @@ class UsersController < ApplicationController
     @user_assignments = @assignments.map do |a|
       a = a.user_assignments.where(user_id: @user.id).first || a.user_assignments.create(user_id: @user.id)
     end
+    @comments = @user_assignments.map do |ua|
+    comment = ua.comments.where(user_assignment_id: ua.id, tutor_id: @auth.id).first || 
+      ua.comments.create(user_assignment_id: ua.id, tutor_id: @auth.id)
+    end
   end
 end
