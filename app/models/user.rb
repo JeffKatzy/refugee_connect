@@ -175,13 +175,11 @@ class User < ActiveRecord::Base
     end
   end
 
-  private 
-
   def format_phone_number
     if self.is_tutor?
-      self.cell_number = PhonyRails.normalize_number(cell_number)
+      self.cell_number = self.cell_number.phony_formatted(normalize: :US, format: :international, spaces: "")
     else
-      self.cell_number = PhonyRails.normalize_number(cell_number)
+      self.cell_number = self.cell_number.phony_formatted(normalize: :IN, format: :international, spaces: "")
     end
   end
 
