@@ -34,7 +34,7 @@ FactoryGirl.define do
     factory :tutor_unavailable do
       role 'tutor'
       admin 'active'
-      time_zone 'America/New_York'
+      time_zone '12312312334'
       cell_number Faker::PhoneNumber.cell_phone
       
       after(:create) do |tutor|
@@ -51,7 +51,7 @@ FactoryGirl.define do
       role 'tutor'
       admin 'false'
       time_zone 'America/New_York'
-      cell_number Faker::PhoneNumber.cell_phone
+      cell_number '12312312335'
       per_week 5
     end
 
@@ -59,7 +59,7 @@ FactoryGirl.define do
       role 'tutee'
       admin 'false'
       time_zone "New Delhi"
-      cell_number '+91 97960 97962'
+      cell_number '+91 97960 97963'
       per_week '3'
         
       after(:create) do |tutee|
