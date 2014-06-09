@@ -1,13 +1,12 @@
-.row
+.row.padded
 	.two.sixths
 	.two.sixths
-		%h1 Assignments
+		%h1#assignments-title Assignments
 		- @user_assignments.each do |ua|
 			- ua.assignment.bookpages.each do |page|
 				- if page.photos.present?
-					= cl_image_tag(page.photos.first.path, { size: '300x300' })
+					= cl_image_tag(page.photos.first.path, { size: '600x500' })
 					.row
-						%span Comment (click to edit)
-						= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, classes: 'background-gray'
-
-
+						- if @auth
+							%span Comment (click to edit)
+							= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, classes: 'background-gray'

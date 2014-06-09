@@ -1,37 +1,17 @@
+- occurrence = @user.specific_openings(Time.current + 14.days).first
 = render "openings_modal"
-.row#background_show
+.row#background_show.pad-bottom
 	.four.centered.fifths#main
-		.row.triple-pad-top
-			#info
-				.one.fourth.double-padded
-					%h1#basic_info_user_name.pad-bottom.align-center.responsive
-						= @user.location.geocoder_address_info.try(:city) + ", " + @user.location.geocoder_address_info.try(:state) if @user.location && @user.location.geocoder_address_info
-					#map
-						#map_canvas.rounded
-				.one.fourth.double-padded
-					%h1#basic_info_user_name.pad-bottom.responsive= @user.name
-					#basic_info_profile_summary.box
-						= "Classes completed: #{pluralize(@user.appointments.complete.count, "class")}"
-						- if @user.is_tutor?
-							%p= "Current students: #{pluralize(@user.appointment_partners.count, "student")}"
-						- else
-							%p= "Current teachers: #{pluralize(@user.appointment_partners.count, "teacher")}"
-				.one.fourth.double-padded
-					%h1#basic_info_user_name.pad-bottom.responsive Upcoming availabilities
-					.box
-						- @user.specific_openings(Time.current + 14.days).each_with_index do |occurrence, idx|
-							= occurrence.scheduled_for.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")
-							%br
-						- if @auth == @user
-							.button.green{'data-toggle' => 'modal', 'data-target' => '#myModal'}= "Add times available"
-				.one.fourth.double-padded
-			.main_section
-				- if @user.role == 'tutee'
-					- @user.photos.tweet_created_at_asc.each do |photo|
-						%row.padded.center
-							= image_tag photo.url
-				- elsif @user.role == 'tutor'
-			- if @user.location && @user.location.latitude && @user.location.longitude
-				%script
-					= "display_map(#{@user.location.latitude}, #{@user.location.longitude});"	
-			= render 'work'
+		.row
+			.cover-photo
+				= image_tag "http://img1.tutorpl.us.s3.amazonaws.com/a/01.jpg"
+			#main-info.padded
+				#user-name-wrap
+					.user-name.half-pad
+						%h2 Jeff Katz
+					.user-info
+						%span.padded #{pluralize(@user.appointments.complete.count, "class")} completed
+						%span.padded #{pluralize(@user.appointment_partners.count, "current student")}
+						- if occurrence
+							%span.padded Next availability #{occurrence.scheduled_for.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")}
+= render 'work'
