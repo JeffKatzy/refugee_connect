@@ -5,12 +5,12 @@ class SpecificOpeningMatcher
 		@specific_openings = specific_openings
 	end
 
-	def matches_and_creates_users
+	def matches_users_and_creates_apts
   	specific_openings.select{ |s_o| s_o.status == 'confirmed'}.each do |confirmed_s_o|
-  		unless confirmed_s_o.upcoming?
-  			match_opening = confirmed_s_o.match_from_related_users 
+  		if !confirmed_s_o.upcoming?
+        match_opening = confirmed_s_o.match_from_related_users 
   		else
-  			match_opening = confirmed_s_o.match_from_unrelated_users 
+        match_opening = confirmed_s_o.match_from_unrelated_users  
   		end
   		create_appointment(confirmed_s_o, match_opening) if match_opening
   	end

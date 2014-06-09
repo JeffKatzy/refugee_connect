@@ -27,15 +27,17 @@ class ReminderText < ActiveRecord::Base
     ReminderText.send_reminder_text(appointments_batch, BEGIN_SESSION) 
   end
 
-  def self.set_page_number #remind delinquents to enter page number
-    appointments_batch = Appointment.needs_text 
-    ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
-  end
-
   def self.confirm_specific_openings
     specific_openings_batch = SpecificOpening.available.today
     ReminderText.ask_if_available(specific_openings_batch, REQUEST_CONFIRMATION)
   end
+
+  # def self.set_page_number #remind delinquents to enter page number
+  #   appointments_batch = Appointment.needs_text 
+  #   ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
+  # end
+
+  private
 
   def self.ask_if_available(specific_openings_batch, category)
     specific_openings_batch.each do |specific_opening|

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe SpecificOpeningMatcher do
-	describe '#matches_and_creates_users' do
+	describe '#matches_users_and_creates_apts' do
 		let(:tutor_confirmed_opening) { FactoryGirl.create :specific_opening, 
 			status: 'confirmed', 
 			user_role: 'tutor',
@@ -42,7 +42,7 @@ describe SpecificOpeningMatcher do
 				it "matches for related users" do
 					tutor_openings.first.should_receive(:match_from_related_users)
 					som = SpecificOpeningMatcher.new(tutor_openings)
-					som.matches_and_creates_users
+					som.matches_users_and_creates_apts
 				end
 			end
 
@@ -54,7 +54,7 @@ describe SpecificOpeningMatcher do
 				it "matches for unrelated users" do
 					tutor_openings.first.should_receive(:match_from_unrelated_users)
 					som = SpecificOpeningMatcher.new(tutor_openings)
-					som.matches_and_creates_users
+					som.matches_users_and_creates_apts
 				end
 
 				context "and there is a match" do
@@ -63,7 +63,7 @@ describe SpecificOpeningMatcher do
 
 					before do
 						som = SpecificOpeningMatcher.new(tutor_openings)
-						som.matches_and_creates_users
+						som.matches_users_and_creates_apts
 					end
 
 					it "creates an appointment" do 
@@ -87,7 +87,7 @@ describe SpecificOpeningMatcher do
 					tutee_openings.first.should_not_receive(:match_from_unrelated_users)
 					tutee_openings.first.should_not_receive(:match_from_related_users)
 					som = SpecificOpeningMatcher.new(tutor_openings)
-					som.matches_and_creates_users
+					som.matches_users_and_creates_apts
 				end
 			end
 	end
