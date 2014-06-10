@@ -13,7 +13,7 @@ class SpecificOpeningBuilder < Object
 
 	def build_specific_openings
 		@openings.map do |opening|
-  		build_s_o(opening)
+  			build_s_o(opening)
 		end
 	end
 

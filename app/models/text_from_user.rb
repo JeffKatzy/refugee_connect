@@ -76,9 +76,11 @@ class TextFromUser < ActiveRecord::Base
 
   def find_specific_opening
     specific_opening = user.specific_openings.today.first
-    if specific_opening && specific_opening.status == 'available'
+    if specific_opening
+      puts "found specific opening #{specific_opening.id}"
       specific_opening
     else
+      puts "did not find specific opening"
       send_error_text
       nil
     end

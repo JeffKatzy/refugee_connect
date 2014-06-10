@@ -1,8 +1,10 @@
 desc "This task is called by the Heroku scheduler add-on"
 
 task :build_specific_openings => :environment do
+  puts "build_specific_openings"
 	sob = SpecificOpeningBuilder.new
 	sob.add_and_build_all_openings
+  puts "done."
 end
 
 task :create_appointments => :environment do
