@@ -14,4 +14,8 @@ class Comment < ActiveRecord::Base
   attr_accessible :comment_text, :tutor_id, :user_assignment_id
   belongs_to :tutor
   belongs_to :user_assignment
+
+  def description
+  	comment_text.presence || "Click to edit"
+  end
 end

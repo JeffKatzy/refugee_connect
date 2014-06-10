@@ -8,5 +8,5 @@
 					= cl_image_tag(page.photos.first.path, { size: '600x500' })
 					.row
 						- if @auth
-							%span Comment (click to edit)
-							= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, classes: 'background-gray'
+							%p Assignment comment
+							= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, nil: "Click here to add content", classes: 'background-gray'
