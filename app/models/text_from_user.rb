@@ -75,7 +75,7 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def find_specific_opening
-    specific_opening = user.specific_openings.today.first
+    specific_opening = user.specific_openings.today.where(status: 'requested_confirmation').first
     if specific_opening
       puts "found specific opening #{specific_opening.id}"
       specific_opening
