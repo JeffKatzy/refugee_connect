@@ -12,7 +12,7 @@
 					.user-info
 						%span.padded #{pluralize(@user.appointments.complete.count, "class")} completed
 						%span.padded #{pluralize(@user.appointment_partners.count, "current student")}
-						- if occurrence
+						- if occurrence && @auth
 							%span.padded Next availability #{occurrence.scheduled_for.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")}
 		- if @auth == @user
 			.row.padded
