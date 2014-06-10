@@ -14,4 +14,19 @@
 						%span.padded #{pluralize(@user.appointment_partners.count, "current student")}
 						- if occurrence
 							%span.padded Next availability #{occurrence.scheduled_for.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")}
+		- if @auth == @user
+			.row.padded
+				.one.fourth.padded
+					.button.green{'data-toggle' => 'modal', 'data-target' => '#myModal'}= "Add times available"
+				.one.fourth.padded
+					Edit times available
+					- @user.openings[0..-2].each do |opening|
+						- if @user.is_tutor?
+							%p
+								= best_in_place opening, :day_open, :type => :select, :collection => [["Monday", "Monday"], ["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"]]
+								= best_in_place opening, :time_open, :type => :select, :collection => [["11:30 am", "11:30 pm"], ["12:30 pm", "12:30 pm"]]
+						- else
+							%p
+								= best_in_place opening, :day_open, :type => :select, :collection => [["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"], ["Friday", "Friday"]]
+								= best_in_place opening, :time_open, :type => :select, :collection => [["9:00 pm", "9:00 pm"], ["10:00 pm", "10:00 pm"]]
 = render 'work'

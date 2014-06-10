@@ -14,10 +14,16 @@
 						= f.fields_for :openings do |form|
 							- if form.object == @user.openings.last
 								= hidden_field :user_id, value: @user.id
-								= form.label :day_open, "day open"
-								= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
-								= form.label :time_open, "time open"
-								= form.select("time_open", {"7:30 am" => "7:30 am", "8:30 am" => "8:30 am", "9:30 am" => "9:30 am" })
+								- if @user.is_tutor?
+									= form.label :day_open, "day open"
+									= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday"})
+									= form.label :time_open, "time open"
+									= form.select("time_open", {"11:30 am" => "11:30 am", "12:30 pm" => "12:30 pm" })
+								- else
+									= form.label :day_open, "day open"
+									= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
+									= form.label :time_open, "time open"
+									= form.select("time_open", {"9:00 pm" => "9:00 pm", "10:00 pm" => "10:00 pm" })
 								.row.padded
 									%p.right= form.link_to_remove "Remove this availability"
 						.row

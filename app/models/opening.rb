@@ -20,7 +20,8 @@ class Opening < ActiveRecord::Base
   def set_time
 	 Time.zone = user.time_zone
 	 Chronic.time_class = Time.zone
-	 self.time = Chronic.parse(day_open + " " + time_open)
+	 time = Chronic.parse(day_open + " " + time_open)
+   self.time = time
    self.save
   end
 

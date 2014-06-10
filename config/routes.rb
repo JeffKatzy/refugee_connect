@@ -26,6 +26,7 @@ RefugeeConnect::Application.routes.draw do
 
   resources :sessions, only: [:new, :create, :destroy]
   resources :call_to_users
+  resources :openings
   
   
   match '/signup',  to: 'users#new'
