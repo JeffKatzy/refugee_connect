@@ -7,7 +7,6 @@ class TextFromUsersController < ApplicationController
 			 zip: params['FromZip'],
 			 country: params['FromCountry']
 			 )
-		@text_from_user.format_phone_number
 		@text_from_user.save
 	end
 end

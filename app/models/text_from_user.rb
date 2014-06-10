@@ -21,6 +21,7 @@ class TextFromUser < ActiveRecord::Base
   belongs_to :user
   belongs_to :appointment
   attr_accessible :body, :time, :user_id, :incoming_number
+  before_save :format_phone_number
   after_create :set_user
 
   def twilio_response
@@ -121,7 +122,9 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def format_phone_number
+    puts "in format phone number"
     self.incoming_number = self.incoming_number.phony_formatted(format: :international, spaces: "")
+    puts "incoming number is #{incoming_number}"
   end
 
   def register_user
