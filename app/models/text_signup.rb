@@ -108,7 +108,7 @@ class TextSignup < ActiveRecord::Base
   end
 
 	def request_name
-		@body += "Tell us your name by typing the word name followed by your name.\n For example name Jeff."
+		@body += "Type the word name followed by your name.  For example name Jeff."
 		TextToUser.deliver(user, @body)
 		self.status = 'user_name_requested'
 		self.save

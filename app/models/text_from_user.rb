@@ -24,8 +24,6 @@ class TextFromUser < ActiveRecord::Base
   before_save :format_phone_number
   after_create :set_user
 
-  phony_normalize :incoming_number
-
   def twilio_response
     Rails.logger.info("#{self.id} now responding to the word #{body} at #{Time.current}")
     self.reload
@@ -35,8 +33,10 @@ class TextFromUser < ActiveRecord::Base
       attempt_session
     elsif body == "y"
       opening = find_specific_opening
-      opening.confirm
-      TextToUser.deliver(user, "Great you are all set.  You will receive a text from us at the scheduled time")
+      if opening
+        opening.confirm 
+        TextToUser.deliver(user, "Great you are all set.  You will receive a text from us at the scheduled time")
+      end
     elsif body == 'n'
       opening = find_specific_opening
       opening.cancel
@@ -57,9 +57,11 @@ class TextFromUser < ActiveRecord::Base
     puts "in attempt_session"
     self.user.reload
     last_text = user.text_to_users.last
-    appointment = self.appointment = last_text.appointment
-    self.save
-    if appointment.scheduled_for.hour == Time.current.hour
+    if last_text
+      appointment = self.appointment = last_text.appointment
+      self.save
+    end
+    if appointment && appointment.scheduled_for.hour == Time.current.hour
       puts "about to call start_call"
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
       appointment.start_call
