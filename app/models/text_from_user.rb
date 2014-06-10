@@ -21,6 +21,7 @@ class TextFromUser < ActiveRecord::Base
   belongs_to :user
   belongs_to :appointment
   attr_accessible :body, :time, :user_id, :incoming_number
+  before_save :format_phone_number
   after_create :set_user
 
   phony_normalize :incoming_number
@@ -116,6 +117,10 @@ class TextFromUser < ActiveRecord::Base
     self.user = @user
     self.save
     logger.debug "setting user to #{user}"
+  end
+
+  def format_phone_number
+    self.incoming_number = self.incoming_number.phony_formatted(format: :international, spaces: "")
   end
 
   def register_user
