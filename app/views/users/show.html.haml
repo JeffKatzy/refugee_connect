@@ -24,7 +24,7 @@
 						- if @user.is_tutor?
 							%p
 								= best_in_place opening, :day_open, :type => :select, :collection => [["Monday", "Monday"], ["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"]]
-								= best_in_place opening, :time_open, :type => :select, :collection => [["11:30 am", "11:30 pm"], ["12:30 pm", "12:30 pm"]]
+								= best_in_place opening, :time_open, :type => :select, :collection => [["11:30 am", "11:30 am"], ["12:30 pm", "12:30 pm"]]
 						- else
 							%p
 								= best_in_place opening, :day_open, :type => :select, :collection => [["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"], ["Friday", "Friday"]]
