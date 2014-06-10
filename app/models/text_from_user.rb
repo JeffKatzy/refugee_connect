@@ -21,7 +21,6 @@ class TextFromUser < ActiveRecord::Base
   belongs_to :user
   belongs_to :appointment
   attr_accessible :body, :time, :user_id, :incoming_number
-  before_save :format_phone_number
   after_create :set_user
 
   def twilio_response
