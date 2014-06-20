@@ -28,35 +28,18 @@ describe User do
     FactoryGirl.create(:user).should be_valid
   end
 
-  describe ".create" do
-    it "should create an availability manager" do
-      #Do not know how to properly stub this out??
-      # AvailabilityManager.should_receive(:find_or_create_by_user_id)
-      # AvailabilityManager.last.should_receive(:per_week)
-      # @user = FactoryGirl.create(:user)
-    end
-
-    it "should add per week to the availability manager" do
-      #Do not know how to properly stub this out??
-      # @user.should_receive(:add_per_week_to_availability_manager)
-    end
-
-    it "should build matches for this week" do
-      Match.should_receive(:build_all_matches_for)
-      FactoryGirl.create(:user)
-    end
-  end
-
   describe ".tutors" do
   	before :each do
-  		@janie = FactoryGirl.create(:user, role: 'tutor')
-  		@joey = FactoryGirl.create(:user, role: 'tutor')
-  		@priya = FactoryGirl.create(:user, role: 'tutee')
-  		@jaya = FactoryGirl.create(:user, role: 'tutee')
+      User.destroy_all
+  		@janie = FactoryGirl.create(:tutor_available)
+  		@joey = FactoryGirl.create(:tutor_available)
+  		@priya = FactoryGirl.create(:tutee_unavailable)
+  		@jaya = FactoryGirl.create(:tutee_unavailable)
   	end
 
   	it "returns only users marked as tutor" do
-  		User.tutors.should eq [@janie, @joey]
+  		User.tutors.should include @janie
+      User.tutors.should include @joey
   	end
 
   	it "does not return users marked as tutee" do
@@ -66,14 +49,15 @@ describe User do
 
   describe ".tutees" do
   	before :each do
-  		@janie = FactoryGirl.create(:user, role: 'tutor')
-  		@joey = FactoryGirl.create(:user, role: 'tutor')
-  		@priya = FactoryGirl.create(:user, role: 'tutee')
-  		@jaya = FactoryGirl.create(:user, role: 'tutee')
+  		@janie = FactoryGirl.create(:tutee_available)
+  		@joey = FactoryGirl.create(:tutor_available)
+  		@priya = FactoryGirl.create(:tutee_available)
+  		@jaya = FactoryGirl.create(:tutee_available)
   	end
 
   	it "returns only tutees" do
-  		User.tutees.should eq [@priya, @jaya]
+  		User.tutees.should include @priya
+      User.tutees.should include @jaya
   	end
 
   	it "does not return tutors" do
@@ -104,98 +88,12 @@ describe User do
   describe '#format_cell_number' do
     it "should add a US country code for tutors" do
       tutor = FactoryGirl.create(:tutor_unavailable)
-      tutor.cell_number[0].should eq "1"
+      tutor.cell_number.should include "+1"
     end
 
     it "should add an Indian country code for tutees" do
       tutee = FactoryGirl.create(:tutee_unavailable)
-      tutee.cell_number[0].should eq "9"
-      tutee.cell_number[1].should eq "1"
-    end
-  end
-  
-  describe "#too_many_apts_per_week" do
-    before :each do
-      time = DateTime.new 2013,02,14,12,30,00
-      Timecop.travel(time.beginning_of_week)
-    end
-
-    it "should return true when the number of appointments is more" do
-      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 2)
-      tutor.too_many_apts_per_week(Time.current.end_of_week).should eq true
-    end
-
-    # it "should return true when the number of appointments is more" do
-    #   tutee = FactoryGirl.create(:tutee_unavailable, per_week: 2)
-    #   tutee.too_many_apts_per_week(Time.current.end_of_week).should eq true
-    # end 
-
-
-    it "should return false when the number of appointments is equal" do
-      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 3)
-      tutor.too_many_apts_per_week(Time.current.end_of_week).should eq false
-    end
-
-    it "should return false when the number of appointments is equal" do
-      tutee = FactoryGirl.create(:tutee_unavailable, per_week: 3)
-      tutee.too_many_apts_per_week(Time.current.end_of_week).should eq false
-    end
-
-    it "should return false when the number of appointments is less" do
-      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 4)
-
-      tutor.too_many_apts_per_week(Time.current.end_of_week).should eq false
-    end
-  end
-
-  describe "#wants_more_appointments_before" do
-    before :each do
-      time = DateTime.new 2013,02,14,12,30,00
-      Timecop.travel(time.beginning_of_week)
-    end
-
-    it "should return true when the number of appointments is less" do
-      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 4)
-      tutor.wants_more_appointments_before(Time.current.end_of_week).should eq true
-    end
-
-    it "should return true when the number of appointments is less" do
-      tutee = FactoryGirl.create(:tutee_unavailable, per_week: 4)
-      tutee.wants_more_appointments_before(Time.current.end_of_week).should eq true
-    end
-
-    it "should return false when the number of appointments is equal" do
-      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 3)
-      tutor.wants_more_appointments_before(Time.current.end_of_week).should eq false
-    end
-
-    it "should return false when the number of appointments is equal" do
-      tutee = FactoryGirl.create(:tutee_unavailable, per_week: 3)
-      tutee.wants_more_appointments_before(Time.current.end_of_week).should eq false
-    end
-
-    it "should return false when the number of appointments is more" do
-      tutor = FactoryGirl.create(:tutor_unavailable, per_week: 2)
-      tutor.wants_more_appointments_before(Time.current.end_of_week).should eq false
-    end
-  end
-
-  describe "#opposite_active_users" do
-    before :each do
-      @devin = FactoryGirl.create(:tutor_available)
-      @simran = FactoryGirl.create(:tutor_available)
-
-      @nitika = FactoryGirl.create(:tutee_available)
-      @ruchi = FactoryGirl.create(:tutee_unavailable)
-      @pooja = FactoryGirl.create(:tutee_unavailable)      
-    end
-
-    it "should return an array of active users with the opposite role" do
-      @simran.opposite_active_users.should include @nitika, @ruchi, @pooja
-    end
-
-    it "should return an array of active users with the same role" do
-      @simran.opposite_active_users.should_not include @devin
+      tutee.cell_number.should include "+91"
     end
   end
 end

@@ -24,6 +24,20 @@ describe TextSignup do
     end
 
   	let(:text_signup) { FactoryGirl.create :text_signup}
+
+    describe '#request_name' do
+      context "when user_initialized" do
+        before do 
+          @user = FactoryGirl.create(:tutor_available)
+          @text_signup = FactoryGirl.create(:text_signup, user: @user, status: 'user_initialized')
+          @text = FactoryGirl.create(:text_from_user, incoming_number: @user.cell_number)
+        end
+
+        it "sets the status to user_name_requested" do
+          expect(@text_signup.status).to eq 'user_name_requested'
+        end
+      end
+    end
   	
 
   	context "when the user sends the initial text" do

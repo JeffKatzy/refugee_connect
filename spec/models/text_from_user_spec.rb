@@ -26,66 +26,41 @@ describe TextFromUser do
 			Appointment.any_instance.stub(:start_call)
       CallToUser.any_instance.stub(:start_call)
 			Appointment.any_instance.stub(:send_confirmation_text)
-	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
-	    @text = FactoryGirl.create(:text_from_user)
+      @user = FactoryGirl.create(:user, cell_number: '+12312312336')
+	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current, tutor: @user)
+      @text = FactoryGirl.create(:text_from_user, incoming_number: '+12312312336')
   	end
 
 		it "should find the user after the text is created" do
-			TextFromUser.any_instance.stub(:respond)
+      TextFromUser.any_instance.stub(:twilio_response)
+      TextFromUser.any_instance.stub(:register_user)
 			@text.save
 			expect(@text.user).to eq @appointment.tutor
 	  end
-	end
-
-  describe '#attempt_session' do 
-  	before do	
-			Appointment.any_instance.stub(:remove_availability_occurrence)
-			Appointment.any_instance.stub(:start_call)
-	  	@appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current)
-	    @text = FactoryGirl.build(:text_from_user)
-  	end
-
-    it "calls the users with an appointment this hour" do
-			@text.save
-    end
-  end
-
-  describe '#set_user' do
-    context "with complete mobile signup" do 
-    	before do 
-    		@user = FactoryGirl.create(:tutor_available)
-    		@text = FactoryGirl.create(:text_from_user)
-    	end
-
-    	it "should set the proper user" do 
-    		expect(@text.user).to eq @user
-    	end
-    end
 
     context "with an incomplete mobile signup" do
       before do 
-        @user = FactoryGirl.create(:tutor_available)
-        @text_signup = FactoryGirl.create(:text_signup, user: @user)
-        @text = FactoryGirl.create(:text_from_user)
+        @user = FactoryGirl.create(:user, cell_number: '+12312312337')
+        @text = FactoryGirl.create(:text_from_user, incoming_number: '+12312312337')
       end
 
       it "sets the user" do
         expect(@text.user).to eq @user
       end
     end
-  end
+	end
 
-  describe '#request_name' do
-    context "when user_initialized" do
-      before do 
-        @user = FactoryGirl.create(:tutor_available)
-        @text_signup = FactoryGirl.create(:text_signup, user: @user, status: 'user_initialized')
-        @text = FactoryGirl.create(:text_from_user)
-      end
+  describe '#attempt_session' do 
+  	before do	
+      User.delete_all
+      @user = FactoryGirl.create(:user, cell_number: '+12312312337')
+      @appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current, tutor: @user)
+      @text_to_user = FactoryGirl.create(:text_to_user, body: 'go', appointment: @appointment, user: @user)
+  	end
 
-      it "sets the status to user_name_requested" do
-        expect(@text_signup.status).to eq 'user_name_requested'
-      end
+    it "calls the users with an appointment this hour" do
+      @text = FactoryGirl.create(:text_from_user, body: 'go', incoming_number: '+12312312337')
+      #Do not understand how to implement expectation that attempt_session is called
     end
   end
 
@@ -100,7 +75,7 @@ describe TextFromUser do
     let(:text) { FactoryGirl.create(:text_from_user, body: body, incoming_number: '+12154997415') }
     let(:specific_opening) { FactoryGirl.create :specific_opening, 
         status: 'available', 
-        scheduled_for: Time.current + 3.hours,
+        scheduled_for: Time.current,
         user:  FactoryGirl.create(:tutor_available, cell_number: '+12154997415') }
 
   	context "when text is go" do 
@@ -113,6 +88,7 @@ describe TextFromUser do
         tutor: FactoryGirl.create(:tutor_available, cell_number: '+12154997415') ) 
         ReminderText.begin_session
 
+        #Not sure how to implement
         expect(@appointment).to receive(:start_call)
         text
 	  	end
@@ -130,7 +106,6 @@ describe TextFromUser do
 
     context "when text is 'n' " do
       let(:body) { 'n' }
-      let(:status) { 'incomplete' }
 
       it "it cancels the specific opening" do 
         specific_opening
@@ -140,13 +115,11 @@ describe TextFromUser do
     end
 
     context "when text is 3" do 
-      let(:body) { '3' } 
-      @appointment  = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: 'complete')
-
-      it "should set the page" do 
-        text
-        @appointment.reload
-        expect(@appointment.finish_page).to eq 3
+      it "should set the page" do
+        @user = FactoryGirl.create(:user, cell_number: '+12312312334', role: 'tutor') 
+        appointment = FactoryGirl.create(:appointment, scheduled_for: Time.current, status: 'complete', tutor: @user)
+        text = FactoryGirl.create(:text_from_user, incoming_number: '+12312312334', body: '3')
+        expect(appointment.reload.finish_page).to eq 3
       end
     end
   end

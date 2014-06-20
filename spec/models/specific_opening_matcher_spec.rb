@@ -16,17 +16,17 @@ describe SpecificOpeningMatcher do
 
 		before do
 			@tutee_confirmed_opening_1 = FactoryGirl.create(:specific_opening, 
-				status: status, 
+				status: s_o_tutee_status, 
 				scheduled_for:  time_tutee,
 				user_role: 'tutee',
 				user: FactoryGirl.create(:tutee_available) )
 			@tutee_confirmed_opening_2 = FactoryGirl.create(:specific_opening, 
-				status: 'confirmed', 
+				status: s_o_tutee_status, 
 				scheduled_for:  time_tutee,
 				user_role: 'tutee',
 				user: FactoryGirl.create(:tutee_available) )
 			@tutee_confirmed_opening_3 = FactoryGirl.create(:specific_opening, 
-				status: 'confirmed',
+				status: s_o_tutee_status,
 				scheduled_for:  time_tutee,
 				user_role: 'tutee',
 				user: FactoryGirl.create(:tutee_available) )
@@ -37,7 +37,7 @@ describe SpecificOpeningMatcher do
 			context "when no s_os are upcoming" do
 				let(:time_tutee) {Time.current + 3.hours }
 				let(:time_tutor) {Time.current + 3.hours }
-				let(:status) {'confirmed'}
+				let(:s_o_tutee_status) {'requested_confirmation'}
 
 				it "matches for related users" do
 					tutor_openings.first.should_receive(:match_from_related_users)
@@ -49,7 +49,8 @@ describe SpecificOpeningMatcher do
 			context "when s_os are upcoming" do
 				let(:time_tutor) {Time.current + 1.hour }
 				let(:time_tutee) {Time.current + 1.hour }
-				let(:status) {'confirmed'}
+				let(:s_o_tutor_status) {'confirmed'}
+				let(:s_o_tutee_status) {'requested_confirmation'}
 
 				it "matches for unrelated users" do
 					tutor_openings.first.should_receive(:match_from_unrelated_users)
@@ -78,8 +79,8 @@ describe SpecificOpeningMatcher do
 				end
 			end
 
-			context "when not confirmed" do 
-				let(:status) {'available'}
+			context "when not requested confirmation" do 
+				let(:s_o_tutee_status) {'available'}
 				let(:time_tutee) {Time.current + 3.hours }
 				let(:time_tutor) {Time.current + 3.hours }
 

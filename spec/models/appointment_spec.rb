@@ -48,27 +48,6 @@ describe Appointment do
 	end
 
 	describe 'validations' do
-		context "when users are not available" do
-			before(:each) do
-				time = DateTime.new(2013,02,14,12,30,00)
-				Timecop.travel(time.beginning_of_week)
-				Appointment.any_instance.stub(:make_match_unavailable).and_return(true)
-				Appointment.any_instance.stub(:send_confirmation_text).and_return(true)
-			end
-
-			it "should not save unless both want more appointments" do
-				tutor = FactoryGirl.create(:tutor_unavailable)
-				tutee = FactoryGirl.create(:tutee_available)
-				apt_unavailable_tutor = FactoryGirl.build(:appointment, tutor: tutor, tutee: tutee) 
-				expect(apt_unavailable_tutor).to_not be_valid
-			end
-
-			it "should not invalidate if both want more appointments" do
-				appointment = FactoryGirl.build(:appointment)
-				expect(appointment).to be_valid
-			end
-		end
-
 		it "should validate the presences of a tutor" do
 			appointment = FactoryGirl.build(:appointment)
 			appointment.tutor = nil
@@ -80,25 +59,6 @@ describe Appointment do
 			appointment.tutee = nil
 			expect(appointment).to_not be_valid
 		end
-
-		context "when either user is not available" do
-			let(:first_appointment) { FactoryGirl.build(:appointment) }
-			let(:second_appointment) { FactoryGirl.build(:appointment, tutor: first_appointment.tutor) }
-			let(:third_appointment) { FactoryGirl.build(:appointment, tutee: first_appointment.tutee) }
-
-			it "should invalidate when a tutor already has an appointment then" do
-				first_appointment.save
-				expect(second_appointment.valid?).to be_false
-				expect(second_appointment.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
-			end
-
-			it "should invalidate when a tutee already has an appointment then" do
-				first_appointment.save
-				expect(third_appointment.valid?).to be_false
-				expect(third_appointment.errors.messages[:base].pop).to eq "A tutor or tutee is already scheduled at that time."
-			end
-		end
-	end
 
 	describe "#find_start_page" do
 		let(:apt) {FactoryGirl.create(:apt_five_min, began_at: Time.current, status: 'complete') }

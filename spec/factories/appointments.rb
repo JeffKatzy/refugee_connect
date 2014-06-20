@@ -20,7 +20,6 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 FactoryGirl.define do
   factory :appointment do
-    scheduled_for (DateTime.new 2013,02,14,12,30,00).end_of_week(:tuesday)
 
     after(:build) do |appointment|
       if appointment.tutee.nil?

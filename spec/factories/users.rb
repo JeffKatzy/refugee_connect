@@ -28,14 +28,14 @@ FactoryGirl.define do
     email { Faker::Internet.email }
     password 'password'
     name 'jeffers'
-    cell_number Faker::PhoneNumber.cell_phone
+    cell_number '12312312334'
     time_zone 'New Delhi'
 
     factory :tutor_unavailable do
       role 'tutor'
       admin 'active'
-      time_zone '12312312334'
-      cell_number Faker::PhoneNumber.cell_phone
+      time_zone 'America/New_York'
+      cell_number '12312312334'
       
       after(:create) do |tutor|
         time = DateTime.new 2013,02,14,12,30,00
@@ -53,6 +53,7 @@ FactoryGirl.define do
       time_zone 'America/New_York'
       cell_number '12312312335'
       per_week 5
+      active true
     end
 
     factory :tutee_unavailable do
@@ -75,6 +76,7 @@ FactoryGirl.define do
       cell_number '+91 97960 97962'
       time_zone "New Delhi"
       per_week 5
+      active true
     end
   end
 end
