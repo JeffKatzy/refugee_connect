@@ -60,6 +60,7 @@ class Appointment < ActiveRecord::Base
   has_many :reminder_texts
   has_many :text_from_users
   has_many :text_to_users
+  has_many :specific_openings
   after_create :find_start_page, :make_incomplete
   validates :tutor, presence: true
   validates :tutee, presence: true

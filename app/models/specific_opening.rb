@@ -32,10 +32,19 @@ class SpecificOpening < ActiveRecord::Base
   def match_from_related_users
     partners = self.user.appointment_partners
     if partners.present?
-      opening = partners.map(&:specific_openings).flatten.detect do |s_o|
-        s_o.scheduled_for == self.scheduled_for && 
-          s_o.status == 'confirmed'
-      end
+      if user.is_tutor?
+        return nil if status != 'confirmed'
+        opening = partners.map(&:specific_openings).flatten.detect do |s_o|
+          s_o.scheduled_for == self.scheduled_for && 
+            s_o.status == 'requested_confirmation'
+        end
+      else 
+        return nil if status != 'requested_confirmation'
+        opening = partners.map(&:specific_openings).flatten.detect do |s_o|
+          s_o.scheduled_for == self.scheduled_for && 
+            s_o.status == 'confirmed'
+        end
+      end 
     end
   end
 
@@ -48,9 +57,11 @@ class SpecificOpening < ActiveRecord::Base
   end
 
   def match_from_unrelated_users
+    return nil if (user.is_tutor? && self.status != 'confirmed')
+    return nil if (!user.is_tutor? && self.status != 'requested_confirmation')
     tutor_opening = SpecificOpening.after(self.scheduled_for - 1.minute).
-      before(self.scheduled_for + 1.minute).where(user_role: self.user.is_tutor? ? 'tutee' : 'tutor', 
-      status: 'confirmed').first
+    before(self.scheduled_for + 1.minute).where(user_role: self.user.is_tutor? ? 'tutee' : 'tutor', 
+    status: self.user.is_tutor? ? 'requested_confirmation' : 'confirmed' ).first
   end
 
   def scheduled_for_to_text(user_role)
