@@ -182,9 +182,9 @@ class Appointment < ActiveRecord::Base
 
   def scheduled_for_to_text(user_role)
     if user_role == 'tutor'
-      self[:scheduled_for].in_time_zone(tutor.time_zone).strftime("%l:%M %p on %A beginning")
+      self[:scheduled_for].in_time_zone(self.tutor.time_zone).strftime("%l:%M %p on %A beginning")
     elsif user_role == 'tutee'
-      self[:scheduled_for].in_time_zone(tutee.time_zone).strftime("%l:%M %p on %A beginning")
+      self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("%l:%M %p on %A beginning")
     else
       raise 'Must pass in either tutor or tutee'
     end
