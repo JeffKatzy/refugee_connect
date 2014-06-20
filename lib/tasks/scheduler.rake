@@ -8,7 +8,9 @@ task :build_specific_openings => :environment do
 end
 
 task :create_appointments => :environment do
-	som = SpecificOpeningMatcher.new(SpecificOpening.where(status: 'confirmed'))
+  tutor_so = SpecificOpening.today.where(status: 'confirmed', user_role: 'tutor')
+  tutee_so = SpecificOpening.today.where(status: 'requested_confirmation', user_role: 'tutee')
+	som = SpecificOpeningMatcher.new(tutor_so  + tutee_so)
 	som.matches_and_creates_apts
 end
 
