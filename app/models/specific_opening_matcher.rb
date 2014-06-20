@@ -6,19 +6,19 @@ class SpecificOpeningMatcher
 	end
 
 	def matches_and_creates_apts
-  	specific_openings.select{ |s_o| s_o.status == 'confirmed'}.each do |confirmed_s_o|
-  		if !confirmed_s_o.upcoming?
-        match_opening = confirmed_s_o.match_from_related_users 
+  	specific_openings.each do |s_o|
+  		if !s_o.upcoming?
+        match_opening = s_o.match_from_related_users 
   		else
-        match_opening = confirmed_s_o.match_from_unrelated_users  
+        match_opening = s_o.match_from_unrelated_users
   		end
-  		create_appointment(confirmed_s_o, match_opening) if match_opening
+  		create_appointment(s_o, match_opening) if match_opening
   	end
   end
 
   private
 
-  def create_appointment(opening, match_opening)
+ def create_appointment(opening, match_opening)
   	if opening.user.is_tutor?
   		tutor_opening = opening
   		tutee_opening = match_opening

@@ -24,7 +24,7 @@ class ReminderText < ActiveRecord::Base
   REQUEST_CONFIRMATION = 'request_confirmation'
 
   def self.begin_session
-    appointments_batch = Appointment.batch_for_begin_text   
+    appointments_batch = Appointment.batch_for_begin_text
     ReminderText.send_reminder_text(appointments_batch, BEGIN_SESSION) 
   end
 
@@ -42,7 +42,7 @@ class ReminderText < ActiveRecord::Base
 
   def self.ask_if_available(specific_openings_batch, category)
     specific_openings_batch.each do |specific_opening|
-      if user.is_tutor?
+      if specific_opening.user.is_tutor?
         body = ReminderText.body(specific_opening, category)
       else 
         category = SPECIFIC_OPENING_REMINDER
@@ -88,9 +88,9 @@ class ReminderText < ActiveRecord::Base
     elsif category == SET_PAGE_NUMBER
       "Reminder: Please text the page number that you last left off at."
     elsif category == PM_REMINDER
-      upcoming_session + " #{time} beginning on page #{appointment.start_page}.  " + admin_session
+      upcoming_session + " #{time} beginning on page #{object.start_page}.  " + admin_session
     elsif category == JUST_BEFORE
-      upcoming_session + " #{time} beginning on page #{appointment.start_page}.  " + admin_session
+      upcoming_session + " #{time} beginning on page #{object.start_page}.  " + admin_session
     else
       raise 'must pass in valid category'
     end
