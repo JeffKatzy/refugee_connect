@@ -59,8 +59,8 @@ class SpecificOpening < ActiveRecord::Base
   def match_from_unrelated_users
     return nil if (user.is_tutor? && self.status != 'confirmed')
     return nil if (!user.is_tutor? && self.status != 'requested_confirmation')
-    tutor_opening = SpecificOpening.after(self.scheduled_for - 1.minute).
-    before(self.scheduled_for + 1.minute).where(user_role: self.user.is_tutor? ? 'tutee' : 'tutor', 
+    tutor_opening = SpecificOpening.after(self.scheduled_for - 10.minutes).
+    before(self.scheduled_for + 10.minutes).where(user_role: self.user.is_tutor? ? 'tutee' : 'tutor', 
     status: self.user.is_tutor? ? 'requested_confirmation' : 'confirmed' ).first
   end
 
