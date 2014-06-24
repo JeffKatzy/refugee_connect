@@ -22,7 +22,7 @@ class SpecificOpeningBuilder < Object
 	def build_s_o(opening)
 		Time.zone = opening.user.time_zone
 	    Chronic.time_class = Time.zone
-	    s_o_time = Chronic.parse(opening.day_open.to_s + " " + opening.time_open.to_s, context: :future)
+	    s_o_time = Chronic.parse("this " + opening.day_open.to_s + " " + opening.time_open.to_s, context: :future)
 	    return if already_specific_opening(opening, s_o_time)
 	    specific_openings << SpecificOpening.create(user_id: opening.user_id, 
 	    	scheduled_for: s_o_time, 
