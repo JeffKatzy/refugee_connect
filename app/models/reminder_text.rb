@@ -43,6 +43,7 @@ class ReminderText < ActiveRecord::Base
   def self.ask_if_available(specific_openings_batch, category)
     specific_openings_batch.each do |specific_opening|
       if specific_opening.user.is_tutor?
+        category = REQUEST_CONFIRMATION
         body = ReminderText.body(specific_opening, category)
       else 
         category = SPECIFIC_OPENING_REMINDER
