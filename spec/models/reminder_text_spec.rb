@@ -66,23 +66,26 @@ describe ReminderText do
   describe 'begin_session' do
   	ReminderText.delete_all
 		Appointment.delete_all
-    
+    let(:tutor) { FactoryGirl.create(:tutor_available) }
+    let(:tutee) { FactoryGirl.create(:tutee_available) }
+
   	before :each do
 			@nine_pm = FactoryGirl.create(:appointment, 
         scheduled_for: Time.current.change(hour: 21, min: 21),
-        tutor: FactoryGirl.build(:tutor_available), 
-        tutee: FactoryGirl.build(:tutee_available))
+        tutor: tutor, 
+        tutee: FactoryGirl.create(:tutee_available, cell_number: '2154997415')
+          )
 
 			@ten_pm = FactoryGirl.create(:appointment, 
         scheduled_for: Time.current.change(hour: 22, min: 21),
-        tutor: FactoryGirl.build(:tutor_available), 
-				tutee: FactoryGirl.build(:tutee_available)
+        tutor: tutor, 
+				tutee: tutee
 				)
 
 			@eleven_pm = FactoryGirl.create(:appointment, 
         scheduled_for: Time.current.change(hour: 23, min: 21),
-				tutor: FactoryGirl.build(:tutor_available), 
-				tutee: FactoryGirl.build(:tutee_available)
+				tutor: tutor, 
+				tutee: tutee
 				)
 		end
 
@@ -92,6 +95,15 @@ describe ReminderText do
   			ReminderText.begin_session
   			ReminderText.first.appointment.should eq @nine_pm
   		end
+
+      it "sends different messages to the tutor and tutee" do
+        Timecop.travel(Time.current.change(hour: 21, min: 55))
+        ReminderText.begin_session
+        tutor_text = TextToUser.where(user_id: @nine_pm.tutor.id).first
+        tutee_text = TextToUser.where(user_id: @nine_pm.tutee.id).first
+        expect(tutor_text.body).to include 'Reply to this text with the word'
+        expect(tutee_text.body).to include 'If you would not like'
+      end
   	end
 
   	context "when it is 10 pm" do 

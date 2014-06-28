@@ -58,12 +58,15 @@ class ReminderText < ActiveRecord::Base
   def self.send_reminder_text(appointments_batch, category)
     appointments_batch.each do |apt|
       unless apt.reminder_texts.where(category: "#{category}").any?
+        category = BEGIN_SESSION
         body = ReminderText.body(apt, category)
         tutor_text = TextToUser.deliver(apt.tutor, body) 
         tutor_text.appointment = apt
         tutor_text.save
         reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id, category: category) 
         begin
+          category = BEGIN_SESSION_TUTEE
+          body = ReminderText.body(apt, category)
           tutee_text = TextToUser.deliver(apt.tutee, body) 
           tutee_text.appointment = apt
           tutee_text.save
@@ -90,6 +93,8 @@ class ReminderText < ActiveRecord::Base
       "Reminder: Please text the page number that you last left off at."
     elsif category == PM_REMINDER
       upcoming_session + " #{time} beginning on page #{object.start_page}.  " + admin_session
+    elsif category == BEGIN_SESSION_TUTEE
+      "Your class at #{time} is now ready to start.  If you would not like a class, do not answer the phone when you receive the call."
     elsif category == JUST_BEFORE
       upcoming_session + " #{time} beginning on page #{object.start_page}.  " + admin_session
     else
