@@ -84,7 +84,7 @@ class TextFromUser < ActiveRecord::Base
       specific_opening
     else
       puts "did not find specific opening"
-      send_error_text
+      send_could_not_find_opening_text
       nil
     end
   end
@@ -102,6 +102,11 @@ class TextFromUser < ActiveRecord::Base
   def send_error_text
     body = "We could not understand your text. Please type 'go' to call the student, 'y' to 
     confirm your appointmet or 'n' to cancel."
+    TextToUser.deliver(user, body)
+  end
+
+  def send_could_not_find_opening_text
+    body = "We could not find a specific opening that you have scheduled for for this time."
     TextToUser.deliver(user, body)
   end
 
