@@ -2,11 +2,13 @@ class UsersController < ApplicationController
   layout 'application'
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(params[:user]) 
     if @user.save
       session[:user_id] = @user.id
       authentication
       redirect_to user_path(@user.id)
+      flash_message(:sign_up, "Congrats!  On #{@user.openings.first.day_open} we'll send you a text message asking if you are still free for the class.  Just follow the instructions in the text to confirm or cancel.
+        To view the book you will be teaching click the 'View book' link on this page.") 
     else
       render action: 'new'
     end
