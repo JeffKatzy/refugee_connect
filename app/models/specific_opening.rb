@@ -26,7 +26,7 @@ class SpecificOpening < ActiveRecord::Base
   STATUSES = ['available', 'requested_confirmation', 'confirmed', 'canceled']
 
   def upcoming?
-  	Time.current + 1.hour + 30.minutes > self.scheduled_for
+  	Time.current.utc + 1.hour + 30.minutes > self.scheduled_for
   end
 
   def match_from_related_users

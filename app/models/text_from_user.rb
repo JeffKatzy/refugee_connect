@@ -25,11 +25,11 @@ class TextFromUser < ActiveRecord::Base
   after_create :set_user
 
   def twilio_response
-    Rails.logger.info("#{self.id} now responding to the word #{body} at #{Time.current}")
+    Rails.logger.info("#{self.id} now responding to the word #{body} at #{Time.current.utc}")
     self.reload
     body = self.body.downcase.strip
     if body == "go"
-      Rails.logger.info("#{self.id} now attempting session at #{Time.current}")
+      Rails.logger.info("#{self.id} now attempting session at #{Time.current.utc}")
       attempt_session
     elsif body == "y"
       opening = find_specific_opening

@@ -29,7 +29,7 @@ class Appointment < ActiveRecord::Base
   scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
   
   # scope :this_hour, after(Time.current.beginning_of_hour).before(Time.current.end_of_hour)  #for some reason this was not working
-  scope :tomorrow, after(Time.current.end_of_day).before(Time.current.end_of_day + 24.hours)
+  scope :tomorrow, after(Time.current.utc.end_of_day).before(Time.current.utc.end_of_day + 24.hours)
   scope :incomplete, where(status: 'incomplete')
   scope :complete, where(status: 'complete')
   scope :needs_text, complete.where("finish_page IS NULL")
@@ -41,7 +41,7 @@ class Appointment < ActiveRecord::Base
 
   scope :most_recent, complete.recent_inclusive
 
-  scope :this_hour, where("scheduled_for between (?) and (?)", Time.current.beginning_of_hour, Time.current.end_of_hour)
+  scope :this_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour, Time.current.utc.end_of_hour)
   scope :next_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour)
   
   #check to see if this still works
@@ -152,7 +152,7 @@ class Appointment < ActiveRecord::Base
   end
 
   def start_call
-    self.began_at = Time.current
+    self.began_at = Time.current.utc
     self.status = 'In Progress'
     self.save
 
