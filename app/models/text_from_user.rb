@@ -78,7 +78,8 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def find_specific_opening
-    specific_opening = user.specific_openings.today.first
+    specific_opening = user.specific_openings.where('scheduled_for >=?', Time.current.utc.beginning_of_day).
+      where('scheduled_for <=?', Time.current.utc.end_of_day).first
     if specific_opening
       puts "found specific opening #{specific_opening.id}"
       specific_opening

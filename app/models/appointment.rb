@@ -28,7 +28,6 @@ class Appointment < ActiveRecord::Base
   scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
   scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
   
-  # scope :this_hour, after(Time.current.beginning_of_hour).before(Time.current.end_of_hour)  #for some reason this was not working
   scope :tomorrow, after(Time.current.utc.end_of_day).before(Time.current.utc.end_of_day + 24.hours)
   scope :incomplete, where(status: 'incomplete')
   scope :complete, where(status: 'complete')
