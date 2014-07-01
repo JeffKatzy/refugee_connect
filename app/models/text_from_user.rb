@@ -56,7 +56,7 @@ class TextFromUser < ActiveRecord::Base
   def attempt_session
     puts "in attempt_session"
     self.user.reload
-    last_text = user.text_to_users.last
+    last_text = user.text_to_users.where('appointment_id IS NOT NULL').last
     if last_text
       appointment = self.appointment = last_text.appointment
       self.save
