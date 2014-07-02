@@ -29,7 +29,7 @@ class TextToUser < ActiveRecord::Base
      @text.send_text(user, body)
     rescue => e
       "Failed in sending to user #{user.name} the message #{body}"
-      raise e
+      puts e.message
     end
     @text
   end
