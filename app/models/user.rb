@@ -92,10 +92,11 @@ class User < ActiveRecord::Base
 
   def appointment_partners
     if self.role == 'tutor'
-      self.appointment_partners_of_tutor
+      partners = self.appointment_partners_of_tutor
     else
-      self.appointment_partners_of_tutee
+      partners = self.appointment_partners_of_tutee
     end
+      partners.reject! {|u| u.id == self.id }
   end
 
   def is_tutor?

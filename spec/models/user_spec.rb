@@ -85,6 +85,18 @@ describe User do
   	end
   end
 
+  describe '#appointment_partners' do
+    before :each do
+      @janie = FactoryGirl.create(:tutor_available, active: false)
+      apt_same_user = FactoryGirl.create(:appointment, tutor: @janie, tutee: @janie)
+      apt_diff_users = FactoryGirl.create(:appointment, tutor: @janie, tutee: @priya)
+    end
+
+    it "does not return the user itself" do 
+      expect(@janie.appointment_partners).to_not include(@janie)
+    end
+  end
+
   describe '#format_cell_number' do
     it "should add a US country code for tutors" do
       tutor = FactoryGirl.create(:tutor_unavailable)
