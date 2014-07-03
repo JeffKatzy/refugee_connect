@@ -24,18 +24,20 @@ class SpecificOpeningBuilder < Object
 	    Chronic.time_class = Time.zone
 	    s_o_time = Chronic.parse("this " + opening.day_open.to_s + " " + opening.time_open.to_s, context: :future)
 	    past_s_o_time = s_o_time - 1.week
-	    return if already_specific_opening(opening, s_o_time)
-	    specific_openings << SpecificOpening.create(user_id: opening.user_id, 
-	    	scheduled_for: s_o_time, 
-	    	opening_id: opening.id, 
-	    	user_role: opening.user.role, 
-	    	status: 'available')
-	    
-	    specific_openings << SpecificOpening.create(user_id: opening.user_id, 
-	    	scheduled_for: past_s_o_time, 
-	    	opening_id: opening.id, 
-	    	user_role: opening.user.role, 
-	    	status: 'available')
+	    if !already_specific_opening(opening, s_o_time)
+		    specific_openings << SpecificOpening.create(user_id: opening.user_id, 
+		    	scheduled_for: s_o_time, 
+		    	opening_id: opening.id, 
+		    	user_role: opening.user.role, 
+		    	status: 'available')
+		end
+	    if !already_specific_opening(opening, past_s_o_time)
+		    specific_openings << SpecificOpening.create(user_id: opening.user_id, 
+		    	scheduled_for: past_s_o_time, 
+		    	opening_id: opening.id, 
+		    	user_role: opening.user.role, 
+		    	status: 'available')
+		end
   	end
 
   	def already_specific_opening(opening, s_o_time)

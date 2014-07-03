@@ -1,3 +1,4 @@
+- @new_opening = @user.openings.last
 .modal.fade#myModal{'role' => 'dialog', 'aria-labelledby' => 'myModalLabel', 'aria-hidden' => 'true'} 
 	.modal-dialog
 		.modal-content
@@ -18,24 +19,19 @@
 								= best_in_place opening, :time_open, :type => :select, :collection => [["9:00 pm", "9:00 pm"], ["10:00 pm", "10:00 pm"]]
 					.row
 						.center Add New opening
-					= nested_form_for @user do |f|
-						= f.fields_for :openings do |form|
-							- if form.object == @user.openings.last
-								= hidden_field :user_id, value: @user.id
-								- if @user.is_tutor?
-									= form.label :day_open, "day open"
-									= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday"})
-									= form.label :time_open, "time open"
-									= form.select("time_open", {"11:30 am" => "11:30 am", "12:30 pm" => "12:30 pm" })
-								- else
-									= form.label :day_open, "day open"
-									= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
-									= form.label :time_open, "time open"
-									= form.select("time_open", {"9:00 pm" => "9:00 pm", "10:00 pm" => "10:00 pm" })
-								.row.padded
-									%p.right= form.link_to_remove "Remove this availability"
-						.row
-							= f.submit 'Submit availability', class: 'green button large padded fixed center'
-						%br
-						%br
-						%br
+					= form_for @new_opening do |form|
+						= form.hidden_field :user_id, value: @user.id
+						- if @user.is_tutor?
+							= form.label :day_open, "day open"
+							= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday"})
+							= form.label :time_open, "time open"
+							= form.select("time_open", {"11:30 am" => "11:30 am", "12:30 pm" => "12:30 pm" })
+						- else
+							= form.label :day_open, "day open"
+							= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
+							= form.label :time_open, "time open"
+							= form.select("time_open", {"9:00 pm" => "9:00 pm", "10:00 pm" => "10:00 pm" })
+							= form.submit 'Submit availability', class: 'green button large padded fixed center'
+							%br
+							%br
+							%br
