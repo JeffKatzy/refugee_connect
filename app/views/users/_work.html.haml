@@ -1,12 +1,32 @@
 .row.padded
-	.two.sixths
-	.two.sixths
-		%h1#assignments-title Assignments
-		- @user_assignments.each do |ua|
-			- ua.assignment.bookpages.each do |page|
-				- if page.photos.present?
-					= cl_image_tag(page.photos.first.path, { size: '600x500' })
-					.row
-						- if @auth
-							%p Assignment comment
-							= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, nil: "Click here to add content", classes: 'background-gray'
+	.four.centered.fifths
+		.tabs.ipad
+			%ul{:role => "tablist"}
+				%li{:role => "tablist", :"aria-controls" => "#tab1"} Assignments
+				%li{:role => "tablist", :"aria-controls" => "#tab2"} Pictures
+			#tab1{:role => "tabpanel"}
+				%h1#assignments-title Assignments
+				- @user_assignments.each do |ua|
+					- ua.assignment.bookpages.each do |page|
+						- if page.photos.present?
+							.row.padded.center
+								.one.sixth
+								.four.sixths.center
+									= cl_image_tag(page.photos.first.path, { size: '600x500' })
+									%p Assignment comment
+									- if @auth
+										= best_in_place ua.comments.where(tutor_id: @auth.id).first, :comment_text, :type => :textarea, nil: "Click here to add content", classes: 'background-gray'
+								.one.sixth
+			#tab2{:role => "tabpanel"}
+				- if @user.role == 'tutee' && @user.photos.present?
+					- @user.photos.tweet_created_at_asc.each do |photo|
+						%row.padded.center
+							= image_tag photo.url
+				- else
+					%h1 No Photos Currently Available
+					%br
+					%br
+					%br
+					%br
+					%br
+					%br
