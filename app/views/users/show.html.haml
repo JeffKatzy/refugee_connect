@@ -13,9 +13,11 @@
 						%span.padded #{pluralize(@user.appointments.complete.try(:count), "class")} completed
 						%span.padded #{pluralize(@user.appointment_partners.try(:count), "current student")}
 						- if occurrence && @auth
-							%span.padded Next availability #{occurrence.scheduled_for.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")}
+							%span.padded Next opening #{occurrence.scheduled_for.in_time_zone(@auth.time_zone).strftime("%B %-d at %l:%M %p on %A")}
 						- if @auth == @user
 							%span.padded
 								.button.green{'data-toggle' => 'modal', 'data-target' => '#myModal'}= "Add/Edit times available"
+							%span.pad-left
+								.book-link.button.blue=link_to "View book", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
 				.one.fourth.padded
 = render 'work'
