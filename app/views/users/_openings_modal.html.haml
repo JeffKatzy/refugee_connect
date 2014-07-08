@@ -26,12 +26,13 @@
 							= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday"})
 							= form.label :time_open, "time open"
 							= form.select("time_open", {"11:30 am" => "11:30 am", "12:30 pm" => "12:30 pm" })
+							= form.submit 'Submit availability', class: 'green button large padded fixed center'
 						- else
 							= form.label :day_open, "day open"
 							= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
 							= form.label :time_open, "time open"
 							= form.select("time_open", {"9:00 pm" => "9:00 pm", "10:00 pm" => "10:00 pm" })
-						= form.submit 'Submit availability', class: 'green button large padded fixed center'
+							= form.submit 'Submit availability', class: 'green button large padded fixed center'
 							%br
 							%br
 							%br
