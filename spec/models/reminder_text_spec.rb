@@ -32,19 +32,19 @@ describe ReminderText do
       ReminderText.delete_all
       SpecificOpening.delete_all
       @eleven_thirty_pm = FactoryGirl.create(:specific_opening, 
-        scheduled_for: Time.current.change(hour: 11, min: 30),
+        scheduled_for: Time.current.utc.change(hour: 11, min: 30),
         user: FactoryGirl.build(:tutor_available)
         )
 
       @twelve_thirty_pm = FactoryGirl.create(:specific_opening, 
-        scheduled_for: Time.current.change(hour: 12, min: 30),
+        scheduled_for: Time.current.utc.change(hour: 12, min: 30),
         user: FactoryGirl.build(:tutor_available)
         )
     end
 
     context "when it is 9 am" do 
       it "sends confirmation requests for specific openings scheduled for the day" do 
-        Timecop.travel(Time.current)
+        Timecop.travel(Time.current.utc)
         ReminderText.confirm_specific_openings
         text = ReminderText.first
         expect(text.user).to eq @eleven_thirty_pm.user
@@ -59,6 +59,21 @@ describe ReminderText do
         expect(ReminderText.count).to eq 2
         ReminderText.confirm_specific_openings
         expect(ReminderText.count).to eq 2
+      end
+    end
+
+    context "when a user with a SO no longer exists" do
+      before :each do
+        @no_user = FactoryGirl.create(:specific_opening, 
+          scheduled_for: Time.current,
+          user_id: 30009
+          )
+      end
+
+      it "does not blow up" do
+        @no_user.reload
+        expect(SpecificOpening.available.today).to include(@no_user)
+        expect(ReminderText.confirm_specific_openings).to_not raise_error
       end
     end
   end

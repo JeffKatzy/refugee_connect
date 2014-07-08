@@ -29,7 +29,8 @@ class ReminderText < ActiveRecord::Base
   end
 
   def self.confirm_specific_openings
-    specific_openings_batch = SpecificOpening.available.today
+    specific_openings_batch = SpecificOpening.available.where('scheduled_for >=?', Time.current.utc.beginning_of_day).
+      where('scheduled_for <=?', Time.current.utc.end_of_day)
     ReminderText.ask_if_available(specific_openings_batch, REQUEST_CONFIRMATION)
   end
 
@@ -42,6 +43,7 @@ class ReminderText < ActiveRecord::Base
 
   def self.ask_if_available(specific_openings_batch, category)
     specific_openings_batch.each do |specific_opening|
+      next if specific_opening.user == nil
       if specific_opening.user.is_tutor?
         category = REQUEST_CONFIRMATION
         body = ReminderText.body(specific_opening, category)
@@ -71,9 +73,7 @@ class ReminderText < ActiveRecord::Base
           tutee_text.appointment = apt
           tutee_text.save
         rescue
-          return puts "could not send to tutee"
-          tutee_text.received = "could_not_send"
-          tutee_text.save
+          puts "could not send to tutee"
         end
       end
     end
