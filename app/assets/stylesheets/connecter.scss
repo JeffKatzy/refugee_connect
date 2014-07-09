@@ -65,13 +65,17 @@ header {
 	margin: 0 auto;
 }
 
+.container_home {
+	position: relative;
+}
+
 .signup_buttons {
 	clear: both;
 }
 
 .signup_links {
-	font-size: 1.0vw;
 	font-size: 13px;
+	font-size: 2.1vw;
 	p {
 		margin: 0px;
 	}
@@ -117,10 +121,7 @@ header {
  .homepage-header {
  	position: absolute;
  	z-index: 2;
- 	top: 100px;
- 	right: 50px;
- 	max-width: 980px;
- 	padding: 6em 0;
+ 	top: 2%;
  	margin: auto;
  	color: #303030;
  }
@@ -134,16 +135,13 @@ header {
  }
 
  .homepage-herotext {
- 	margin-left: auto;
- 	max-width: 313px;
  	color: #303030;
- 	font-size: 2.0vw;
+ 	font-size: 2.5vw;
+ 	margin-bottom: 0px;
  }
 
  .homepage-hero-paragraph{
- 	margin-left: auto;
-	max-width: 430px;
-	font-size: 1.0vw;
+	font-size: 1.4vw;
  }
 
 .nav {

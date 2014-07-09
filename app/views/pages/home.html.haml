@@ -1,23 +1,23 @@
 .container_home
 	#shloka-img
 		=image_tag('/assets/shlokasphoto.jpg')
-		.homepage-header
-			.row
-				.one.whole
-					%h1.homepage-herotext
-						Teach English to the ones who need it most
-					.homepage-hero-paragraph
-						%h3.pull-right It begins with one phone call.
-					.signup_buttons.pull-right
-						%p.big_button_paragraph
-							= link_to('auth/facebook') do 
-								%button.yb_button.blue
-									Get started
-						.signup_links
-							%p
-								= link_to('Sign up without facebook', new_user_path)
-							%p
-								= link_to('Login without facebook', new_session_path)
+	.homepage-header.row
+		.one.half.mobile
+		.one.half.mobile
+			%h1.homepage-herotext.padded
+				Teach English to the ones who need it most
+			.homepage-hero-paragraph.skip-two.five.eighths.mobile
+				%h3 It begins with one phone call.
+			.signup_buttons.skip-two.three.sixths.mobile
+				%p.big_button_paragraph
+					= link_to('auth/facebook') do 
+						%button.yb_button.blue
+							Get started
+				.signup_links
+					%p
+						= link_to('Sign up without facebook', new_user_path)
+					%p
+						= link_to('Login without facebook', new_session_path)
 	%section.explanation
 		%h2.mission_statement 
 			%p For one hour per week during lunch, connect with the rest of the world.
