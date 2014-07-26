@@ -18,6 +18,8 @@ class SpecificOpening < ActiveRecord::Base
   belongs_to :user
   belongs_to :appointment
   belongs_to :opening
+  has_many :confirmations
+  
   scope :after, ->(time) { where("scheduled_for >= ?", time) }
   scope :before, ->(time) { where("scheduled_for <= ?", time) }
   scope :available, where(status: 'available')

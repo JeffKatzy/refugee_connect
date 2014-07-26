@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140604003133) do
+ActiveRecord::Schema.define(:version => 20140722025613) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -126,6 +126,14 @@ ActiveRecord::Schema.define(:version => 20140604003133) do
     t.integer  "user_assignment_id"
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
+  end
+
+  create_table "confirmations", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "specific_opening_id"
+    t.boolean  "confirmed"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
   end
 
   create_table "facebook_users", :force => true do |t|

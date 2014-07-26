@@ -1,0 +1,18 @@
+.one.third
+.one.third
+	- if @specific_opening
+		.padded
+			= simple_form_for [@specific_opening, @confirmation] do |f|
+				= f.hidden_field :user_id, value: @user.id
+				= f.hidden_field :specific_opening_id, value: @specific_opening.id
+				= f.input :confirmed, as: :radio_buttons, label: 'Still free?', boolean_style: :inline, wrapper_html: { class: 'label-wrapper' }
+				= f.submit 'Confirm', class: 'green button large padded fixed center'
+				%br
+				%br
+				%br
+	- else
+		.padded
+			%h3 You have no scheduled availability today.
+			%span To manage your availabilties, visit your profile page
+			= link_to('here.', user_path(@user)) 
+/ Add in that you can't cancel if the SO already has been set up -- or you need a way of cancelling.

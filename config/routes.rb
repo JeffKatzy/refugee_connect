@@ -4,11 +4,18 @@ RefugeeConnect::Application.routes.draw do
   match 'users/new_tutor', to: 'users#new_tutor'
   match 'users/new_tutee', to: 'users#new_tutee'
   get 'users/cancel' => 'users#cancel'
-  resources :users
+  
+  resources :users 
+
+  resources :specific_openings do
+    resources :confirmations
+  end
+
   resources :appointments
   resources :lessons
   resources :assignments
   resources :user_assignments
+
 
   resources :matches
   resources :bookpages
