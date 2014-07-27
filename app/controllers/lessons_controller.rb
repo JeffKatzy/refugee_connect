@@ -6,11 +6,11 @@ class LessonsController < ApplicationController
 
 	def create
 		@lesson = Lesson.new(params[:lesson])
-    if @lesson.save
-      redirect_to lessons_path
-    else
-      render action: 'new'
-    end
+	    if @lesson.save
+	      redirect_to lessons_path
+	    else
+	      render action: 'new'
+	    end
 	end
 
 	def index

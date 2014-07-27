@@ -59,6 +59,7 @@ describe Appointment do
 			appointment.tutee = nil
 			expect(appointment).to_not be_valid
 		end
+	end
 
 	describe "#find_start_page" do
 		let(:apt) {FactoryGirl.create(:apt_five_min, began_at: Time.current, status: 'complete') }
@@ -326,5 +327,4 @@ describe Appointment do
 			expect(Appointment.batch_for_just_before).to include @appointment_one
 		end
 	end
-
 end
