@@ -97,6 +97,7 @@ class User < ActiveRecord::Base
       partners = self.appointment_partners_of_tutee
     end
       partners.reject! {|u| u.id == self.id }
+      partners
   end
 
   def is_tutor?

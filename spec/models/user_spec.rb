@@ -69,7 +69,7 @@ describe User do
   	before :each do
   		@janie = FactoryGirl.create(:tutor_available, active: false)
   		@joey = FactoryGirl.create(:tutor_available, active: false)
-  		@priya = FactoryGirl.create(:tutor_available, active: true)
+  		@priya = FactoryGirl.create(:tutee_available, active: true)
   		@jaya = FactoryGirl.create(:tutor_available, active: true)
       @joey.active = false
       @joey.save
@@ -87,6 +87,7 @@ describe User do
 
   describe '#appointment_partners' do
     before :each do
+      @priya = FactoryGirl.create(:tutee_available, active: true)
       @janie = FactoryGirl.create(:tutor_available, active: false)
       apt_same_user = FactoryGirl.create(:appointment, tutor: @janie, tutee: @janie)
       apt_diff_users = FactoryGirl.create(:appointment, tutor: @janie, tutee: @priya)
@@ -94,6 +95,10 @@ describe User do
 
     it "does not return the user itself" do 
       expect(@janie.appointment_partners).to_not include(@janie)
+    end
+
+    it "returns the other users" do
+      expect(@janie.appointment_partners).to include(@priya)
     end
   end
 
