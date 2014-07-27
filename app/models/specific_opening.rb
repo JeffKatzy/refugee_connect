@@ -31,20 +31,38 @@ class SpecificOpening < ActiveRecord::Base
   	Time.current.utc + 1.hour + 30.minutes > self.scheduled_for
   end
 
+  # Concept of still_on? should only exist for a tutees.  For students they need to
+  def still_on?
+    if user.role == 'tutee'
+      (status == 'confirmed' || status == 'requested_confirmation') && !canceled?
+    else 
+      puts 'No Op.  Concept only exists for tutees.'
+    end
+  end
+
+  def canceled?
+    (confirmations.last.try(:confirmed) == false)
+  end
+
+  def confirmed?
+    return true if status == 'confirmed'
+    false
+  end
+
   def match_from_related_users
     partners = self.user.appointment_partners
     if partners.present?
       if user.is_tutor?
-        return nil if status != 'confirmed'
+        return nil if !confirmed?
         opening = partners.map(&:specific_openings).flatten.detect do |s_o|
           s_o.scheduled_for == self.scheduled_for && 
-            s_o.status == 'requested_confirmation'
+            s_o.still_on?
         end
       else 
-        return nil if status != 'requested_confirmation'
+        return nil if !still_on?
         opening = partners.map(&:specific_openings).flatten.detect do |s_o|
           s_o.scheduled_for == self.scheduled_for && 
-            s_o.status == 'confirmed'
+            s_o.confirmed?
         end
       end 
     end
