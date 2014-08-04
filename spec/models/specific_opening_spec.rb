@@ -134,4 +134,31 @@ describe SpecificOpening do
 	  	end
 	  end
 	end
+
+	describe '#confirm' do
+		
+		before do
+			specific_opening.reload
+			specific_opening.confirm
+		end
+
+		let(:specific_opening) { FactoryGirl.create(:specific_opening, user: (FactoryGirl.create :user)) }
+
+		it "creates a new confirmation" do
+			specific_opening.confirm
+			expect(specific_opening.confirmations).to be_present
+		end
+
+		it "has the correct user" do
+			specific_opening.confirm
+			confirmation = specific_opening.confirmations.first
+			expect(confirmation.user).to eq specific_opening.user
+		end
+
+		it "has the correct attribute" do
+			specific_opening.confirm
+			confirmation = specific_opening.confirmations.first
+			expect(confirmation.confirmed).to eq true
+		end
+	end
 end

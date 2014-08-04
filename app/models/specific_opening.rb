@@ -73,7 +73,7 @@ class SpecificOpening < ActiveRecord::Base
   end
 
   def confirm
-    self.update_attributes(status: 'confirmed')
+    Confirmation.create(specific_opening_id: self.id, user_id: self.user.id, confirmed: true)
   end
 
   def match_from_unrelated_users
