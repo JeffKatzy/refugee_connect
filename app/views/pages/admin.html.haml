@@ -1,0 +1,83 @@
+.row.table.padded
+	.two.thirds.centered
+		Specific Openings
+		%table
+			%thead
+				%tr
+					%th
+						User
+					%th
+						Role
+					%th
+						Time
+					%th
+						Status
+					%th
+						Has Appointment
+			%tbody
+			- @specific_openings.each do |so|
+				%tr
+					%td
+						= so.user.name
+					%td
+						= so.user.role
+					%td
+						= so.scheduled_for.in_time_zone('America/New_York').strftime("%I:%M%p on %A") + " (EST)"
+					%td
+						= so.status
+					%td
+						= so.has_appointment? ? 'yes' : 'no'
+.row.table.padded
+	.two.thirds.centered
+		Appointments
+		%table
+			%thead
+				%tr
+					%th
+						Tutor
+					%th
+						Tutee
+					%th
+						Time
+					%th
+						Status
+			%tbody
+			- @appointments.each do |apt|
+				%tr
+					%td
+						= apt.tutor.name
+					%td
+						= apt.tutee.name
+					%td
+						= apt.scheduled_for.in_time_zone('America/New_York').strftime("%I:%M%p on %A") + " (EST)"
+					%td
+						= apt.status
+.row.table.padded
+	.two.thirds.centered
+		Specific Openings Tomorrow
+		%table
+			%thead
+				%tr
+					%th
+						User
+					%th
+						Role
+					%th
+						Time
+					%th
+						Status
+					%th
+						Has Appointment
+			%tbody
+			- @specific_openings_tomorrow.each do |so|
+				%tr
+					%td
+						= so.user.try(:name)
+					%td
+						= so.user.try(:role)
+					%td
+						= so.scheduled_for.in_time_zone('America/New_York').strftime("%I:%M%p on %A") + " (EST)"
+					%td
+						= so.status
+					%td
+						= so.has_appointment? ? 'yes' : 'no'

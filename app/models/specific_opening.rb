@@ -24,8 +24,13 @@ class SpecificOpening < ActiveRecord::Base
   scope :before, ->(time) { where("scheduled_for <= ?", time) }
   scope :available, where(status: 'available')
   scope :today, after(Time.current.utc.beginning_of_day).before(Time.current.utc.end_of_day)
+  scope :tomorrow, after(Time.current.utc.beginning_of_day + 1.day).before(Time.current.utc.end_of_day + 1.day)
 
   STATUSES = ['available', 'requested_confirmation', 'confirmed', 'canceled']
+
+  def has_appointment?
+    appointment
+  end
 
   def upcoming?
   	Time.current.utc + 1.hour + 30.minutes > self.scheduled_for

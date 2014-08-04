@@ -24,6 +24,7 @@ RefugeeConnect::Application.routes.draw do
   post 'appointments/batch'
   mount Attachinary::Engine => "/attachinary"
   resources :comments
+  get 'admin', to: 'pages#admin'
   
   
 

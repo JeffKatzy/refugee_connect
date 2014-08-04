@@ -26,6 +26,7 @@ class Appointment < ActiveRecord::Base
   scope :before, ->(time) { where("scheduled_for <= ?", time) }
   scope :during, ->(time) { where("scheduled_for between (?) and (?)", time, time + 1.hour) }
   scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
+  scope :today, after(Time.current.utc.beginning_of_day).before(Time.current.utc.end_of_day)
   scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
   
   scope :tomorrow, after(Time.current.utc.end_of_day).before(Time.current.utc.end_of_day + 24.hours)
