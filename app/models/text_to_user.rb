@@ -38,6 +38,4 @@ class TextToUser < ActiveRecord::Base
     @message = @@account.sms.messages.create(:from => '+12673172085', :to => user.cell_number, :body => body, :status_callback => BASE_URL + "text_to_users/complete/#{self.id}.xml")
     puts @message  
   end
-
-  # find the text message you relate to
 end

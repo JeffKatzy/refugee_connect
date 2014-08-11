@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <p>Hi <%= @user.name %>,</p>
+    <p>
+      This is just a reminder that you have a session open #{@specific_opening.scheduled_for_to_text}.<br>
+    </p>
+    <p>
+      If you cannot make it, you can let us know when we text you tomorrow.  Or you can cancel in advance here #{@url}
+    </p>
+    <p>Thanks for all of the help, and let me know if you have any suggestions or issues!</p>
+
+  </body>
+</html>

@@ -47,8 +47,6 @@ class SpecificOpening < ActiveRecord::Base
     false
   end
 
-  
-
   def cancel
     self.update_attributes(status: 'canceled')
   end
@@ -61,6 +59,6 @@ class SpecificOpening < ActiveRecord::Base
   
 
   def scheduled_for_to_text(user_role)
-    self[:scheduled_for].in_time_zone(user.time_zone).strftime("%l:%M %p on %A beginning")
+    self[:scheduled_for].in_time_zone(user.time_zone).strftime("%l:%M %p on %A")
   end
 end
