@@ -47,24 +47,7 @@ class SpecificOpening < ActiveRecord::Base
     false
   end
 
-  def match_from_related_users
-    partners = self.user.appointment_partners
-    if partners.present?
-      if user.is_tutor?
-        return nil if !confirmed?
-        opening = partners.map(&:specific_openings).flatten.detect do |s_o|
-          s_o.scheduled_for == self.scheduled_for && 
-            s_o.still_on?
-        end
-      else 
-        return nil if !still_on?
-        opening = partners.map(&:specific_openings).flatten.detect do |s_o|
-          s_o.scheduled_for == self.scheduled_for && 
-            s_o.confirmed?
-        end
-      end 
-    end
-  end
+  
 
   def cancel
     self.update_attributes(status: 'canceled')
@@ -75,13 +58,7 @@ class SpecificOpening < ActiveRecord::Base
     Confirmation.create(specific_opening_id: self.id, user_id: self.user.id, confirmed: true)
   end
 
-  def match_from_unrelated_users
-    return nil if (user.is_tutor? && self.status != 'confirmed')
-    return nil if (!user.is_tutor? && self.status != 'requested_confirmation')
-    tutor_opening = SpecificOpening.after(self.scheduled_for - 10.minutes).
-    before(self.scheduled_for + 10.minutes).where(user_role: self.user.is_tutor? ? 'tutee' : 'tutor', 
-    status: self.user.is_tutor? ? 'requested_confirmation' : 'confirmed' ).first
-  end
+  
 
   def scheduled_for_to_text(user_role)
     self[:scheduled_for].in_time_zone(user.time_zone).strftime("%l:%M %p on %A beginning")

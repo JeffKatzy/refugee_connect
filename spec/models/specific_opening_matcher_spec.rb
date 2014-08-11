@@ -40,8 +40,10 @@ describe SpecificOpeningMatcher do
 				let(:s_o_tutee_status) {'requested_confirmation'}
 
 				it "matches for related users" do
-					tutor_openings.first.should_receive(:match_from_related_users)
+
 					som = SpecificOpeningMatcher.new(tutor_openings)
+					expect(som).to receive(:match_from_related_users).with(tutor_openings.first)
+					expect(som).to receive(:match_from_related_users).with(tutor_openings.last)
 					som.matches_and_creates_apts
 				end
 			end
@@ -53,8 +55,9 @@ describe SpecificOpeningMatcher do
 				let(:s_o_tutee_status) {'requested_confirmation'}
 
 				it "matches for unrelated users" do
-					tutor_openings.first.should_receive(:match_from_unrelated_users)
 					som = SpecificOpeningMatcher.new(tutor_openings)
+					expect(som).to receive(:match_from_unrelated_users).with(tutor_openings.first)
+					expect(som).to receive(:match_from_unrelated_users).with(tutor_openings.last)
 					som.matches_and_creates_apts
 				end
 
@@ -72,24 +75,152 @@ describe SpecificOpeningMatcher do
 						expect(tutor_openings.map(&:appointment).compact.count).to eq 1
 					end
 
-					it "sets the status to taken" do 
+					it "sets the status to taken for confirmed appointments" do 
 						expect(tutor_openings.first.status).to eq 'taken'
+					end
+					it "does not create an appointment for unconfirmed openings" do 
 						expect(tutor_openings.last.status).to eq 'available'
+						expect(tutor_openings.last.appointment).to_not be_present
 					end
 				end
 			end
 
-			context "when not requested confirmation" do 
-				let(:s_o_tutee_status) {'available'}
-				let(:time_tutee) {Time.current + 3.hours }
-				let(:time_tutor) {Time.current + 3.hours }
+		context "when not requested confirmation" do 
+			let(:s_o_tutee_status) {'available'}
+			let(:time_tutee) {Time.current + 3.hours }
+			let(:time_tutor) {Time.current + 3.hours }
 
-				it "does not select the opening" do
-					tutee_openings.first.should_not_receive(:match_from_unrelated_users)
-					tutee_openings.first.should_not_receive(:match_from_related_users)
-					som = SpecificOpeningMatcher.new(tutor_openings)
-					som.matches_and_creates_apts
-				end
+			it "does not select the opening" do
+				tutee_openings.first.should_not_receive(:match_from_unrelated_users)
+				tutee_openings.first.should_not_receive(:match_from_related_users)
+				som = SpecificOpeningMatcher.new(tutor_openings)
+				som.matches_and_creates_apts
 			end
+		end
+	end
+
+	describe '#match_from_related_users' do 
+	  	before do 
+		  	@apt = FactoryGirl.create(:appointment)
+		  	@tutor = @apt.tutor
+		  	@tutee = @apt.tutee
+		  	@random_user = FactoryGirl.create(:tutor_available)
+		  	@s_o_random_tutor = FactoryGirl.create(:specific_opening, user: @random_user)
+		  	@s_o_tutor = FactoryGirl.create(:specific_opening, user_id: @tutor.id, status: s_o_tutor_status)
+		  	@s_o_tutee = FactoryGirl.create(:specific_opening, user_id: @tutee.id, status: s_o_tutee_status)
+		  	@s_os = [@s_o_random_tutor, @s_o_tutor, @s_o_tutee]
+		  	@som = SpecificOpeningMatcher.new(@s_os)
+	  	end
+
+		context "when a tutor" do
+		  context "when tutor status is confirmed and tutee status is requested confirmation" do 
+		  	let(:s_o_tutor_status) { 'confirmed' }
+		  	let(:s_o_tutee_status) { 'requested_confirmation' }
+
+		  	it "returns the S O from the appointment partner" do
+		  		expect(@som.match_from_related_users(@s_o_tutor)).to eq @s_o_tutee
+		  	end
+
+		  	it "returns nil when there is no match from users apt partners" do 
+		  		expect(@som.match_from_related_users(@s_o_random_tutor)).to eq nil
+		  	end
+		  end
+
+		  context "when tutor status is not confirmed" do 
+		  	let(:s_o_tutor_status) { 'available' }
+		  	let(:s_o_tutee_status) { 'requested_confirmation' }
+		  	it "does not return the S O from the appointment partner" do 
+		  		expect(@som.match_from_related_users(@s_o_tutor)).to eq nil
+		  	end
+		  end
+
+		  context "when tutee status is not requested confirmation" do 
+		  	let(:s_o_tutor_status) { 'confirmed' }
+		  	let(:s_o_tutee_status) { 'available' }
+
+		  	it "does not return the S O from the appointment partner" do 
+		  		expect(@som.match_from_related_users(@s_o_tutor)).to eq nil
+		  	end
+		  end
+		end
+
+		context "when a tutee" do
+		  context "when tutor status is confirmed and tutee status is requested confirmation" do 
+		  	let(:s_o_tutor_status) { 'confirmed'}
+		  	let(:s_o_tutee_status) { 'requested_confirmation'}
+
+		  	it "returns the S O from the appointment partner" do 
+		  		expect(@som.match_from_related_users(@s_o_tutee)).to eq @s_o_tutor
+		  	end
+		  end
+
+		  context "when tutor status is not confirmed" do 
+		  	let(:s_o_tutor_status) { 'available' }
+		  	let(:s_o_tutee_status) { 'requested_confirmation' }
+
+		  	it "does not return the S O from the appointment partner" do 
+		  		expect(@som.match_from_related_users(@s_o_tutee)).to eq nil
+		  	end
+		  end
+
+		  context "when tutee status is not requested confirmation" do 
+		  	let(:s_o_tutor_status) { 'confirmed' }
+		  	let(:s_o_tutee_status) { 'available' }
+
+		  	it "does not return the S O from the appointment partner" do
+		  		expect(@som.match_from_related_users(@s_o_tutee)).to eq nil
+		  	end
+		  end
+		end
+	end
+
+  describe '#match_unrelated_users' do
+  	let(:tutee) { FactoryGirl.create(:tutee_available) }
+
+  	let(:s_o_tutee)  { FactoryGirl.create(:specific_opening, user_id: tutee.id, 
+  										user_role: 'tutee', 
+  										status: s_o_tutee_status) }
+  	let(:unrelated_tutor_same_time)  { FactoryGirl.create(:tutor_available) }
+
+  	let(:unrelated_tutor_different_time)  { FactoryGirl.create(:tutor_available) }
+
+  	before :each do 
+			@s_o_unrelated_tutor_different_time = FactoryGirl.create(:specific_opening, 
+		  		user: unrelated_tutor_different_time,
+		  		scheduled_for: s_o_tutee.scheduled_for + 1.hour, 
+		  		user_role: 'tutor', 
+		  		status: s_o_tutor_status)
+
+			@s_o_unrelated_tutor_same_time = FactoryGirl.create(:specific_opening, 
+	  		user: unrelated_tutor_same_time, 
+	  		scheduled_for: s_o_tutee.scheduled_for, 
+	  		user_role: 'tutor', 
+	  		status: s_o_tutor_status )
+			@s_os = [@s_o_unrelated_tutor_different_time, @s_o_unrelated_tutor_same_time]
+
+			@som = SpecificOpeningMatcher.new(@s_os)
+		end
+
+		context "when the tutees status is requested confirmation and the tutors status is available" do 
+			let(:s_o_tutor_status) { 'confirmed' }
+			let(:s_o_tutee_status) { 'requested_confirmation' }
+
+	  	it "matches s_os with the same time" do
+	  		expect(@som.match_from_unrelated_users(s_o_tutee)).to eq @s_o_unrelated_tutor_same_time
+	  	end
+
+	  	it "does not match s_os with the different times" do
+	  		expect(@som.match_from_unrelated_users(@s_o_unrelated_tutor_different_time)).to eq nil
+	  	end
+	  end
+
+	  context "when the tutees status is not requested confirmation and the tutors status is available" do 
+	  	let(:s_o_tutor_status) { 'confirmed' }
+			let(:s_o_tutee_status) { 'available' }
+			
+	  	it "does not match s_os with the same time" do
+	  		expect(@som.match_from_unrelated_users(s_o_tutee)).to eq nil
+	  	end
+	  end
 	end
 end
