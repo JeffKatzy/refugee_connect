@@ -28,14 +28,7 @@ class SpecificOpening < ActiveRecord::Base
 
   STATUSES = ['available', 'requested_confirmation', 'confirmed', 'canceled']
 
-  def has_appointment?
-    appointment
-  end
-
-  def upcoming?
-  	Time.current.utc + 1.hour + 30.minutes > self.scheduled_for
-  end
-
+  
   # Concept of still_on? should only exist for a tutees.  For students they need to
   def still_on?
     if user.role == 'tutee'
