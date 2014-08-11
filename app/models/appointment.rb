@@ -76,12 +76,24 @@ class Appointment < ActiveRecord::Base
       (Time.current.utc + 24.hours).beginning_of_hour, (Time.current.utc + 24.hours).end_of_hour)
   end
 
+  
+
   def scheduled_for_est
     self.scheduled_for.in_time_zone("America/New_York")
   end
 
   def scheduled_for_ist
     self.scheduled_for.in_time_zone("New Delhi")
+  end
+
+  def scheduled_for_to_text(user_role)
+    if user_role == 'tutor'
+      self[:scheduled_for].in_time_zone(self.tutor.time_zone).strftime("%l:%M %p on %A beginning")
+    elsif user_role == 'tutee'
+      self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("%l:%M %p on %A beginning")
+    else
+      raise 'Must pass in either tutor or tutee'
+    end
   end
 
   def set_scheduled_for_est(params)
@@ -180,13 +192,5 @@ class Appointment < ActiveRecord::Base
     self.status = 'incomplete'
   end
 
-  def scheduled_for_to_text(user_role)
-    if user_role == 'tutor'
-      self[:scheduled_for].in_time_zone(self.tutor.time_zone).strftime("%l:%M %p on %A beginning")
-    elsif user_role == 'tutee'
-      self[:scheduled_for].in_time_zone(self.tutee.time_zone).strftime("%l:%M %p on %A beginning")
-    else
-      raise 'Must pass in either tutor or tutee'
-    end
-  end
+  
 end
