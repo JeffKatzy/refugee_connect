@@ -19,5 +19,7 @@ class ConfirmationsController < ApplicationController
 	def index
 		@specific_opening = SpecificOpening.find(params[:specific_opening_id])
 		@confirmation = @specific_opening.confirmations.last
+		@appointment = @specific_opening.appointment
+		@user = @specific_opening.user
 	end
 end

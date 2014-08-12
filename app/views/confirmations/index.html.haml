@@ -1,6 +1,9 @@
 .row
 	.one.half.centered
-		- if @confirmation.confirmed == true
-			Great, we'll find a match for you shortly
-		- else
+		- if @appointment
+			Woohoo! You've got an appointment #{@appointment.scheduled_for_to_text(@user.role)}
+		- elsif @confirmation.confirmed == true
+			Great, we'll find a match for you shortly.  You can return to this page to see when we matched you.
+		- else @confirmation == false
 			Cool.  Your session is canceled.
+
