@@ -9,12 +9,15 @@ class ConfirmationsController < ApplicationController
 		@confirmation = Confirmation.new(params[:confirmation])
 		if @confirmation.save
 			@user = @confirmation.user
-      redirect_to user_confirmation_path(@user, @confirmation)
+			@specific_opening = @confirmation.specific_opening
+      redirect_to specific_opening_confirmation_path(@specific_opening, @confirmation)
     else
       render action: 'new'
     end
 	end
 
-	def show
+	def index
+		@specific_opening = SpecificOpening.find(params[:specific_opening_id])
+		@confirmation = @specific_opening.confirmations.last
 	end
 end
