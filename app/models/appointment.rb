@@ -61,6 +61,7 @@ class Appointment < ActiveRecord::Base
   has_many :text_from_users
   has_many :text_to_users
   has_many :specific_openings
+  has_many :texts, as: :unit_of_work
   after_create :find_start_page, :make_incomplete
   validates :tutor, presence: true
   validates :tutee, presence: true
@@ -75,8 +76,6 @@ class Appointment < ActiveRecord::Base
     Appointment.fully_assigned.where("scheduled_for between (?) and (?)", 
       (Time.current.utc + 24.hours).beginning_of_hour, (Time.current.utc + 24.hours).end_of_hour)
   end
-
-  
 
   def scheduled_for_est
     self.scheduled_for.in_time_zone("America/New_York")
@@ -164,6 +163,7 @@ class Appointment < ActiveRecord::Base
   end
 
   def start_call
+    #move begin date to the call itself. 
     self.began_at = Time.current.utc
     self.status = 'In Progress'
     self.save
@@ -191,6 +191,4 @@ class Appointment < ActiveRecord::Base
   def make_incomplete
     self.status = 'incomplete'
   end
-
-  
 end

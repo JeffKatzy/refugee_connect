@@ -22,7 +22,7 @@ describe ReminderText do
   end
 
   before :each do
-    TextToUser.stub(:deliver).and_return(text)
+    TextToUser.any_instance.stub(:send_text).and_return(true)
   end
 
   describe '.confirm_specific_openings' do
@@ -38,7 +38,7 @@ describe ReminderText do
 
       @twelve_thirty_pm = FactoryGirl.create(:specific_opening, 
         scheduled_for: Time.current.utc.change(hour: 12, min: 30),
-        user: FactoryGirl.build(:tutor_available)
+        user: FactoryGirl.build(:tutee_available)
         )
     end
 
@@ -46,19 +46,27 @@ describe ReminderText do
       it "sends confirmation requests for specific openings scheduled for the day" do 
         Timecop.travel(Time.current.utc)
         ReminderText.confirm_specific_openings
-        text = ReminderText.first
+        text = Text.first
         expect(text.user).to eq @eleven_thirty_pm.user
-        expect(text.category).to eq 'request_confirmation'
         expect(@eleven_thirty_pm.reload.status).to eq 'requested_confirmation'
-        expect(ReminderText.count).to eq 2
+        expect(Text.count).to eq 2
       end
 
       it 'does not resend confirmation requests' do
         Timecop.travel(Time.current)
         ReminderText.confirm_specific_openings
-        expect(ReminderText.count).to eq 2
+        expect(Text.count).to eq 2
         ReminderText.confirm_specific_openings
-        expect(ReminderText.count).to eq 2
+        expect(Text.count).to eq 2
+      end
+
+      it 'sends different messages to the tutor and tutee' do
+        Timecop.travel(Time.current)
+        ReminderText.confirm_specific_openings
+        tutor_text = TextToUser.where(user_id: @eleven_thirty_pm.user.id).first
+        tutee_text = TextToUser.where(user_id: @twelve_thirty_pm.user.id).first
+        expect(tutor_text.body).to include "Text back 'Y' to confirm or text 'N' to cancel"
+        expect(tutee_text.body).to include "If you cannot attend the class"
       end
     end
 
@@ -79,8 +87,8 @@ describe ReminderText do
   end
 
   describe 'begin_session' do
-  	ReminderText.delete_all
 		Appointment.delete_all
+    Text.delete_all
     let(:tutor) { FactoryGirl.create(:tutor_available) }
     let(:tutee) { FactoryGirl.create(:tutee_available) }
 
@@ -108,7 +116,7 @@ describe ReminderText do
   		it "sends reminders for appointments in the next hour" do 
   			Timecop.travel(Time.current.change(hour: 21, min: 55))
   			ReminderText.begin_session
-  			ReminderText.first.appointment.should eq @nine_pm
+  			Text.first.unit_of_work.should eq @nine_pm
   		end
 
       it "sends different messages to the tutor and tutee" do
@@ -125,7 +133,7 @@ describe ReminderText do
   		it "sends reminders for appointments in the next hour" do 
   			Timecop.travel(Time.current.change(hour: 22, min: 55))
   			ReminderText.begin_session
-  			ReminderText.first.appointment.should eq @ten_pm
+  			Text.first.appointment.should eq @ten_pm
   		end
   	end
 
@@ -133,42 +141,7 @@ describe ReminderText do
   		it "sends reminders for appointments scheduled  in the next hour" do 
   			Timecop.travel(Time.current.change(hour: 23, min: 55))
   			ReminderText.begin_session
-  			ReminderText.first.appointment.should eq @eleven_pm
-  		end
-  	end
-  end
-
-  describe "send_reminder_text" do
-    before :each do 
-      ReminderText.delete_all
-      TextToUser.any_instance.stub(:send_text)
-    end
-
-    it 'marks the reminder text with the proper appointments' do
-      @user = FactoryGirl.create(:user)
-      apt_just_before_text = FactoryGirl.create(:appointment, tutor: @user, tutee: @user, scheduled_for: Time.current)
-      apt_pm_text = FactoryGirl.create(:appointment, scheduled_for: Time.current + 3.hours, tutor: @user, tutee: @user)
-      apts = [apt_pm_text, apt_just_before_text]
-      ReminderText.send_reminder_text(apts, "begin_session")
-      expect(ReminderText.all.map(&:appointment).uniq).to eq [apts.first, apts.last]
-    end
-
-  	context "when apt already had a text of that type" do
-  		it "does not resend the text" do 
-  			ReminderText.delete_all
-        @user = FactoryGirl.create(:user)
-  			pm_reminder_text = FactoryGirl.create(:reminder_text, category: 'pm_reminder')
-  			just_before_text = FactoryGirl.create(:reminder_text, category: 'just_before')
-
-  			apt_just_before_text = FactoryGirl.create(:appointment, tutor: @user, tutee: @user, scheduled_for: Time.current)
-  			apt_pm_text = FactoryGirl.create(:appointment, tutor: @user, tutee: @user, scheduled_for: Time.current)
-        apts = [apt_pm_text, apt_just_before_text]
-
-  			apt_pm_text.reminder_texts << pm_reminder_text
-  			apt_just_before_text.reminder_texts << just_before_text
-  			ReminderText.send_reminder_text(apts, "pm_reminder")
-  			expect(ReminderText.all.count).to eq 3
-  			expect(ReminderText.last.appointment).to eq apt_just_before_text
+  			Text.first.appointment.should eq @eleven_pm
   		end
   	end
   end

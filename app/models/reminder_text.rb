@@ -13,65 +13,16 @@
 
 class ReminderText < ActiveRecord::Base
   attr_accessible :appointment_id, :category, :time, :user_id
-  belongs_to :appointment
-  belongs_to :user
-
-  SPECIFIC_OPENING_REMINDER = 'specific_opening_reminder'
-  BEGIN_SESSION = "begin_session"
-  SET_PAGE_NUMBER = "set_page_number"
-  PM_REMINDER = "pm_reminder"
-  JUST_BEFORE = "just_before_reminder"
-  REQUEST_CONFIRMATION = 'request_confirmation'
 
   def self.begin_session
     appointments_batch = Appointment.batch_for_begin_text
-    ReminderText.send_reminder_text(appointments_batch, BEGIN_SESSION) 
-  end
-
-  def self.confirm_specific_openings
-    specific_openings_batch = SpecificOpening.available.where('scheduled_for >=?', Time.current.utc.beginning_of_day).
-      where('scheduled_for <=?', Time.current.utc.end_of_day)
-    ReminderText.ask_if_available(specific_openings_batch, REQUEST_CONFIRMATION)
-  end
-
-  # def self.set_page_number #remind delinquents to enter page number
-  #   appointments_batch = Appointment.needs_text 
-  #   ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
-  # end
-
-  private
-
-  def self.ask_if_available(specific_openings_batch, category)
-    specific_openings_batch.each do |specific_opening|
-      next if specific_opening.user == nil
-      if specific_opening.user.is_tutor?
-        category = REQUEST_CONFIRMATION
-        body = ReminderText.body(specific_opening, category)
-      else 
-        category = SPECIFIC_OPENING_REMINDER
-        body = ReminderText.body(specific_opening, category)
-      end
-      tutor_text = TextToUser.deliver(specific_opening.user, body)
-      specific_opening.update_attributes(status: 'requested_confirmation')
-      reminder_text = ReminderText.create(time: Time.now, user_id: specific_opening.user.id, category: category) 
-    end
-  end
-
-  def self.send_reminder_text(appointments_batch, category)
     appointments_batch.each do |apt|
-      unless apt.reminder_texts.where(category: "#{category}").any?
-        category = BEGIN_SESSION
-        body = ReminderText.body(apt, category)
-        tutor_text = TextToUser.deliver(apt.tutor, body) 
-        tutor_text.appointment = apt
-        tutor_text.save
-        reminder_text = ReminderText.create(time: Time.now, appointment_id: apt.id, user_id: apt.tutor.id, category: category) 
+      unless apt.texts.any?
+        text = BeginSessionText.create(unit_of_work_id: apt.id, user_id: apt.tutor.id)
+        tutor_text = TextToUser.deliver(apt.tutor, text.body) 
         begin
-          category = BEGIN_SESSION_TUTEE
-          body = ReminderText.body(apt, category)
-          tutee_text = TextToUser.deliver(apt.tutee, body) 
-          tutee_text.appointment = apt
-          tutee_text.save
+          text = BeginSessionText.create(unit_of_work_id: apt.id, user_id: apt.tutee.id)
+          tutee_text = TextToUser.deliver(apt.tutee, text.body) 
         rescue
           puts "could not send to tutee"
         end
@@ -79,26 +30,19 @@ class ReminderText < ActiveRecord::Base
     end
   end
 
-  def self.body(object, category)
-    time = object.scheduled_for_to_text('tutor')
-    upcoming_session = "Tutoring Reminder: upcoming session at"
-    admin_session = "Please email jek2141@columbia.edu to reschedule or cancel the session."
-    if category == SPECIFIC_OPENING_REMINDER
-      "You have a session today at #{time}.  If you cannot attend the class, do not answer the phone when you receive the call."
-    elsif category == BEGIN_SESSION
-      "Your class at #{time} is now ready to start.  Reply to this text with the word 'go' to start the call or 'c' to cancel."
-    elsif category == REQUEST_CONFIRMATION
-      "Can you still teach at #{time}?  Text back 'Y' to confirm or text 'N' to cancel."
-    elsif category == SET_PAGE_NUMBER
-      "Reminder: Please text the page number that you last left off at."
-    elsif category == PM_REMINDER
-      upcoming_session + " #{time} beginning on page #{object.start_page}.  " + admin_session
-    elsif category == BEGIN_SESSION_TUTEE
-      "Your class at #{time} is now ready to start.  If you would not like a class, do not answer the phone when you receive the call."
-    elsif category == JUST_BEFORE
-      upcoming_session + " #{time} beginning on page #{object.start_page}.  " + admin_session
-    else
-      raise 'must pass in valid category'
+  def self.confirm_specific_openings
+    specific_openings_batch = SpecificOpening.available.where('scheduled_for >=?', Time.current.utc.beginning_of_day).
+      where('scheduled_for <=?', Time.current.utc.end_of_day)
+    specific_openings_batch.each do |specific_opening|
+      next if specific_opening.user.nil?
+      text = SpecificOpeningReminderText.create(unit_of_work_id: specific_opening.id)
+      tutor_text = TextToUser.deliver(text.user, text.body)
+      specific_opening.update_attributes(status: 'requested_confirmation')
     end
   end
+
+  # def self.set_page_number #remind delinquents to enter page number
+  #   appointments_batch = Appointment.needs_text 
+  #   ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
+  # end
 end

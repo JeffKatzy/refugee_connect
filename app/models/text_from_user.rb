@@ -56,22 +56,24 @@ class TextFromUser < ActiveRecord::Base
   def attempt_session
     puts "in attempt_session"
     self.user.reload
-    last_text = user.text_to_users.where('appointment_id IS NOT NULL').last
+    last_text = user.text_to_users.where('appointment_id IS NOT NULL').last #find last begin_session text
     if last_text
-      appointment = self.appointment = last_text.appointment
-      self.save
+      self.appointment = last_text.appointment
+      save
     end
+    #
     if appointment && appointment.scheduled_for.hour == Time.current.hour
       puts "about to call start_call"
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
       appointment.start_call
     else
-      appointment = user.appointments.next_appointment
+      #pull this into another method bc not attempting session anymore
+      appointment = user.appointments.next_appointment 
       begin
         body = appointment[:scheduled_for].in_time_zone.
           strftime("No sessions for this hour. Your next session is at %I:%M%p on %A.")
         TextToUser.deliver(self.user, body)
-      rescue NoMethodError
+      rescue NoMethodError #why do you need to do this?
         Rails.logger.debug("The next session doesn't exist for this user. ID: #{user.id}")
       end
     end
