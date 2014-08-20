@@ -40,9 +40,4 @@ class ReminderText < ActiveRecord::Base
       specific_opening.update_attributes(status: 'requested_confirmation')
     end
   end
-
-  # def self.set_page_number #remind delinquents to enter page number
-  #   appointments_batch = Appointment.needs_text 
-  #   ReminderText.send_reminder_text(appointments_batch, SET_PAGE_NUMBER) 
-  # end
 end
