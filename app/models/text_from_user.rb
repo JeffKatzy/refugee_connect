@@ -35,7 +35,7 @@ class TextFromUser < ActiveRecord::Base
       opening = find_specific_opening
       if opening
         opening.confirm 
-        TextToUser.deliver(user, "Great you are all set.  You will receive a text from us at the scheduled time")
+        TextToUser.deliver(user, "Great!  We'll text you at the time of your class.  For the class, you will need your phone and either the book, which you can download from your profile page, or Internet to view the book on speakloud.")
       end
     elsif body == 'n'
       opening = find_specific_opening

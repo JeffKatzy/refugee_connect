@@ -86,6 +86,40 @@ describe ReminderText do
     end
   end
 
+  describe '.missing_apts' do
+    let(:time) {DateTime.new(2013,02,13,00,00,00)}
+
+    before :each do
+      ReminderText.delete_all
+      SpecificOpening.delete_all
+      @eleven_thirty_pm = FactoryGirl.create(:specific_opening, 
+        scheduled_for: Time.current.utc.change(hour: 11, min: 30),
+        user: FactoryGirl.build(:tutor_available),
+        status: 'confirmed'
+        )
+
+      @twelve_thirty_pm = FactoryGirl.create(:specific_opening, 
+        scheduled_for: Time.current.utc.change(hour: 12, min: 30),
+        user: FactoryGirl.build(:tutee_available),
+        status: 'confirmed' 
+        )
+    end
+
+    context "when it is 12:31" do
+      Timecop.travel(Time.current.utc.change(hour: 12, min: 31))
+
+      it "selects users if there was no match" do
+        expect(ReminderText.missing_apts).to eq [@twelve_thirty_pm]
+      end
+
+      it "creates the proper text" do
+        ReminderText.missing_apts
+        expect(Text.first.body).to include 'Sorry!'
+        expect(Text.count).to eq 1
+      end
+    end
+  end
+
   describe 'begin_session' do
 		Appointment.delete_all
     Text.delete_all

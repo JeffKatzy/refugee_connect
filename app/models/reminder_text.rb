@@ -30,6 +30,17 @@ class ReminderText < ActiveRecord::Base
     end
   end
 
+  def self.missing_apts
+    sos_no_apts = SpecificOpening.confirmed
+      .where('appointment_id IS NULL')
+      .after(Time.current.utc.beginning_of_hour).before(Time.current.utc)
+    sos_no_apts.each do |specific_opening|
+      text = NoAppointmentMatchedText.create(unit_of_work_id: specific_opening.id)
+      tutor_text = TextToUser.deliver(text.user, text.body)
+      specific_opening.update_attributes(status: 'unmatched')
+    end
+  end
+
   def self.confirm_specific_openings
     specific_openings_batch = SpecificOpening.available.where('scheduled_for >=?', Time.current.utc.beginning_of_day).
       where('scheduled_for <=?', Time.current.utc.end_of_day)
