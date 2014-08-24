@@ -8,7 +8,7 @@
 			#main-info.padded
 				#user-name-wrap
 					.user-name.half-pad
-						%h2 Jeff Katz
+						%h2=@user.name
 					.user-info
 						%span.padded #{pluralize(@user.appointments.complete.try(:count), "class")} completed
 						%span.padded #{pluralize(@user.appointment_partners.try(:count), "current student")}
