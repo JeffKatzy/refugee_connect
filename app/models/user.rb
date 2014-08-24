@@ -41,6 +41,7 @@ class User < ActiveRecord::Base
   has_many :assignments, through: :user_assignments
   has_many :user_assignments
   has_many :specific_openings
+  has_one :profile_info
 
 
   attr_accessible :cell_number, :email, :role, :name, :password, :password_confirmation, :openings_attributes, :time_zone, :twitter_handle

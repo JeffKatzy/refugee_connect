@@ -39,5 +39,14 @@ class AppointmentsController < ApplicationController
   end
 
   def show
+    @appointment = Appointment.find(params[:id])
+    @tutor = @appointment.tutor
+    @user = @appointment.tutee 
+    @tutee_profile_info = @user.profile_info || @user.build_profile_info
+
+    @assignments = Assignment.paginate(:page => params[:page])
+    @user_assignments = @assignments.map do |a|
+      a = a.user_assignments.where(user_id: @user.id).first || a.user_assignments.create(user_id: @user.id)
+    end
   end
 end

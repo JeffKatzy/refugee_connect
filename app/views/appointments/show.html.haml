@@ -1,0 +1,19 @@
+.row#background_show.pad-bottom
+	.two.sixths
+	.two.sixths#main
+		.row.padded
+			%h2 Today's Lesson!
+			.box.success.blue
+				%h3 Today's Student
+				%p Name: #{@user.name} 
+				%p Age: #{@tutee_profile_info.age}
+				%p Interests/Job: #{@tutee_profile_info.interests}
+				%p English Focus: #{@tutee_profile_info.english_focus}
+		%p.message.red.dismissible New around these parts??  Here are some hot tips!  Classes last 40 minutes and cover 3-5 pages.  Skip assignments you don't like.  Improvise at times by using the book to start a conversation.  Give feedback to your students!  If using a phone, panorama view works best.
+		%p.message.blue.dismissible Never taught #{@user.name} before??  Look at the profile info above to break the ice and keep in mind the learning goals! If some info is missing, ask #{@user.name} about it and fill it in by clicking on the field.
+	.row
+		= render 'users/work'
+
+
+
+

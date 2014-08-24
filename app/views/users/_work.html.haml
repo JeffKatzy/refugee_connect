@@ -5,7 +5,7 @@
 				%li{:role => "tablist", :"aria-controls" => "#tab1"} Assignments
 				%li{:role => "tablist", :"aria-controls" => "#tab2"} Pictures
 			#tab1{:role => "tabpanel"}
-				%h1#assignments-title Assignments
+				%h1#assignments-title Today's Task
 				- @user_assignments.each do |ua|
 					- ua.assignment.bookpages.each do |page|
 						- if page.photos.present?

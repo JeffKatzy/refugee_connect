@@ -218,6 +218,15 @@ ActiveRecord::Schema.define(:version => 20140820223824) do
     t.datetime "tweet_created_at"
   end
 
+  create_table "profile_infos", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "age"
+    t.text     "interests"
+    t.text     "english_focus"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
   create_table "reminder_texts", :force => true do |t|
     t.integer  "appointment_id"
     t.datetime "time"
