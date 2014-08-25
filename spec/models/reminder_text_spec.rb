@@ -158,7 +158,7 @@ describe ReminderText do
         ReminderText.begin_session
         tutor_text = TextToUser.where(user_id: @nine_pm.tutor.id).first
         tutee_text = TextToUser.where(user_id: @nine_pm.tutee.id).first
-        expect(tutor_text.body).to include 'Reply to this text with the word'
+        expect(tutor_text.body).to include 'just use your book and phone'
         expect(tutee_text.body).to include 'You will be receiving a call'
       end
   	end
