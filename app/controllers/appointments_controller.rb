@@ -42,11 +42,16 @@ class AppointmentsController < ApplicationController
     @appointment = Appointment.find(params[:id])
     @tutor = @appointment.tutor
     @user = @appointment.tutee 
-    @tutee_profile_info = @user.profile_info || @user.build_profile_info
+    @tutee_profile_info = @user.profile_info || @user.create_profile_info
 
     @assignments = Assignment.paginate(:page => params[:page])
     @user_assignments = @assignments.map do |a|
       a = a.user_assignments.where(user_id: @user.id).first || a.user_assignments.create(user_id: @user.id)
+    end
+
+    @comments = @user_assignments.map do |ua|
+      comment = ua.comments.where(user_assignment_id: ua.id, tutor_id: @tutor.id).first || 
+        ua.comments.create(user_assignment_id: ua.id, tutor_id: @tutor.id)
     end
   end
 end

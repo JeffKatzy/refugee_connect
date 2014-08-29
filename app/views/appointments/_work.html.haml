@@ -1,0 +1,32 @@
+.row.padded
+	.four.centered.fifths
+		%span
+			%h1#assignments-title Today's Task
+.row.padded
+	.four.centered.fifths
+		%span
+			%h3 Need the whole book?
+		%span
+			.align-right.book-link.button.blue=link_to "View book", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
+			%h3 Otherwise, just click through
+			= will_paginate @bookpages
+			- @bookpages.each do |photo|
+				.row.padded.center
+					.four.sixths.center
+						= cl_image_tag(photo.path, { size: '600x500' })
+						%p Assignment comment
+						.one.sixth
+			= will_paginate @bookpages
+	#tab2{:role => "tabpanel"}
+		- if @user.role == 'tutee' && @user.photos.present?
+			- @user.photos.tweet_created_at_asc.each do |photo|
+				%row.padded.center
+					= image_tag photo.path
+		- else
+			%h1 No Photos Currently Available
+			%br
+			%br
+			%br
+			%br
+			%br
+			%br

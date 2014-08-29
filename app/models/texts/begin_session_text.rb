@@ -26,7 +26,7 @@ class BeginSessionText < Text
 
 	def body
 		if user.is_tutor?
-			"Your class is now ready!!  Reply to this text with the word 'Go' to begin."
+			"Your class is now ready!!  You'll be teaching #{appointment.tutee.name}.  Reply to this text with the word 'Go' to begin."
 		else
 			"Your class is now ready!! You will be receiving a call shortly."
 		end
