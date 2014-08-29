@@ -9,17 +9,17 @@
 		%span
 			.align-right.book-link.button.blue=link_to "View book", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
 			%h3 Otherwise, just click through
-			= will_paginate @bookpages
-			- @bookpages.each do |photo|
+			= will_paginate @bookpage
+			- @bookpage_photos.each do |photo|
 				.row.padded.center
 					.four.sixths.center
 						= cl_image_tag(photo.path, { size: '600x500' })
 						%p Assignment comment
-						.one.sixth
-			= will_paginate @bookpages
+						= best_in_place @comment, :comment_text, :type => :textarea, nil: "Click here to add content", classes: 'background-gray'
+			= will_paginate @bookpage
 	#tab2{:role => "tabpanel"}
-		- if @user.role == 'tutee' && @user.photos.present?
-			- @user.photos.tweet_created_at_asc.each do |photo|
+		- if @tutee.role == 'tutee' && @tutee.photos.present?
+			- @tutee.photos.tweet_created_at_asc.each do |photo|
 				%row.padded.center
 					= image_tag photo.path
 		- else

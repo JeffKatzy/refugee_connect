@@ -8,6 +8,9 @@
 #  user_assignment_id :integer
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  appointment_id     :integer
+#  tutee_id           :integer
+#  bookpage_id        :integer
 #
 
 require 'spec_helper'

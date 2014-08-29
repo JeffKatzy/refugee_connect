@@ -8,10 +8,13 @@
 #  user_assignment_id :integer
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
+#  appointment_id     :integer
+#  tutee_id           :integer
+#  bookpage_id        :integer
 #
 
 class Comment < ActiveRecord::Base
-  attr_accessible :comment_text, :tutor_id, :user_assignment_id
+  attr_accessible :comment_text, :tutor_id, :user_assignment_id, :tutee_id, :appointment_id, :bookpage_id
   belongs_to :tutor
   belongs_to :user_assignment
 

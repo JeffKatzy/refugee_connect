@@ -5,7 +5,7 @@
 			%h2 Today's Lesson!
 			.box.success.blue
 				%h3 Today's Student
-				%p Name: #{@user.name} 
+				%p Name: #{@tutee.name} 
 				%p Age: 
 				=best_in_place @tutee_profile_info, :age, type: :input, nil: 'click to add age', classes: 'background-gray'
 				%p Interests/Job: 
@@ -13,7 +13,7 @@
 				%p English Focus: 
 				=best_in_place @tutee_profile_info, :english_focus, type: :input, nil: 'click to add profile info', classes: 'background-gray'
 		%p.message.red.dismissible New around these parts??  Here are some hot tips!  Classes last 40 minutes and cover 3-5 pages.  Skip assignments you don't like.  Improvise at times by using the book to start a conversation.  Give feedback to your students!  If using a phone, panorama view works best.
-		%p.message.blue.dismissible Never taught #{@user.name} before??  Look at the profile info above to break the ice and keep in mind the learning goals! If some info is missing, ask #{@user.name} about it and fill it in by clicking on the field.
+		%p.message.blue.dismissible Never taught #{@tutee.name} before??  Look at the profile info above to break the ice and keep in mind the learning goals! If some info is missing, ask #{@tutee.name} about it and fill it in by clicking on the field.
 	.row
 		= render 'appointments/work'
 
