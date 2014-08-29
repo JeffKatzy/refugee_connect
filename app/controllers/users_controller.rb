@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   layout 'application'
+  respond_to :html, :json
 
   def create
     @user = User.new(params[:user]) 
@@ -32,7 +33,7 @@ class UsersController < ApplicationController
   def update
     u = User.find(params[:id])
     u.update_attributes(params[:user])
-    redirect_to u
+    respond_with @user
   end
 
   def new_tutor

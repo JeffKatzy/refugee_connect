@@ -27,7 +27,7 @@ class Appointment < ActiveRecord::Base
   scope :during, ->(time) { where("scheduled_for between (?) and (?)", time, time + 1.hour) }
   scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
   scope :today, after(Time.current.utc.beginning_of_day).before(Time.current.utc.end_of_day)
-  scope :recent_inclusive, :limit => 1, :order => 'began_at DESC'
+  scope :recent_inclusive, where('began_at IS NOT NULL order by began_at desc limit 1')
   
   scope :tomorrow, after(Time.current.utc.end_of_day).before(Time.current.utc.end_of_day + 24.hours)
   scope :incomplete, where(status: 'incomplete')
@@ -67,6 +67,10 @@ class Appointment < ActiveRecord::Base
   validates :tutee, presence: true
   
   #only allow one appointment per hour per user
+
+  def self.most_recent_before_today
+    before(Time.current.beginning_of_day).where('began_at IS NOT NULL').order('began_at desc').first
+  end
 
   def self.batch_for_begin_text
     Appointment.fully_assigned.unstarted.after(Time.current.utc.beginning_of_hour).before(Time.current.utc)

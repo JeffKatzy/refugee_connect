@@ -36,7 +36,7 @@ class SpecificOpeningReminderText < Text
 	def body
 		time = specific_opening.scheduled_for_to_text(user.role)
 		if user.is_tutor?
-			"Can you still teach at #{time}?  Text back 'Y' to confirm or text 'N' to cancel."
+			"You gotta speakloud session today!! Can you still teach at #{time}?  Text back 'Y' and we'll find you a match who is also free today, or text 'N' and we'll find another teacher."
 		else
 			"You have a session today at #{time}.  If you cannot attend the class, do not answer the phone when you receive the call."
 		end

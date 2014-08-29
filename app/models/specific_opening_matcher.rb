@@ -58,8 +58,14 @@ class SpecificOpeningMatcher
   	
   	apt = Appointment.create(tutor_id: tutor_opening.user.id, 
   		tutee_id: tutee_opening.user.id, 
-  		scheduled_for: tutor_opening.scheduled_for.utc)
+  		scheduled_for: tutor_opening.scheduled_for.utc, 
+      start_page: last_finish_page(tutee_opening.user)
+      )
   	opening.update_attributes(status: 'taken', appointment_id: apt.id)
   	match_opening.update_attributes(status: 'taken', appointment_id: apt.id)
+  end
+
+  def last_finish_page(tutee)
+    @start_page = tutee.most_recent_before_today.finish_page 
   end
 end
