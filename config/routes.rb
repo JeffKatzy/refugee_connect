@@ -15,6 +15,7 @@ RefugeeConnect::Application.routes.draw do
   resources :lessons
   resources :assignments
   resources :user_assignments
+  put 'profile_infos/:id', to: 'profile_infos#update'
 
 
   resources :matches
