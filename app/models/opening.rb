@@ -25,6 +25,18 @@ class Opening < ActiveRecord::Base
    self.save
   end
 
+  def scheduled_for_to_text
+    self[:time].in_time_zone(self.user.time_zone).strftime("%l:%M %p")
+  end
+
+  def scheduled_for_est
+    self.time.in_time_zone("America/New_York")
+  end
+
+  def scheduled_for_ist
+    self.time.in_time_zone("New Delhi")
+  end
+
   def build_specific_opening
     sob = SpecificOpeningBuilder.new([self])
     sob.build_specific_openings.first
