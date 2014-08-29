@@ -18,6 +18,7 @@ class BeginSessionText < Text
 
 	def helper_url
 		@helper_url = Rails.application.routes.url_helpers.appointment_path(self.appointment)
+	end
 
 
 	def set_type
