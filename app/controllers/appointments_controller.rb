@@ -33,7 +33,6 @@ class AppointmentsController < ApplicationController
     if @appointment.previous_changes.keys.include?("scheduled_for")
       @appointment.status = 'pending'
       @appointment.save
-      #eventually notify users of a proposed change
     end
     respond_with @appointment
   end
