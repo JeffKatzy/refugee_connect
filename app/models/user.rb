@@ -69,6 +69,10 @@ class User < ActiveRecord::Base
     self.save
   end
 
+  def most_recent_appointment_before_today
+    appointments.before(Time.current.beginning_of_day).where('began_at IS NOT NULL').order('began_at desc').first
+  end
+
   def appointments
     if self.is_tutor?
       appointments_of_tutor || appointments_of_tutee

@@ -62,15 +62,11 @@ class Appointment < ActiveRecord::Base
   has_many :text_to_users
   has_many :specific_openings
   has_many :texts, as: :unit_of_work
-  after_create :find_start_page, :make_incomplete
+  after_create :make_incomplete
   validates :tutor, presence: true
   validates :tutee, presence: true
   
   #only allow one appointment per hour per user
-
-  def self.most_recent_before_today
-    before(Time.current.beginning_of_day).where('began_at IS NOT NULL').order('began_at desc').first
-  end
 
   def self.batch_for_begin_text
     Appointment.fully_assigned.unstarted.after(Time.current.utc.beginning_of_hour).before(Time.current.utc)
@@ -142,18 +138,6 @@ class Appointment < ActiveRecord::Base
 
   def self.needs_page_number
     where('status == complete AND finish_page == nil')
-  end
-
-  def find_start_page
-    self.tutee.reload
-    if self.tutee && self.tutee.appointments.present? && self.tutee.appointments.most_recent.present? && self.tutee.appointments.most_recent.first.finish_page.present?
-      most_recent_appointment = self.tutee.appointments.most_recent.first  
-      self.start_page = most_recent_appointment.finish_page
-      self.save
-    else
-      self.start_page = 1
-      self.save
-    end
   end
 
   def assign_user_role(user_id)

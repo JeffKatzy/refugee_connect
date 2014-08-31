@@ -65,7 +65,7 @@ describe ReminderText do
         ReminderText.confirm_specific_openings
         tutor_text = TextToUser.where(user_id: @eleven_thirty_pm.user.id).first
         tutee_text = TextToUser.where(user_id: @twelve_thirty_pm.user.id).first
-        expect(tutor_text.body).to include "Text back 'Y' to confirm or text 'N' to cancel"
+        expect(tutor_text.body).to include "Text back 'Y'"
         expect(tutee_text.body).to include "If you cannot attend the class"
       end
     end
@@ -158,7 +158,7 @@ describe ReminderText do
         ReminderText.begin_session
         tutor_text = TextToUser.where(user_id: @nine_pm.tutor.id).first
         tutee_text = TextToUser.where(user_id: @nine_pm.tutee.id).first
-        expect(tutor_text.body).to include 'just use your book and phone'
+        expect(tutor_text.body).to include "with the word 'Go'"
         expect(tutee_text.body).to include 'You will be receiving a call'
       end
   	end

@@ -31,13 +31,6 @@ class SpecificOpening < ActiveRecord::Base
 
   
   # Concept of still_on? should only exist for a tutees.  For students they need to
-  def still_on?
-    if user.role == 'tutee'
-      (status == 'confirmed' || status == 'requested_confirmation') && !canceled?
-    else 
-      puts 'No Op.  Concept only exists for tutees.'
-    end
-  end
 
   def canceled?
     (confirmations.last.try(:confirmed) == false)

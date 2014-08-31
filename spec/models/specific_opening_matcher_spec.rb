@@ -37,7 +37,7 @@ describe SpecificOpeningMatcher do
 			context "when no s_os are upcoming" do
 				let(:time_tutee) {Time.current + 3.hours }
 				let(:time_tutor) {Time.current + 3.hours }
-				let(:s_o_tutee_status) {'requested_confirmation'}
+				let(:s_o_tutee_status) {'confirmed'}
 
 				it "matches for related users" do
 
@@ -52,7 +52,7 @@ describe SpecificOpeningMatcher do
 				let(:time_tutor) {Time.current + 1.hour }
 				let(:time_tutee) {Time.current + 1.hour }
 				let(:s_o_tutor_status) {'confirmed'}
-				let(:s_o_tutee_status) {'requested_confirmation'}
+				let(:s_o_tutee_status) {'confirmed'}
 
 				it "matches for unrelated users" do
 					som = SpecificOpeningMatcher.new(tutor_openings)
@@ -113,9 +113,9 @@ describe SpecificOpeningMatcher do
 	  	end
 
 		context "when a tutor" do
-		  context "when tutor status is confirmed and tutee status is requested confirmation" do 
+		  context "when tutor status is confirmed and tutee status is confirmed" do 
 		  	let(:s_o_tutor_status) { 'confirmed' }
-		  	let(:s_o_tutee_status) { 'requested_confirmation' }
+		  	let(:s_o_tutee_status) { 'confirmed' }
 
 		  	it "returns the S O from the appointment partner" do
 		  		expect(@som.match_from_related_users(@s_o_tutor)).to eq @s_o_tutee
@@ -128,7 +128,8 @@ describe SpecificOpeningMatcher do
 
 		  context "when tutor status is not confirmed" do 
 		  	let(:s_o_tutor_status) { 'available' }
-		  	let(:s_o_tutee_status) { 'requested_confirmation' }
+		  	let(:s_o_tutee_status) { 'confirmed' }
+
 		  	it "does not return the S O from the appointment partner" do 
 		  		expect(@som.match_from_related_users(@s_o_tutor)).to eq nil
 		  	end
@@ -145,9 +146,9 @@ describe SpecificOpeningMatcher do
 		end
 
 		context "when a tutee" do
-		  context "when tutor status is confirmed and tutee status is requested confirmation" do 
+		  context "when tutor status is confirmed and tutee status is confirmed" do 
 		  	let(:s_o_tutor_status) { 'confirmed'}
-		  	let(:s_o_tutee_status) { 'requested_confirmation'}
+		  	let(:s_o_tutee_status) { 'confirmed'}
 
 		  	it "returns the S O from the appointment partner" do 
 		  		expect(@som.match_from_related_users(@s_o_tutee)).to eq @s_o_tutor
@@ -156,7 +157,7 @@ describe SpecificOpeningMatcher do
 
 		  context "when tutor status is not confirmed" do 
 		  	let(:s_o_tutor_status) { 'available' }
-		  	let(:s_o_tutee_status) { 'requested_confirmation' }
+		  	let(:s_o_tutee_status) { 'confirmed' }
 
 		  	it "does not return the S O from the appointment partner" do 
 		  		expect(@som.match_from_related_users(@s_o_tutee)).to eq nil
@@ -201,9 +202,9 @@ describe SpecificOpeningMatcher do
 			@som = SpecificOpeningMatcher.new(@s_os)
 		end
 
-		context "when the tutees status is requested confirmation and the tutors status is available" do 
+		context "when the tutees status is confrimed and the tutors status is confirmed" do 
 			let(:s_o_tutor_status) { 'confirmed' }
-			let(:s_o_tutee_status) { 'requested_confirmation' }
+			let(:s_o_tutee_status) { 'confirmed' }
 
 	  	it "matches s_os with the same time" do
 	  		expect(@som.match_from_unrelated_users(s_o_tutee)).to eq @s_o_unrelated_tutor_same_time
@@ -214,7 +215,7 @@ describe SpecificOpeningMatcher do
 	  	end
 	  end
 
-	  context "when the tutees status is not requested confirmation and the tutors status is available" do 
+	  context "when the tutees status is not confirmed and the tutors status is available" do 
 	  	let(:s_o_tutor_status) { 'confirmed' }
 			let(:s_o_tutee_status) { 'available' }
 			
