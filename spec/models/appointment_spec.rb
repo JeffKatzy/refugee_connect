@@ -40,10 +40,6 @@ describe Appointment do
 		it "should mark the appointment as complete" do
 			expect(apt.status).to eq 'complete'
 		end
-
-		it "should send a text to the tutor" do
-			expect(TextToUser).to receive(:deliver)
-		end
 	end
 
 	describe 'validations' do
@@ -137,6 +133,7 @@ describe Appointment do
 		end
 
 		it "should return only the next upcoming, incomplete appointment" do
+			binding.pry
 			Appointment.next_appointment.should eq @twenty_minutes
 		end
 	end

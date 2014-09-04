@@ -151,9 +151,8 @@ class Appointment < ActiveRecord::Base
 
   def complete
     self.ended_at = Time.current.utc
-    self.save
+    self.save 
     self.set_status
-    TextToUser.deliver(self.tutor, 'Please text the page number that you last left off at.')
   end
 
   def set_status
