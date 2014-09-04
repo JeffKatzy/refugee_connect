@@ -76,7 +76,6 @@ describe User do
   	end
 
   	it "returns only active users" do
-  		User.tutors.should include @priya
       User.tutors.should include @jaya
   	end
 

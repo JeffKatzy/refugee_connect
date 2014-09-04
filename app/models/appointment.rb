@@ -27,7 +27,7 @@ class Appointment < ActiveRecord::Base
   scope :during, ->(time) { where("scheduled_for between (?) and (?)", time, time + 1.hour) }
   scope :this_week, after(Time.current.utc.beginning_of_week).before(Time.current.utc.end_of_week)
   scope :today, after(Time.current.utc.beginning_of_day).before(Time.current.utc.end_of_day)
-  scope :recent_inclusive, where('began_at IS NOT NULL order by began_at desc limit 1')
+  scope :recent_inclusive, where('began_at IS NOT NULL').order('began_at desc').limit(1)
   
   scope :tomorrow, after(Time.current.utc.end_of_day).before(Time.current.utc.end_of_day + 24.hours)
   scope :incomplete, where(status: 'incomplete')
@@ -40,9 +40,6 @@ class Appointment < ActiveRecord::Base
   scope :unstarted, where("began_at IS NULL")
 
   scope :most_recent, complete.recent_inclusive
-
-  scope :this_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour, Time.current.utc.end_of_hour)
-  scope :next_hour, where("scheduled_for between (?) and (?)", Time.current.utc.beginning_of_hour + 1.hour, Time.current.utc.end_of_hour + 1.hour)
   
   #check to see if this still works
 
@@ -124,16 +121,8 @@ class Appointment < ActiveRecord::Base
     self.scheduled_for += diff_in_hours.hours
   end
 
-  def self.batch_for_just_before
-    Appointment.fully_assigned.next_hour
-  end
-
   def self.next_appointment #next_appointment includes the current_appointment
     next_appointments.first
-  end
-
-  def self.current #subset of next_appointment
-    next_appointment if next_appointment.present? && next_appointment.scheduled_for.utc.hour == Time.current.utc.hour
   end
 
   def self.needs_page_number

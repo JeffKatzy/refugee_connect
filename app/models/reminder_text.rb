@@ -34,10 +34,11 @@ class ReminderText < ActiveRecord::Base
     sos_no_apts = SpecificOpening.confirmed
       .where('appointment_id IS NULL')
       .after(Time.current.utc.beginning_of_hour).before(Time.current.utc)
-    sos_no_apts.each do |specific_opening|
+    sos_no_apts.map do |specific_opening|
       text = NoAppointmentMatchedText.create(unit_of_work_id: specific_opening.id)
       tutor_text = TextToUser.deliver(text.user, text.body)
       specific_opening.update_attributes(status: 'unmatched')
+      specific_opening
     end
   end
 

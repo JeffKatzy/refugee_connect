@@ -74,6 +74,7 @@ describe ReminderText do
       before :each do
         @no_user = FactoryGirl.create(:specific_opening, 
           scheduled_for: Time.current,
+          status: 'available',
           user_id: 30009
           )
       end
