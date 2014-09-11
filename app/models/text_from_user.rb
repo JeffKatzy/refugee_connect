@@ -35,7 +35,7 @@ class TextFromUser < ActiveRecord::Base
       opening = find_specific_opening
       if opening
         opening.confirm 
-        TextToUser.deliver(user, "Woohoo!  We'll match you with someone who could also make it and then text you at #{opening.scheduled_for_to_text}.  For the class, you'll need your phone and the book. So either download it from your profile page, or go to the link we send you right before your class.  Protip: use earbuds with a mic and view the book on your smartphone by going to the link we'll give you.")
+        TextToUser.deliver(user, "Cool! We'll match you up and text you at #{opening.scheduled_for_to_text}.  You'll need your phone and the book. Get it in your profile page or the link in our next text.")
       end
     elsif body == 'n'
       opening = find_specific_opening

@@ -5,10 +5,10 @@ RefugeeConnect::Application.routes.draw do
   match 'users/new_tutee', to: 'users#new_tutee'
   get 'users/cancel' => 'users#cancel'
   
-  resources :users 
+  resources :users
 
-  resources :specific_openings do
-    resources :confirmations
+  resources :specific_openings, path: 'sos' do
+    resources :confirmations, path: 'cos'
   end
 
   resources :appointments

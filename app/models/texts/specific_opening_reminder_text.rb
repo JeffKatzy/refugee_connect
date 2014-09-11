@@ -14,6 +14,7 @@
 
 class SpecificOpeningReminderText < Text
 	after_create :set_type, :set_user, :set_body
+	BASE_URL = 'www.speakloud.org'
 
 	def specific_opening
 		unit_of_work
@@ -22,6 +23,10 @@ class SpecificOpeningReminderText < Text
 	def set_type
 		self.unit_of_work_type = 'SpecificOpening'
 		save
+	end
+
+	def helper_url
+		Rails.application.routes.url_helpers.new_specific_opening_confirmation_path(specific_opening)
 	end
 
 	def set_user
@@ -37,9 +42,9 @@ class SpecificOpeningReminderText < Text
 	def body
 		time = specific_opening.scheduled_for_to_text(user.role)
 		if user.is_tutor?
-			"Speakloud session today!! Can you still teach at #{time}?  Text back 'Y' and we'll match you up with someone to teach. Or text 'N' to cancel."
+			"Speakloud session today at #{time}!! Text 'Y' and we match you with someone to teach. Text 'N' to cancel. Or click #{BASE_URL + helper_url} to confirm online."
 		else
-			"You have a session today at #{time}.  Text back 'Y' and we'll match you with a teacher. Or text 'N' to cancel."
+			"You have a session today at #{time}!!  Text back 'Y' and we'll match you with a teacher. Or text 'N' to cancel. Or click #{BASE_URL + helper_url} to confirm online."
 		end
 	end
 end
