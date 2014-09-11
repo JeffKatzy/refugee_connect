@@ -21,35 +21,57 @@
 	%section.explanation
 		%h2.mission_statement 
 			%p For one hour per week during lunch, connect with the rest of the world.
-	%br
-	%br
+		%h3.mission_statement 
+			%p Students have flip phones and books, they just need your call.
 	.row
 		.one.sixth
 		%section.explanation#home-problem.four.sixths
 			.row.padded
-				.two.sixths.pad-left
-					%h1#home-problem-title The Problem
-					.row
-						%h2#home-problem-statement
-							Lack of access to English learning resources
-						%p 
-							The poorest throughout the world need it to work and to properly assert their rights.  Yet many do not have knowledge to learn.
-				.four.sixths
-			%br
+				%h1#home-problem-title.centered How it works
 			.row
-				.four.sixths
-				.two.sixths.padded
-					%h1#home-problem-title Our Solution
-					.row
-						%h2#home-problem-statement
-							Teaching through cell phones
-						%p 
-							Volunteers sign up for weekly tutoring sessions facilitated through their cell phone.  At the proper time, the application calls the volunteer and then the student, and keeps track of student progress.
-				%br
+				.one.third.padded
+					%h2 Signup
+					%p Choose the weekday to teach.  Sessions are 40 minutes at 11:30am or 12:30pm.  
+					.one.sixth
+					.two.thirds
+						=image_tag('/assets/registration.jpg')
+				.one.third.padded
+					%h2 Confirm
+					%p Stuff happens..So before each class we ask if you're still free.  Text 'y' and it's on.
+					.one.twelfth
+					.five.sixths
+						=image_tag('/assets/confirm.jpg')
+				.one.third.padded
+					%h2 We match
+					%p We match you with students who also are free, favoring those you taught before.
+					%br
+					.one.sixth
+					.two.thirds
+						.padded=image_tag('/assets/match.jpg')
+			.row
+				%h1#home-problem-title.centered They learn
+				.one.third.padded
+					%p You need (1) a phone with web access (or the book printed out) (2) earbuds to teach handsfree (optional).
+					%br
+					%br
+					.one.half
+						.padded=image_tag('/assets/musicplayer.png')
+					.one.half
+						.padded=image_tag('/assets/large_open_book.png')
+				.one.third.padded
+					%p Right before class, we text a link to the day's work and student bio. Text back 'go' to trigger the call. 
+					%br
+					.one.third
+					.one.third
+						=image_tag('/assets/mail-text.jpg')
+				.one.third.padded
+					%p Your student won't have internet, just a cell phone and a book to follow along.
+					.padded=image_tag('/assets/phone_call.jpg')
 		.one.sixth
 	%section.explanation
 		%br
 		%h2.mission_statement 
+			%p Signup, confirm, we match, they learn.
 			%p It's your call
 			%p
 				= link_to('auth/facebook') do 
