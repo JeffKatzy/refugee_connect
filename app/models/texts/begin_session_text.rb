@@ -32,7 +32,7 @@ class BeginSessionText < Text
 
 	def body
 		if user.is_tutor?
-			"Your class with #{self.appointment.tutee.name} on!! Go to #{BASE_URL + helper_url} for your customized class info.  Then, reply to this text with the word 'Go' to begin."
+			"Your class with #{self.appointment.tutee.name} is on!! Go to #{BASE_URL + helper_url} for your class info.  Then, reply to this text with the word 'Go' to begin."
 		else
 			"Your class with #{self.appointment.tutor.name} now ready!! You will be receiving a call shortly."
 		end

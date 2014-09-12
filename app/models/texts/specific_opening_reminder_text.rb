@@ -40,11 +40,11 @@ class SpecificOpeningReminderText < Text
 	end
 
 	def body
-		time = specific_opening.scheduled_for_to_text(user.role)
+		time = specific_opening.scheduled_for_time_to_text
 		if user.is_tutor?
-			"Speakloud session today at #{time}!! Text 'Y' and we match you with someone to teach. Text 'N' to cancel. Or click #{BASE_URL + helper_url} to confirm online."
+			"Speakloud class today at #{time}!! Text 'Y' and we match you with a student. Text 'N' to cancel. Or click #{BASE_URL + helper_url} to confirm online."
 		else
-			"You have a session today at #{time}!!  Text back 'Y' and we'll match you with a teacher. Or text 'N' to cancel. Or click #{BASE_URL + helper_url} to confirm online."
+			"You have a class today at #{time}!!  Text back 'Y' and we match you with a teacher. Text 'N' to cancel. Or click #{BASE_URL + helper_url} to confirm online."
 		end
 	end
 end

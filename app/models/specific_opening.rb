@@ -49,7 +49,11 @@ class SpecificOpening < ActiveRecord::Base
     Confirmation.create(specific_opening_id: self.id, user_id: self.user.id, confirmed: true)
   end
 
-  def scheduled_for_to_text(user_role)
+  def scheduled_for_to_text
     self[:scheduled_for].in_time_zone(user.time_zone).strftime("%l:%M %p on %A")
+  end
+
+  def scheduled_for_time_to_text
+    self[:scheduled_for].in_time_zone(user.time_zone).strftime("%l:%M %p")
   end
 end
