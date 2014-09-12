@@ -2,7 +2,10 @@
 	.row.two.sixths.centered
 		= render 'shared/error_messages', user: @user
 	.row#hero_inside.six.centered.twelfths
-		%p#hero_inside_large_text
+		= link_to('/auth/facebook') do 
+			%button.yb_button.blue
+				Signup with facebook
+		%p#hero_inside_large_text.padded
 			= link_to 'I want to teach', "/users/new_tutor", remote: true, :class => 'button tiny radius', id: 'new_tutor_button'
 			= link_to 'I want to learn', "/users/new_tutee", remote: true, :class => 'button tiny radius', id: 'new_tutee_button'
 	.row.six.centered.twelfths

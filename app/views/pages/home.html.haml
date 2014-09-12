@@ -6,18 +6,16 @@
 		.one.half.mobile
 			%h1.homepage-herotext.padded
 				Teach English to the ones who need it most
-			.homepage-hero-paragraph.skip-two.five.eighths.mobile
+			.homepage-hero-paragraph.skip-two.five.eighths.mobile.desktop-only
 				%h3 It begins with one phone call.
 			.signup_buttons.skip-two.three.sixths.mobile
 				%p.big_button_paragraph
-					= link_to('auth/facebook') do 
+					= link_to(new_user_path) do 
 						%button.yb_button.blue
-							Get started
+							Signup
 				.signup_links
 					%p
-						= link_to('Sign up without facebook', new_user_path)
-					%p
-						= link_to('Login without facebook', new_session_path)
+						= link_to('Login', new_session_path)
 	%section.explanation
 		%h2.mission_statement 
 			%p For one hour per week during lunch, connect with the rest of the world.

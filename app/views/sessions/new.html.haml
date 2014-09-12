@@ -14,5 +14,14 @@
 				.one.half.pull-left
 					= f.password_field :password
 			%br
-			= f.submit "Login"
+			.pull-left= f.submit "Login"
+		%br
+		%br
+		.pull-left Or
+		%br
+		%br
+		%p.big_button_paragraph.pull-left
+			= link_to('/auth/facebook') do 
+				%button.yb_button.blue
+					Login with facebook
 
