@@ -10,6 +10,7 @@ class ConfirmationsController < ApplicationController
 		if @confirmation.save
 			@user = @confirmation.user
 			@specific_opening = @confirmation.specific_opening
+			@specific_opening.update_attributes(status: 'confirmed')
       redirect_to specific_opening_confirmation_path(@specific_opening, @confirmation)
     else
       render action: 'new'
