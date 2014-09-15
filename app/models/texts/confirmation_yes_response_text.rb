@@ -12,7 +12,7 @@ class ConfirmationYesResponseText < Text
 	end
 
 	def helper_url
-		Rails.application.routes.url_helpers.specific_opening_confirmation_path(specific_opening)
+		Rails.application.routes.url_helpers.specific_opening_confirmations_path(specific_opening)
 	end
 
 	def set_user
