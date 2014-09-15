@@ -14,7 +14,7 @@ task :create_appointments => :environment do
 	som.matches_and_creates_apts
 end
 
-task :confirm_apts => :environment do
+task :confirm_sos => :environment do
   puts "gather apts in just before"
   ReminderText.confirm_specific_openings
   puts "done."
