@@ -133,7 +133,6 @@ describe Appointment do
 		end
 
 		it "should return only the next upcoming, incomplete appointment" do
-			binding.pry
 			Appointment.next_appointment.should eq @twenty_minutes
 		end
 	end

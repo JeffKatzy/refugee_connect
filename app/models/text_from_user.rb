@@ -62,7 +62,6 @@ class TextFromUser < ActiveRecord::Base
     if self.appointment && self.appointment.scheduled_for.hour == Time.current.hour
       puts "about to call start_call"
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
-      binding.pry
       self.appointment.start_call
     else
       begin

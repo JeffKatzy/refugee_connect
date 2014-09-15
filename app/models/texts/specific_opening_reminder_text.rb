@@ -44,7 +44,7 @@ class SpecificOpeningReminderText < Text
 		if user.is_tutor?
 			"Speakloud class today at #{time}!! Text back 'Y' and we match you with a student. Or click #{BASE_URL + helper_url} to confirm online."
 		else
-			"Speakloud class today at #{time}!! Text 'Y' to THE NUMBER +1267 317 2085 and we'll get a teacher. Or click #{BASE_URL + helper_url} to do it online."
+			"Speakloud class today at #{time}!! TEXT 'Y' TO +1267 317 2085 and we'll get a teacher. Or click #{BASE_URL + helper_url} to do it online."
 		end
 	end
 end

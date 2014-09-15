@@ -30,7 +30,7 @@ class User < ActiveRecord::Base
   has_many :openings
   has_many :reminder_texts
   has_many :photos
-  
+  has_many :texts
   has_many :text_to_users
   
   has_many :appointments_of_tutor, class_name: 'Appointment', foreign_key: :tutor_id, :order => 'scheduled_for DESC'
