@@ -1,1 +1,22 @@
-Hello
+.four.centered.sixths
+	%br
+	Cool.  You are confirmed! 
+	%br
+	=link_to "Download the book here", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
+	Or just hang tight and you can view it on your appointment page..after we match you up.
+	%br
+	%br
+	%p.message.red.dismissible Here are some tips for the lesson!  Classes last 40 minutes and cover 3-5 pages.  Skip assignments you don't like.  Improvise at times by using the book to start a conversation.  Give feedback to your students!  If using a phone, panorama view works best.  Also, use a headset with mic to teach hands free with your phone.
+
+	%br
+	- if @appointment
+		The class is on! We found you a match!
+		%br
+		- if @specific_opening.user.is_tutor?
+			You have a class with #{@appointment.tutee.name}.  
+			= link_to("Click here", appointment_path(@appointment))
+			for more info about #{@appointment.tutee.name} and what you will be teaching.
+		- else
+			You have a class with #{@appointment.tutor.name}.  A few minutes after #{@specific_opening.scheduled_for_time_to_text} you will receive a reminder text, and then a phone call starting the class.
+	- else
+		= "We haven't matched you for a class yet.  But check back at this page around #{@specific_opening.scheduled_for_time_to_text - 1.hour} and we should have a link to the class and the material you'll be teaching."

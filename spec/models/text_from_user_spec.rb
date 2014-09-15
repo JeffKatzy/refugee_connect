@@ -102,6 +102,12 @@ describe TextFromUser do
         text
         expect(specific_opening.reload.status).to eq 'confirmed'
       end
+
+      it "sends back the right text" do
+        specific_opening
+        text
+        expect(Text.last.body).to include("Cool! We'll match you up and text you")
+      end
     end
 
     context "when text is 'n' " do
@@ -122,5 +128,41 @@ describe TextFromUser do
         expect(appointment.reload.finish_page).to eq 3
       end
     end
+  end
+
+  describe 'attempt_session' do
+    before do 
+      User.delete_all
+      TextToUser.any_instance.stub(:send_text)
+      CallToUser.any_instance.stub(:start_call)
+      Appointment.delete_all
+      text_to_user
+    end
+
+    let(:user) { FactoryGirl.create(:user) }
+    let(:text_to_user) { FactoryGirl.create(:text_to_user, user: user, appointment: appointment) }
+
+    
+    let(:text_from_user) { FactoryGirl.create(:text_from_user, body: body, appointment: appointment, user: user) }
+
+    context "when there is an appointment this hour" do 
+      let(:appointment) { FactoryGirl.create(:appointment, tutor: user, scheduled_for: time) }
+      let(:time) { Time.current }
+
+      it "should attempt session" do 
+        expect(appointment).to receive(:start_call)
+        text_from_user.attempt_session
+      end    
+    end
+
+    context "when there is not an appointment this hour" do
+      let(:appointment) { FactoryGirl.create(:appointment, tutor: user, scheduled_for: time) }
+      let(:time) { Time.current + 70.minutes }
+
+      it "should send a text saying there is no appointment this hour" do
+        text_from_user.attempt_session
+        expect(TextToUser.last.body).to include("No sessions for this hour.")
+      end
+    end 
   end
 end

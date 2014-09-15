@@ -23,6 +23,7 @@ class TextFromUser < ActiveRecord::Base
   attr_accessible :body, :time, :user_id, :incoming_number
   before_save :format_phone_number
   after_create :set_user
+  attr_accessor :appointment
 
   def twilio_response
     Rails.logger.info("#{self.id} now responding to the word #{body} at #{Time.current.utc}")
@@ -35,7 +36,8 @@ class TextFromUser < ActiveRecord::Base
       opening = find_specific_opening
       if opening
         opening.confirm 
-        TextToUser.deliver(user, "Cool! We'll match you up and text you at #{opening.scheduled_for_to_text}.  You'll need your phone and the book. Get it in your profile page or the link in our next text.")
+        text = ConfirmationYesResponseText.create(unit_of_work_id: opening.id)
+        TextToUser.deliver(text.user, text.body)
       end
     elsif body == 'n'
       opening = find_specific_opening
@@ -55,27 +57,30 @@ class TextFromUser < ActiveRecord::Base
   #the only thing untested is attempt session.
   def attempt_session
     puts "in attempt_session"
-    self.user.reload
-    last_text = user.text_to_users.where('appointment_id IS NOT NULL').last #find last begin_session text
-    if last_text
-      self.appointment = last_text.appointment
-      save
-    end
-    #
-    if appointment && appointment.scheduled_for.hour == Time.current.hour
+    self.reload.user
+    assign_appointment
+    if self.appointment && self.appointment.scheduled_for.hour == Time.current.hour
       puts "about to call start_call"
       Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
-      appointment.start_call
+      binding.pry
+      self.appointment.start_call
     else
-      #pull this into another method bc not attempting session anymore
-      appointment = user.appointments.next_appointment 
       begin
-        body = appointment[:scheduled_for].in_time_zone.
-          strftime("No sessions for this hour. Your next session is at %I:%M%p on %A.")
+        Rails.logger.info("In no sessions this hour")
+        body = "No sessions for this hour. Check your profile page to see your next opening"
         TextToUser.deliver(self.user, body)
       rescue NoMethodError #why do you need to do this?
         Rails.logger.debug("The next session doesn't exist for this user. ID: #{user.id}")
       end
+    end
+  end
+
+  def assign_appointment
+    #find last begin_session text
+    last_text = user.text_to_users.where('appointment_id IS NOT NULL').last 
+    if last_text
+      self.appointment = last_text.appointment
+      save
     end
   end
 
@@ -91,6 +96,7 @@ class TextFromUser < ActiveRecord::Base
       nil
     end
   end
+
 
   def set_new_page
     puts "in set_new_page"
