@@ -19,6 +19,9 @@
 		- else
 			You have a class with #{@appointment.tutor.name}.  A few minutes after #{@specific_opening.scheduled_for_time_to_text} you will receive a reminder text, and then a phone call starting the class.
 	- else
-		= "We haven't matched you for a class yet.  But check back at this page around #{@specific_opening.scheduled_for_time_to_text - 1.hour} and we should have a link to the class and the material you'll be teaching."
+		- if @specific_opening.user.is_tutor?
+			= "We haven't found you a person to teach yet.  But check back at this page around #{@specific_opening.scheduled_for_time_to_text - 1.hour} and we should have a link to the class and the material you'll be teaching."
+		- else
+			= "We haven't found you a teacher yet.  But check back at this page around #{@specific_opening.scheduled_for_time_to_text - 1.hour} and we should have a link to the class and the material you'll be teaching."
 	%br
 	%br

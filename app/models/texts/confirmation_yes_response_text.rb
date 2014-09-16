@@ -11,8 +11,12 @@ class ConfirmationYesResponseText < Text
 		save
 	end
 
+	def last_confirmation
+		specific_opening.confirmations.last
+	end
+
 	def helper_url
-		Rails.application.routes.url_helpers.specific_opening_confirmations_path(specific_opening)
+		Rails.application.routes.url_helpers.specific_opening_confirmation_path(specific_opening, last_confirmation)
 	end
 
 	def set_user
@@ -28,9 +32,9 @@ class ConfirmationYesResponseText < Text
 	def body
 		time = specific_opening.scheduled_for_time_to_text
 		if user.is_tutor?
-			"Cool! We'll match you up and text you at #{specific_opening.scheduled_for_time_to_text}. You'll need your phone and the book. Click #{BASE_URL + helper_url} for the book, and other info."
+			"OK! We'll match you up and text you at #{specific_opening.scheduled_for_time_to_text}. You'll need your phone and book. Click #{BASE_URL + helper_url} for the book and other info."
 		else
-			"Cool! We'll match you up and text you at #{specific_opening.scheduled_for_time_to_text}. You'll need your phone and the book. Click #{BASE_URL + helper_url} for the book, and other info."
+			"OK! We'll match you up and text you at #{specific_opening.scheduled_for_time_to_text}. You'll need your phone and book. Click #{BASE_URL + helper_url} for the book and other info."
 		end
 	end
 end
