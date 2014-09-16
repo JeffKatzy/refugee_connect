@@ -12,5 +12,5 @@
 						= cl_image_tag(photo.path, { size: '600x500' })
 						.best_in_place_comment
 							.padded= best_in_place @comment, :comment_text, :type => :textarea, nil: "Got feedback? Click here and provide!  Anything #{@tutee.name} needs to work on? Learn anything interesting about #{@tutee.name}?  Think of any changes to the lesson? Add it here, and we'll gather the info for the next teacher!"
-				.pad-left= will_paginate @bookpage_photos
+				.pad-left= will_paginate @bookpage
 				

@@ -3,7 +3,7 @@
 	Cool.  You are confirmed! 
 	%br
 	=link_to "Download the book here", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
-	Or just hang tight and you can view it on your appointment page..after we match you up.
+	Or just hang tight and you can view just the pages you need on your appointment page, without downloading.  You can view this info after we match you up.
 	%br
 	%br
 	%p.message.red.dismissible Here are some tips for the lesson!  Classes last 40 minutes and cover 3-5 pages.  Skip assignments you don't like.  Improvise at times by using the book to start a conversation.  Give feedback to your students!  If using a phone, panorama view works best.  Also, use a headset with mic to teach hands free with your phone.
@@ -20,7 +20,7 @@
 			You have a class with #{@appointment.tutor.name}.  A few minutes after #{@specific_opening.scheduled_for_time_to_text} you will receive a reminder text, and then a phone call starting the class.
 	- else
 		- if @specific_opening.user.is_tutor?
-			= "We haven't found you a person to teach yet.  But check back at this page an hour before your class at #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
+			= "We haven't found you a person to teach yet.  But check back at this page an hour before your #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
 		- else
 			= "We haven't found you a teacher yet.  But check back at an hour before your #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
 	%br

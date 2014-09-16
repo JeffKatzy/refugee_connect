@@ -6,6 +6,9 @@
         = f.label :page_number
         = f.text_field :page_number
       %p
+        = f.label :teachers_page
+        = f.select :teachers_page, [['Teachers Page', true], ['Not', false]]
+      %p
         = f.attachinary_file_field :photos
       %p
         = f.submit

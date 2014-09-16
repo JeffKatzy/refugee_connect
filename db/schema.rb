@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140829203508) do
+ActiveRecord::Schema.define(:version => 20140916231637) do
 
   create_table "add_appointment_id_to_call_to_users", :force => true do |t|
     t.integer  "appointment_id"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(:version => 20140829203508) do
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
     t.integer  "assignment_id"
+    t.boolean  "teachers_page"
   end
 
   create_table "call_to_users", :force => true do |t|

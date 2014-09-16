@@ -9,6 +9,7 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  assignment_id :integer
+#  teachers_page :boolean
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl
