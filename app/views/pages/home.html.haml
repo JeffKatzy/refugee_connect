@@ -39,7 +39,7 @@
 					%h2 Confirm
 					%p Stuff happens..So before each class we ask if you're still free.  Text 'y' and it's on.
 					.one.twelfth
-					.five.sixths
+					.five.sixths.two-up-mobile
 						=image_tag('/assets/confirm.jpg')
 				.one.third.padded
 					%h2 We match
@@ -54,15 +54,15 @@
 					%p You need (1) a phone with web access (or the book printed out) (2) earbuds to teach handsfree (optional).
 					%br
 					%br
-					.one.half
+					.one.half.three-up-mobile
 						.padded=image_tag('/assets/musicplayer.png')
-					.one.half
+					.one.half.three-up-mobile
 						.padded=image_tag('/assets/large_open_book.png')
 				.one.third.padded
 					%p Right before class, we text a link to the day's work and student bio. Text back 'go' to trigger the call. 
 					%br
 					.one.third
-					.one.third
+					.one.third.three-up-mobile
 						=image_tag('/assets/mail-text.jpg')
 				.one.third.padded
 					%p Your student won't have internet, just a cell phone and a book to follow along.
@@ -74,7 +74,7 @@
 			%p Signup, confirm, we match, they learn.
 			%p It's your call
 			%p
-				= link_to('auth/facebook') do 
+				= link_to(new_user_path) do 
 					%button.yb_button.blue
 						Get Started
 		%br
