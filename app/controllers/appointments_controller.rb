@@ -43,7 +43,7 @@ class AppointmentsController < ApplicationController
     @tutee = @appointment.tutee
     @tutee_profile_info = @tutee.profile_info || @tutee.create_profile_info
     @current_page = params[:page] || @appointment.start_page
-    @bookpage = Bookpage.where('page_number is not null').page(@current_page).per_page(1)
+    @bookpage = Bookpage.where('page_number is not null').order(:page_number).page(1).per_page(1)
 
     @appointment.finish_page = @current_page
     @appointment.save
