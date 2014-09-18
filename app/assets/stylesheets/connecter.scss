@@ -7,14 +7,14 @@
 }
 
 //medium+ screen sizes
-@media (min-width:992px) {
+@media (min-width:492px) {
     .desktop-only {
         display:block !important;
     }
 }
  
 //small screen sizes
-@media (max-width: 991px) {
+@media (max-width: 491px) {
     .mobile-only {
         display:block !important;
     }
@@ -22,6 +22,10 @@
     .desktop-only {
         display:none !important;
     }
+}
+
+#shorter_herotext {
+	font-size: 11px;
 }
 
 body {
@@ -111,7 +115,7 @@ header {
 }
 
 .signup_links {
-	font-size: 17px;
+	font-size: 14px;
 	p {
 		margin: 0px;
 	}
@@ -267,10 +271,10 @@ header {
 
 .yb_button {
 	letter-spacing: .15em;
-	padding: .4em;
+	padding: .3em;
 	margin-bottom: 10px;
 	border-radius: 4px;
-	font-size: 14px;
+	font-size: 12px;
 	margin: 0px 0px;
 	clear: both;
 }

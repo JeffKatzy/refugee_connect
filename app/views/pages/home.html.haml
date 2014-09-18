@@ -5,10 +5,12 @@
 		.one.half.mobile
 		.one.half.mobile.pad-right
 			.align-right
-				%h1.homepage-herotext.padded
+				%h1.homepage-herotext.padded.desktop-only
 					Teach English to the ones who need it most
 				.homepage-hero-paragraph.mobile.desktop-only
 					%h3 It begins with one phone call.
+				%h1.homepage-herotext.padded.mobile-only#shorter_herotext
+					Teach English to those in need
 				.signup_buttons.mobile.pad-right
 					%p.big_button_paragraph
 						= link_to(new_user_path) do 
