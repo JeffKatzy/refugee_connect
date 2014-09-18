@@ -1,13 +1,13 @@
 .max-width
 	%nav.nav.nocollapse#navigation
 		.container
-		%ul
-			.pull-left
-				%li#icon= link_to 'SpeakLoud.org', root_path
-				%p#icon#slogan It's your call
-			.pull-right.navigation_right_side.pad-top
-				%li= link_to 'Sign Up', new_user_path, id: 'register_btn' if @auth.nil?
-				%li= link_to 'Login', signin_path if @auth.nil?
-				%li.relative.middle.right.padded= link_to 'Browse Users', users_path if @auth.present?
-				%li.relative.middle.right.padded= link_to "Welcome #{@auth.name}", user_path(@auth) if @auth.present?
-				%li.relative.middle.right.padded= link_to 'Signout', signout_path if @auth.present?
+			.row
+				.pull-left
+					%li#icon= link_to 'SpeakLoud.org', root_path
+					%p#icon#slogan It's your call
+				.pull-right.navigation_right_side.pad-top
+					%li= link_to 'Sign Up', new_user_path, id: 'register_btn' if @auth.nil?
+					%li= link_to 'Login', signin_path if @auth.nil?
+					%li.relative.middle.right= link_to 'Users', users_path if @auth.present?
+					%li.relative.middle.right= link_to "Hi #{@auth.name}", user_path(@auth) if @auth.present?
+					%li.relative.middle.right= link_to 'Logout', signout_path if @auth.present?
