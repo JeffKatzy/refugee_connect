@@ -3,13 +3,13 @@
 		=image_tag('/assets/shlokasphoto.jpg')
 	.homepage-header.row
 		.one.half.mobile
-		.four.tenths.mobile
+		.one.half.mobile.pad-right
 			.align-right
 				%h1.homepage-herotext.padded
 					Teach English to the ones who need it most
 				.homepage-hero-paragraph.mobile.desktop-only
 					%h3 It begins with one phone call.
-				.signup_buttons.mobile
+				.signup_buttons.mobile.pad-right
 					%p.big_button_paragraph
 						= link_to(new_user_path) do 
 							%button.yb_button.blue
@@ -19,9 +19,9 @@
 							= link_to('Login', new_session_path)
 		.one.eighth
 	%section.explanation
-		%h2.mission_statement 
+		%h2.mission_statement.pad-left.pad-right
 			%p For one hour a week during lunch, connect with the rest of the world.
-		%h3.mission_statement 
+		%h3.mission_statement.pad-left.pad-right
 			%p Students don't need Internet.  Just a phone, a book, and your call.
 	.row
 		.one.sixth
