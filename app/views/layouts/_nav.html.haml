@@ -3,7 +3,7 @@
 		.container
 			.row
 				.pull-left
-					%li#icon= link_to 'SpeakLoud.org', root_path
+					%li#icon= link_to 'SpeakLoud', root_path
 					%p#icon#slogan It's your call
 				.pull-right.navigation_right_side.pad-top
 					%li= link_to 'Sign Up', new_user_path, id: 'register_btn' if @auth.nil?
