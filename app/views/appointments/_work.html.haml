@@ -3,14 +3,29 @@
 		%h1#assignments-title Today's Task
 		.row
 			.three.centered.fourths
-				.two.fifths.pad-left
-					= will_paginate @bookpage 
+				.two.fifths
+					= will_paginate @student_bookpage 
 				.two.fifths
 					=link_to "Download book", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
-				- @bookpage_photos.each do |photo|
-					.row.padded.center
-						= cl_image_tag(photo.path, { size: '600x500' })
-						.best_in_place_comment
-							.padded= best_in_place @comment, :comment_text, :type => :textarea, nil: "Got feedback? Click here and provide!  Anything #{@tutee.name} needs to work on? Learn anything interesting about #{@tutee.name}?  Think of any changes to the lesson? Add it here, and we'll gather the info for the next teacher!"
-				.pad-left= will_paginate @bookpage
+				.row.pad-top
+					.tabs.ipad
+						%ul{role: "tablist"}
+							%li{role: "tab", :"aria-controls" => "#tab1"}
+								Student Book
+							%li{role: "tab", :"aria-controls" => "#tab2"}
+								Teachers Book
+						#tab1{role: "tabpanel"}
+							Students Bookpage Stuff
+							- @student_bookpage_photos.each do |photo|
+								.row.padded.center
+									= cl_image_tag(photo.path, { size: '600x500' })
+						#tab2{role: "tabpanel"}
+							Teachers Bookpage Stuff
+							- @teacher_bookpage_photos.each do |photo|
+								.row.padded.center
+									= cl_image_tag(photo.path, { size: '600x500' })
+				.padded
+				.best_in_place_comment
+					.padded= best_in_place @comment, :comment_text, :type => :textarea, nil: "Got feedback? Click here and provide!  Anything #{@tutee.name} needs to work on? Learn anything interesting about #{@tutee.name}?  Think of any changes to the lesson? Add it here, and we'll gather the info for the next teacher!"
+				.pad-top= will_paginate @student_bookpage
 				

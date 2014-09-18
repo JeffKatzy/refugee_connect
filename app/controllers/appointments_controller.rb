@@ -43,14 +43,16 @@ class AppointmentsController < ApplicationController
     @tutee = @appointment.tutee
     @tutee_profile_info = @tutee.profile_info || @tutee.create_profile_info
     @current_page = params[:page] || @appointment.start_page
-    @bookpage = Bookpage.where('page_number is not null').order(:page_number).page(1).per_page(1)
+    @student_bookpage = Bookpage.where('page_number is not null').where(teachers_page: false).order(:page_number).page(@current_page).per_page(1)
+    @teacher_bookpage = Bookpage.where('page_number is not null').where(teachers_page: true).order(:page_number).page(@current_page).per_page(1)
 
     @appointment.finish_page = @current_page
     @appointment.save
 
-    @bookpage_photos = @bookpage.first.photos
+    @student_bookpage_photos = @student_bookpage.first.photos
+    @teacher_bookpage_photos = @teacher_bookpage.first.photos
 
-    @comment = Comment.where(tutee_id: @tutee.id, tutor_id: @tutor.id, bookpage_id: @bookpage.first.id).first || 
-      Comment.create(tutor_id: @tutor.id, tutee_id: @tutee.id, appointment_id: @appointment.id, bookpage_id: @bookpage.first.id)
+    @comment = Comment.where(tutee_id: @tutee.id, tutor_id: @tutor.id, bookpage_id: @student_bookpage.first.id).first || 
+      Comment.create(tutor_id: @tutor.id, tutee_id: @tutee.id, appointment_id: @appointment.id, bookpage_id: @student_bookpage.first.id)
   end
 end
