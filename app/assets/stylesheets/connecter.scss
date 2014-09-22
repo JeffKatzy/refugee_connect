@@ -6,6 +6,15 @@
   src: url(font-path('five_minutes-webfont.otf')) format('opentype')
 }
 
+
+.best_in_place:hover, #user_account .do_hover {
+  padding-right: 1.5em;
+  background-color: #CCC;
+  cursor: pointer; 
+  cursor: hand;
+}
+
+
 //medium+ screen sizes
 @media (min-width:492px) {
     .desktop-only {
