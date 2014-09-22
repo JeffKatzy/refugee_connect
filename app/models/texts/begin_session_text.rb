@@ -28,6 +28,7 @@ class BeginSessionText < Text
 
 	def appointment
 		unit_of_work
+		save
 	end
 
 	def body

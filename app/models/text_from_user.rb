@@ -61,7 +61,7 @@ class TextFromUser < ActiveRecord::Base
     assign_appointment
     if self.appointment && self.appointment.scheduled_for.hour == Time.current.hour
       puts "about to call start_call"
-      Rails.logger.info("Text from User #{self.id} with user #{user.id} with appointment #{appointment.id}")
+      Rails.logger.info("Text_from_user number #{self.id} from user #{user.id} with appointment #{appointment.id}")
       self.appointment.start_call
     else
       begin
@@ -75,8 +75,7 @@ class TextFromUser < ActiveRecord::Base
   end
 
   def assign_appointment
-    #find last begin_session text
-    last_text = user.text_to_users.where('appointment_id IS NOT NULL').last 
+    last_text = BeginSessionText.where(user_id: self.user).last
     if last_text
       self.appointment = last_text.appointment
       save
