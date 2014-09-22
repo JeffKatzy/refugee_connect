@@ -153,6 +153,7 @@ class Appointment < ActiveRecord::Base
     self.ended_at = Time.current.utc
     self.save 
     self.set_status
+    TextToUser.deliver(self.tutor, "Thanks for teaching! Same time next week!")
   end
 
   def set_status
