@@ -59,7 +59,7 @@ class TextFromUser < ActiveRecord::Base
     puts "in attempt_session"
     self.reload.user
     assign_appointment
-    if self.appointment && self.appointment.scheduled_for.hour == Time.current.hour
+    if self.user.appointments.today.include?(self.appointment) && (self.appointment.scheduled_for.utc.hour == Time.current.utc.hour)
       puts "about to call start_call"
       Rails.logger.info("Text_from_user number #{self.id} from user #{user.id} with appointment #{appointment.id}")
       self.appointment.start_call
