@@ -3,36 +3,51 @@
 	.modal-dialog
 		.modal-content
 			.modal-header
-				.modal-title
-					= @user.name
-				.modal-body
-					= "Current Availabilities" if (@user.openings - [@opening]).present?
-					(Edit by clicking on them below)
+				.modal-body.padded
+					.bold.padded.align-center= "Edit Current Availabilities (Edit by clicking on them below)" if (@user.openings - [@opening]).present?
 					- @user.openings[0..-2].each do |opening|
-						- if @user.is_tutor?
-							%p
-								= best_in_place opening, :day_open, :type => :select, :collection => [["Monday", "Monday"], ["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"]]
-								= best_in_place opening, :time_open, :type => :select, :collection => [["11:30 am", "11:30 am"], ["12:30 pm", "12:30 pm"]]
-						- else
-							%p
-								= best_in_place opening, :day_open, :type => :select, :collection => [["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"], ["Friday", "Friday"]]
-								= best_in_place opening, :time_open, :type => :select, :collection => [["9:00 pm", "9:00 pm"], ["10:00 pm", "10:00 pm"]]
+						.row.pad-top
+							- if @user.is_tutor?
+								.one.fourth
+								.one.fourth
+									= best_in_place opening, :day_open, :type => :select, :collection => [["Monday", "Monday"], ["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"]]
+								.one.fourth
+									= best_in_place opening, :time_open, :type => :select, :collection => [["11:30 am", "11:30 am"], ["12:30 pm", "12:30 pm"]]
+							- else
+								.one.fourth
+									= best_in_place opening, :day_open, :type => :select, :collection => [["Tuesday", "Tuesday"], ["Wednesday", "Wednesday"], ["Thursday", "Thursday"], ["Friday", "Friday"]]
+								.one.fourth
+									= best_in_place opening, :time_open, :type => :select, :collection => [["9:00 pm", "9:00 pm"], ["10:00 pm", "10:00 pm"]]
+					%br
+					%br
+					%br
+					%br
 					.row
-						.center Add New opening
+
+						.bold.padded.align-center Add New opening
 					= form_for @new_opening do |form|
 						= form.hidden_field :user_id, value: @user.id
 						- if @user.is_tutor?
-							= form.label :day_open, "day open"
-							= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday"})
-							= form.label :time_open, "time open"
-							= form.select("time_open", {"11:30 am" => "11:30 am", "12:30 pm" => "12:30 pm" })
-							= form.submit 'Submit availability', class: 'green button large padded fixed center'
+							.row.padded
+								.one.fourth
+								.one.fourth
+									= form.label :day_open, "day open"
+								.one.fourth
+									= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday"})
+							.row.padded
+								.one.fourth
+								.one.fourth
+									= form.label :time_open, "time open"
+								.one.fourth
+									= form.select("time_open", {"11:30 am" => "11:30 am", "12:30 pm" => "12:30 pm" })
+							.padded.align-center= form.submit 'Submit availability', class: 'green button large padded'
 						- else
 							= form.label :day_open, "day open"
 							= form.select("day_open", {"Monday" => "Monday", "Tuesday" => "Tuesday", "Wednesday" => "Wednesday", "Thursday" => "Thursday", "Friday" => "Friday"})
 							= form.label :time_open, "time open"
 							= form.select("time_open", {"9:00 pm" => "9:00 pm", "10:00 pm" => "10:00 pm" })
-							= form.submit 'Submit availability', class: 'green button large padded fixed center'
-							%br
-							%br
-							%br
+							.row
+								.padded.align-center= form.submit 'Submit availability', class: 'green button large padded'
+					%br
+					%br
+					
