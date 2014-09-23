@@ -47,9 +47,15 @@ class ReminderText < ActiveRecord::Base
       where('scheduled_for <=?', Time.current.utc.end_of_day)
     specific_openings_batch.each do |specific_opening|
       next if specific_opening.user.nil?
-      text = Text::SpecificOpeningReminderText.create(unit_of_work_id: specific_opening.id)
-      tutor_text = TextToUser.deliver(text.user, text.body)
-      specific_opening.update_attributes(status: 'requested_confirmation')
+      if specific_opening.potential_matches.present?
+        text = Text::SpecificOpeningReminderText.create(unit_of_work_id: specific_opening.id)
+        tutor_text = TextToUser.deliver(text.user, text.body)
+        specific_opening.update_attributes(status: 'requested_confirmation')
+      else
+        text = Text::NoPotentialMatchText.create(unit_of_work_id: specific_opening.id)
+        tutor_text = TextToUser.deliver(text.user, text.body)
+        specific_opening.update_attributes(status: 'no_match')
+      end
     end
   end
 end

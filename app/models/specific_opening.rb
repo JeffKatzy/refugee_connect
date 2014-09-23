@@ -49,6 +49,12 @@ class SpecificOpening < ActiveRecord::Base
     Confirmation.create(specific_opening_id: self.id, user_id: self.user.id, confirmed: true)
   end
 
+  def potential_matches
+    SpecificOpening.after(self.scheduled_for - 10.minutes).
+    before(self.scheduled_for + 10.minutes).
+    where(user_role: self.user.is_tutor? ? 'tutee' : 'tutor')
+  end
+
   def scheduled_for_to_text
     self[:scheduled_for].in_time_zone(user.time_zone).strftime("%l:%M %p on %A")
   end
