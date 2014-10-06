@@ -85,8 +85,8 @@ describe SpecificOpeningMatcher do
 				end
 			end
 
-		context "when not requested confirmation" do 
-			let(:s_o_tutee_status) {'available'}
+		context "when not confirmed" do 
+			let(:s_o_tutee_status) {'requested_confirmation'}
 			let(:time_tutee) {Time.current + 3.hours }
 			let(:time_tutor) {Time.current + 3.hours }
 

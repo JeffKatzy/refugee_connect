@@ -6,15 +6,20 @@ class SpecificOpeningMatcher
 	end
 
 	def matches_and_creates_apts
+    apts = []
   	specific_openings.each do |s_o|
   		if !upcoming?(s_o)
         match_opening = match_from_related_users(s_o)
   		else
         match_opening = match_from_unrelated_users(s_o)
   		end
-  		create_appointment(s_o, match_opening) if match_opening
+  		@apt = create_appointment(s_o, match_opening) if match_opening
   	end
+    apts << @apt
   end
+
+  #See about refactoring match from unrelated and match from related.
+  #Debug, why was sakesh confirmed even when there was no appointment.
 
   def match_from_related_users(specific_opening)
     return nil if !specific_opening.confirmed?
