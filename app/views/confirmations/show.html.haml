@@ -1,28 +1,31 @@
 .four.centered.sixths
 	%br
-	Cool.  You are confirmed! 
-	%br
-	- if !@appointment
-		=link_to "Download the book here", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
-		Or hang tight and you can view the pages you'll be teaching on your class page, without downloading.  You can view this info after we match you up.
-	%br
-	%br
-	%p.message.red.dismissible Here are some tips for the lesson!  Classes last 40 minutes and cover 3-5 pages.  Skip assignments you don't like.  Improvise at times by using the book to start a conversation.  Give feedback to your students!  If using a phone, panorama view works best.  Also, use a headset with mic to teach hands free with your phone.
-
-	%br
-	- if @appointment
-		The class is on! We found you a match!
+	- if @specific_opening.confirmed?
+		Cool.  You are confirmed! 
 		%br
-		- if @specific_opening.user.is_tutor?
-			You have a class with #{@appointment.tutee.name} starting on page #{@appointment.start_page}.  
-			= link_to("Click here", appointment_path(@appointment))
-			for your class page, which has more info about #{@appointment.tutee.name} and what you will be teaching.
+		- if !@appointment
+			=link_to "Download the book here", "https://dl.dropboxusercontent.com/u/22020175/Interchange%20Book%203.pdf"
+			Or hang tight and you can view the pages you'll be teaching on your class page, without downloading.  You can view this info after we match you up.
+		%br
+		%br
+		%p.message.red.dismissible Here are some tips for the lesson!  Classes last 40 minutes and cover 3-5 pages.  Skip assignments you don't like.  Improvise at times by using the book to start a conversation.  Give feedback to your students!  If using a phone, panorama view works best.  Also, use a headset with mic to teach hands free with your phone.
+
+		%br
+		- if @appointment
+			The class is on! We found you a match!
+			%br
+			- if @specific_opening.user.is_tutor?
+				You have a class with #{@appointment.tutee.name} starting on page #{@appointment.start_page}.  
+				= link_to("Click here", appointment_path(@appointment))
+				for your class page, which has more info about #{@appointment.tutee.name} and what you will be teaching.
+			- else
+				You have a class with #{@appointment.tutor.name} on page #{@appointment.start_page}.  A few minutes after #{@specific_opening.scheduled_for_time_to_text} you will receive a reminder text, and then a phone call starting the class.
 		- else
-			You have a class with #{@appointment.tutor.name} on page #{@appointment.start_page}.  A few minutes after #{@specific_opening.scheduled_for_time_to_text} you will receive a reminder text, and then a phone call starting the class.
+			- if @specific_opening.user.is_tutor?
+				= "We haven't found you a person to teach yet.  But check back at this page an hour before your #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
+			- else
+				= "We haven't found you a teacher yet.  But check back at an hour before your #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
+		%br
+		%br
 	- else
-		- if @specific_opening.user.is_tutor?
-			= "We haven't found you a person to teach yet.  But check back at this page an hour before your #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
-		- else
-			= "We haven't found you a teacher yet.  But check back at an hour before your #{@specific_opening.scheduled_for_time_to_text} opening and we should have a link to the class and the page you'll be starting on."
-	%br
-	%br
+		No problem!  We'll find someone else who can teach and send you another message next week.
